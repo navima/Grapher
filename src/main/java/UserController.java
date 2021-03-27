@@ -44,4 +44,8 @@ public class UserController {
     public void setNodeText(int id, String text) {
         graph.getNode(id).text = text;
     }
+
+    public void setEdgeText(int id, String text) {
+        graph.getEdge(id).text = text;
+    }
 }

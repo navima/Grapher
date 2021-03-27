@@ -64,6 +64,7 @@ public class GUI {
                 }
             }
             graphPane.isPanning = false;    // I'm sorry, God.
+            graphPane.requestFocus();
         });
 
         root.getChildren().add(graphPane);
