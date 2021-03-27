@@ -40,4 +40,8 @@ public class UserController {
     public void removeEdge(int id) {
         graph.removeEdge(id);
     }
+
+    public void setNodeText(int id, String text) {
+        graph.getNode(id).text = text;
+    }
 }
