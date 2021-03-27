@@ -2,13 +2,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
 public class UserController {
     Graph graph = new Graph();
     File graphPath;
 
     public UserController() {
-        load(new File(getClass().getResource("default.json").getFile()));
+        //load(new File(getClass().getResource("default.json").getFile()));
+        load(getClass().getResource("default.json")) ;
+
     }
 
     boolean save() {
@@ -41,6 +45,14 @@ public class UserController {
             return true;
         }
         return false;
+    }
+    void load(URL src) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            graph = mapper.readValue(src, Graph.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     void addNode(double x, double y) {
         final var gotId = graph.addNode(x,y) - 1;
