@@ -1,7 +1,10 @@
 import javafx.scene.Group;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
+import javafx.scene.shape.Circle;
 
 public class NodeWidget extends Group {
     final int id;
@@ -27,6 +30,7 @@ public class NodeWidget extends Group {
 
         textArea.setVisible(false);
 
+        button.setShape(NodeShapeBuilder.build(n.shape));
 
         button.setText(n.text);
         this.controller = controller;
@@ -35,7 +39,24 @@ public class NodeWidget extends Group {
         setLayoutX(n.x);
         setLayoutY(n.y);
 
-
+        var contextMenu = new ContextMenu();
+        var contextMenuItem1 = new MenuItem("Rectangle");
+        contextMenuItem1.setOnAction(e -> {
+            controller.setNodeShape(id, eNodeShape.RECTANGLE);
+            updateCallback.apply();
+        });
+        var contextMenuItem2 = new MenuItem("Circle");
+        contextMenuItem2.setOnAction(e -> {
+            controller.setNodeShape(id, eNodeShape.CIRCLE);
+            updateCallback.apply();
+        });
+        var contextMenuItem3 = new MenuItem("Right Triangle");
+        contextMenuItem3.setOnAction(e -> {
+            controller.setNodeShape(id, eNodeShape.RIGHT_TRI);
+            updateCallback.apply();
+        });
+        contextMenu.getItems().addAll(contextMenuItem1,contextMenuItem2,contextMenuItem3);
+        button.setContextMenu(contextMenu);
         button.setOnMousePressed(e -> {
             dragStartMouseX = e.getSceneX();
             dragStartMouseY = e.getSceneY();

@@ -1,6 +1,7 @@
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.scene.shape.Shape;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,5 +71,9 @@ public class UserController {
 
     public void setEdgeText(int id, String text) {
         graph.getEdge(id).text = text;
+    }
+
+    public void setNodeShape(int id, eNodeShape shape) {
+        graph.getNode(id).shape = shape;
     }
 }

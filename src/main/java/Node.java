@@ -2,6 +2,7 @@ public class Node {
     public double x;
     public double y;
     public String text;
+    public eNodeShape shape;
 
     public Node(double x, double y) {
         this.x = x;
