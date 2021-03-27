@@ -60,7 +60,7 @@ public class GUI {
         final var root = new Group();
         final Scene scene = new Scene(root, 640, 480);
         scene.getStylesheets().add("style.css");
-
+        stage.setTitle("Grapher");
         // Graph visualizer -------------------------------------------------------------------
         updateGraphPaneContents();
         graphPane.getStyleClass().add("menubar");

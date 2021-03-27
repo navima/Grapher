@@ -31,7 +31,6 @@ public class UserController {
         return save();
     }
     boolean load(File file) {
-        //TODO
         if (file != null) {
             ObjectMapper mapper = new ObjectMapper();
             try {
