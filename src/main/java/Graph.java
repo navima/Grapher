@@ -15,6 +15,7 @@ public class Graph {
         edges = new HashMap<>();
         addEdge(0, 1);
     }
+
     public int addNode(double x, double y) {
         return addNode(new Node(x, y));
     }
@@ -23,6 +24,12 @@ public class Graph {
         return lastNodeId;
     }
     public void removeNode(int id) {
+        for (var iterator = edges.entrySet().iterator(); iterator.hasNext();){
+            var next = iterator.next().getValue();
+            if (next.to == id || next.from == id) {
+                iterator.remove();
+            }
+        }
         nodes.remove(id);
     }
     public Node getNode(int id) {
