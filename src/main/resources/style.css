@@ -1,0 +1,8 @@
+.menubar {
+    -fx-border-color: black;
+    -fx-fill: #F0F0F0;
+}
+
+.button {
+    -fx-fill: #e3e3e3;
+}
