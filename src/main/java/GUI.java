@@ -92,8 +92,8 @@ public class GUI {
         });
         MenuItem fLoad = new MenuItem("Load...");
         fLoad.setOnAction(actionEvent -> {
-            if(! controller.load())
-                controller.load(showFilePrompt(stage, "Load From"));
+            if(controller.load(showFilePrompt(stage, "Load From")))
+                updateGraphPaneContents();
         });
         filemenu.getItems().addAll(fSave, fLoad);
         bar.getMenus().add(filemenu);

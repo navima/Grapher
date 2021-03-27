@@ -1,24 +1,47 @@
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.File;
+import java.io.IOException;
 
 public class UserController {
     Graph graph = new Graph();
+    File graphPath;
 
     public UserController() {}
 
     boolean save() {
-        //TODO
-        return false;
+        if (graphPath == null)
+            return false;
+        else{
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                mapper.writeValue(graphPath, graph);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+            return true;
+        }
     }
     boolean save(File file) {
-        //TODO
-        return false;
-    }
-    boolean load() {
-        //TODO
-        return false;
+        graphPath = file;
+        return save();
     }
     boolean load(File file) {
         //TODO
+        if (file != null) {
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                var temp = mapper.readValue(file, Graph.class);
+                graph = temp;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+            return true;
+        }
         return false;
     }
     void addNode(double x, double y) {
