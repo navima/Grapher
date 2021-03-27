@@ -10,6 +10,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class GUI {
@@ -29,16 +31,27 @@ public class GUI {
     NodeWidget edgeStartNode = null;
     boolean edgeBeingAdded = false;
 
+    HashMap<Integer, NodeWidget> nodeWidgetMap = new HashMap<>();
     final GraphPane graphPane = new GraphPane();
     void updateGraphPaneContents() {
         graphPane.clear();
+        nodeWidgetMap.clear();
+        Group dummy2 = new Group();
+        Scene dummy = new Scene(dummy2);
+        for (final var node : controller.graph.nodes.entrySet()) {
+            var temp = new NodeWidget(node.getValue(), node.getKey(), controller, this::updateGraphPaneContents, this);
+            nodeWidgetMap.put(temp.id, temp);
+            dummy2.getChildren().add(temp);
+        }
+        dummy2.layout();
+        dummy2.applyCss();
+        dummy2.layout();
         for (final var edge : controller.graph.edges.entrySet()) {
             var temp = new EdgeWidget(edge.getKey(), edge.getValue(), controller, this::updateGraphPaneContents, this);
             graphPane.addChild(temp);
         }
-        for (final var node : controller.graph.nodes.entrySet()) {
-            var temp = new NodeWidget(node.getValue(), node.getKey(), controller, this::updateGraphPaneContents,this);
-            graphPane.addChild(temp);
+        for (var child : nodeWidgetMap.values()){
+            graphPane.addChild(child);
         }
     }
 

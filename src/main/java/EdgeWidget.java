@@ -33,10 +33,12 @@ public class EdgeWidget extends Group {
 
         line.setStrokeWidth(strokeWidthDefault);
 
-        line.setStartX(controller.graph.getNode(edge.from).x);
-        line.setStartY(controller.graph.getNode(edge.from).y);
-        line.setEndX(controller.graph.getNode(edge.to).x);
-        line.setEndY(controller.graph.getNode(edge.to).y);
+        var sourceNodeWidget = parentGUI.nodeWidgetMap.get(edge.from);
+        var targetNodeWidget = parentGUI.nodeWidgetMap.get(edge.to);
+        line.setStartX(sourceNodeWidget.getLayoutX()+sourceNodeWidget.button.getWidth()/2);
+        line.setStartY(sourceNodeWidget.getLayoutY()+sourceNodeWidget.button.getHeight()/2);
+        line.setEndX(targetNodeWidget.getLayoutX()+targetNodeWidget.button.getWidth()/2);
+        line.setEndY(targetNodeWidget.getLayoutY()+targetNodeWidget.button.getHeight()/2);
 
         label.setText(edge.text);
         label.setLayoutX((line.getStartX()+line.getEndX())/2);
