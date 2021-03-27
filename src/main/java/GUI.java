@@ -11,11 +11,10 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Map;
 
 
 public class GUI {
-    UserController controller;
+    final UserController controller;
 
     public GUI(UserController controller) {
         this.controller = controller;
@@ -31,7 +30,7 @@ public class GUI {
     NodeWidget edgeStartNode = null;
     boolean edgeBeingAdded = false;
 
-    HashMap<Integer, NodeWidget> nodeWidgetMap = new HashMap<>();
+    final HashMap<Integer, NodeWidget> nodeWidgetMap = new HashMap<>();
     final GraphPane graphPane = new GraphPane();
     void updateGraphPaneContents() {
         graphPane.clear();

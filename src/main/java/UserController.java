@@ -1,7 +1,4 @@
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javafx.scene.shape.Shape;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,8 +33,7 @@ public class UserController {
         if (file != null) {
             ObjectMapper mapper = new ObjectMapper();
             try {
-                var temp = mapper.readValue(file, Graph.class);
-                graph = temp;
+                graph = mapper.readValue(file, Graph.class);
             } catch (IOException e) {
                 e.printStackTrace();
                 return false;

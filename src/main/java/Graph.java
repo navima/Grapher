@@ -1,8 +1,8 @@
 import java.util.*;
 
 public class Graph {
-    public Map<Integer, Node> nodes;
-    public Map<Integer, Edge> edges;
+    public final Map<Integer, Node> nodes;
+    public final Map<Integer, Edge> edges;
     private int lastNodeId = 0;
     private int lastEdgeId = 0;
 

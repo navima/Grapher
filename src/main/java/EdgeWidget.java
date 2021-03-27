@@ -1,7 +1,6 @@
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
 
 public class EdgeWidget extends Group {
@@ -9,8 +8,8 @@ public class EdgeWidget extends Group {
     final Edge edge;
     final UserController controller;
     final callback updateCallback;
-    double strokeWidthDefault = 2;
-    double strokeWidthWide = 6;
+    final double strokeWidthDefault = 2;
+    final double strokeWidthWide = 6;
 
     final Line line = new Line();
     final Label label = new Label();
