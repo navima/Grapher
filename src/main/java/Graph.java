@@ -6,6 +6,13 @@ public class Graph {
     private int lastNodeId = 0;
     private int lastEdgeId = 0;
 
+    public int getLastNodeId() {
+        return lastNodeId;
+    }
+    public int getLastEdgeId() {
+        return lastEdgeId;
+    }
+
     public Graph() {
         nodes = new HashMap<>();
         var t = new Node( 320, 240);
