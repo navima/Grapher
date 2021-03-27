@@ -75,4 +75,9 @@ public class UserController {
     public void setNodeShape(int id, eNodeShape shape) {
         graph.getNode(id).shape = shape;
     }
+
+    public void reset() {
+        graph = new Graph();
+        graphPath = null;
+    }
 }

@@ -84,6 +84,11 @@ public class GUI {
         MenuBar bar = new MenuBar();
         // File menu ----------------------------------------------------------------
         Menu filemenu = new Menu("File");
+        MenuItem fNew = new MenuItem("New");
+        fNew.setOnAction(actionEvent -> {
+            controller.reset();
+            updateGraphPaneContents();
+        });
         MenuItem fSave = new MenuItem("Save");
         fSave.setOnAction(actionEvent -> {
             if(! controller.save())
@@ -94,7 +99,7 @@ public class GUI {
             if(controller.load(showFilePrompt(stage, "Load From")))
                 updateGraphPaneContents();
         });
-        filemenu.getItems().addAll(fSave, fLoad);
+        filemenu.getItems().addAll(fNew, fSave, fLoad);
         bar.getMenus().add(filemenu);
         // --------------------------------------------------------------------------
         bar.getStyleClass().add("menubar");
