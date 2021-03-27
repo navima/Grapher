@@ -10,7 +10,9 @@ public class UserController {
     Graph graph = new Graph();
     File graphPath;
 
-    public UserController() {}
+    public UserController() {
+        load(new File(getClass().getResource("default.json").getFile()));
+    }
 
     boolean save() {
         if (graphPath == null)

@@ -15,12 +15,7 @@ public class Graph {
 
     public Graph() {
         nodes = new HashMap<>();
-        var t = new Node( 320, 240);
-        t.text = "Welcome to Grapher!\nLoad existing graphs from the File menu\nManipulate graphs with the toolbar on the left";
-        addNode(t);
-        addNode(150, 150);
         edges = new HashMap<>();
-        addEdge(0, 1);
     }
 
     public int addNode(double x, double y) {

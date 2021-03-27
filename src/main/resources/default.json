@@ -1,0 +1,47 @@
+{
+    "nodes": {
+        "0": {
+            "x": 196.80000000000007,
+            "y": 200.79999999999993,
+            "text": "Welcome to Grapher!\nLoad existing graphs from the File menu\nManipulate graphs with the toolbar on the left",
+            "shape": null
+        },
+        "1": {
+            "x": 122.80000000000001,
+            "y": 353.9999999999999,
+            "text": "Click on Nodes or Edges\nto edit their Label",
+            "shape": null
+        },
+        "2": {
+            "x": 424.80000000000007,
+            "y": 357.59999999999997,
+            "text": "Change Node Shape by\nright-clicking",
+            "shape": "CIRCLE"
+        },
+        "4": {
+            "x": 88.79999999999993,
+            "y": 460.80000000000007,
+            "text": "Drag Nodes to change their location\nDrag the Canvas to pan\n",
+            "shape": null
+        }
+    },
+    "edges": {
+        "0": {
+            "from": 0,
+            "to": 1,
+            "text": ""
+        },
+        "1": {
+            "from": 0,
+            "to": 2,
+            "text": null
+        },
+        "2": {
+            "from": 1,
+            "to": 4,
+            "text": null
+        }
+    },
+    "lastNodeId": 5,
+    "lastEdgeId": 3
+}
