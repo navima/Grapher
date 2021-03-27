@@ -50,6 +50,8 @@ public class UserController {
         System.out.println("Added Node #" + gotId + " (" + graph.getNode(gotId) + ")");
     }
     void addEdge(int from, int to) {
+        if (from == to)
+            return;
         final var gotId = graph.addEdge(from, to)-1;
         System.out.println("Added Edge #" + gotId + " (" + graph.getEdge(gotId) + ")");
     }
