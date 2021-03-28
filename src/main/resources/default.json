@@ -9,7 +9,7 @@
         "1": {
             "x": 122.80000000000001,
             "y": 353.9999999999999,
-            "text": "Click on Nodes or Edges\nto edit their Label",
+            "text": "Click on Nodes or Edges\nto edit their Label\nClick away to commit",
             "shape": null
         },
         "2": {
