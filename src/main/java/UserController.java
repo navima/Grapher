@@ -92,4 +92,29 @@ public class UserController {
         graph = new Graph();
         graphPath = null;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UserController that = (UserController) o;
+
+        return Objects.equals(graph, that.graph) && Objects.equals(graphPath, that.graphPath);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = graph != null ? graph.hashCode() : 0;
+        result = 31 * result + (graphPath != null ? graphPath.hashCode() : 0);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "UserController{" +
+                "graph=" + graph +
+                ", graphPath=" + graphPath +
+                '}';
+    }
 }

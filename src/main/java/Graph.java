@@ -51,4 +51,27 @@ public class Graph {
     public Edge getEdge(int id) {
         return edges.get(id);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Graph graph = (Graph) o;
+        return lastNodeId == graph.lastNodeId && lastEdgeId == graph.lastEdgeId && Objects.equals(nodes, graph.nodes) && Objects.equals(edges, graph.edges);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nodes, edges, lastNodeId, lastEdgeId);
+    }
+
+    @Override
+    public String toString() {
+        return "Graph{" +
+                "nodes=" + nodes +
+                ", edges=" + edges +
+                ", lastNodeId=" + lastNodeId +
+                ", lastEdgeId=" + lastEdgeId +
+                '}';
+    }
 }
