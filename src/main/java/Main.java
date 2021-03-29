@@ -6,7 +6,7 @@ public class Main extends Application {
     static GUI gui;
 
     public static void main(String[] args) {
-        controller = new UserController();
+        controller = new UserController(true);
         gui = new GUI(controller);
         launch();
     }

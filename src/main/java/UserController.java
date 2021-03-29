@@ -9,10 +9,16 @@ public class UserController {
     Graph graph = new Graph();
     File graphPath = null;
 
-    public UserController() {
-        //load(new File(getClass().getResource("default.json").getFile()));
-        load(getClass().getResource("default.json")) ;
+    public UserController() {}
 
+    public UserController(boolean loadDefault){
+        if (loadDefault){
+            try {
+                load(getClass().getResource("default.json")) ;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public boolean save() throws IOException {
