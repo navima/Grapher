@@ -84,10 +84,10 @@ public class NodeWidget extends Group {
                 if (parentGUI.edgeBeingAdded) {
                     try {
                         controller.addEdge(parentGUI.edgeStartNode.id, id);
-                        parentGUI.edgeStartNode = null;
-                        parentGUI.edgeBeingAdded = false;
-                        updateCallback.apply();
-                    } catch (Exception ignore) {}
+                    } catch (Exception ignore) { }
+                    parentGUI.edgeStartNode = null;
+                    parentGUI.edgeBeingAdded = false;
+                    updateCallback.apply();
                 } else {
                     parentGUI.edgeBeingAdded = true;
                     parentGUI.edgeStartNode = this;
