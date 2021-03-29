@@ -1,15 +1,13 @@
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 
 
@@ -91,13 +89,27 @@ public class GUI {
         });
         MenuItem fSave = new MenuItem("Save");
         fSave.setOnAction(actionEvent -> {
-            if(! controller.save())
-                controller.save(showFilePrompt(stage, "Save To"));
+            try {
+                var res = controller.save();
+                if(! res)
+                    controller.save(showFilePrompt(stage, "Save To"));
+            } catch (IOException e) {
+                e.printStackTrace();
+                var alert = new Alert(Alert.AlertType.ERROR,e.toString());
+                alert.showAndWait();
+            }
         });
         MenuItem fLoad = new MenuItem("Load...");
         fLoad.setOnAction(actionEvent -> {
-            if(controller.load(showFilePrompt(stage, "Load From")))
-                updateGraphPaneContents();
+            try {
+                var res = controller.load(showFilePrompt(stage, "Load From"));
+                if(res)
+                    updateGraphPaneContents();
+            } catch (IOException e) {
+                e.printStackTrace();
+                var alert = new Alert(Alert.AlertType.ERROR,e.toString());
+                alert.showAndWait();
+            }
         });
         filemenu.getItems().addAll(fNew, fSave, fLoad);
         bar.getMenus().add(filemenu);

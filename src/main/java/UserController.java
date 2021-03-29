@@ -2,12 +2,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
+import java.util.Objects;
 
 public class UserController {
     Graph graph = new Graph();
-    File graphPath;
+    File graphPath = null;
 
     public UserController() {
         //load(new File(getClass().getResource("default.json").getFile()));
@@ -15,54 +15,47 @@ public class UserController {
 
     }
 
-    boolean save() {
+    public boolean save() throws IOException {
         if (graphPath == null)
             return false;
         else{
             ObjectMapper mapper = new ObjectMapper();
-            try {
-                mapper.writeValue(graphPath, graph);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false;
-            }
+            mapper.writeValue(graphPath, graph);
             return true;
         }
     }
-    boolean save(File file) {
+    public boolean save(File file) throws IOException {
         graphPath = file;
         return save();
     }
-    boolean load(File file) {
+    public boolean load(File file) throws IOException {
         if (file != null) {
             ObjectMapper mapper = new ObjectMapper();
-            try {
-                graph = mapper.readValue(file, Graph.class);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return false;
-            }
+            graph = mapper.readValue(file, Graph.class);
+            graphPath = file;
             return true;
         }
         return false;
     }
-    void load(URL src) {
+    public void load(URL src) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        try {
-            graph = mapper.readValue(src, Graph.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        graph = mapper.readValue(src, Graph.class);
+        graphPath = new File(src.getFile());
     }
-    void addNode(double x, double y) {
+    public void addNode(double x, double y) {
         final var gotId = graph.addNode(x,y) - 1;
         System.out.println("Added Node #" + gotId + " (" + graph.getNode(gotId) + ")");
     }
-    void addEdge(int from, int to) {
+    public static class InvalidOperationException extends Exception {}
+    public void addEdge(int from, int to) throws InvalidOperationException {
         if (from == to)
             return;
-        final var gotId = graph.addEdge(from, to)-1;
-        System.out.println("Added Edge #" + gotId + " (" + graph.getEdge(gotId) + ")");
+        if (graph.getNode(from) == null || graph.getNode(to) == null)
+            throw new InvalidOperationException();
+        else{
+            final var gotId = graph.addEdge(from, to) - 1;
+            System.out.println("Added Edge #" + gotId + " (" + graph.getEdge(gotId) + ")");
+        }
     }
     public void removeNode(int id) {
         System.out.println("Removed Node #" + id + " (" + graph.getNode(id) + ")");
@@ -71,23 +64,24 @@ public class UserController {
     public void setNodeTranslate(int id, double x, double y) {
         if (graph.nodes.containsKey(id))
             graph.getNode(id).setXY(x, y);}
-
     public void removeEdge(int id) {
         graph.removeEdge(id);
     }
-
     public void setNodeText(int id, String text) {
-        graph.getNode(id).text = text;
+        var t = graph.getNode(id);
+        if (t != null)
+            t.text = text;
     }
-
     public void setEdgeText(int id, String text) {
-        graph.getEdge(id).text = text;
+        var t = graph.getEdge(id);
+        if (t != null)
+            t.text = text;
     }
-
     public void setNodeShape(int id, eNodeShape shape) {
-        graph.getNode(id).shape = shape;
+        var t = graph.getNode(id);
+        if (t != null)
+            t.shape = shape;
     }
-
     public void reset() {
         graph = new Graph();
         graphPath = null;

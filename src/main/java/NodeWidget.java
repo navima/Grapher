@@ -82,10 +82,12 @@ public class NodeWidget extends Group {
                 updateCallback.apply();
             } else if (parentGUI.actionMode == eActionMode.EDGE_ADD) {
                 if (parentGUI.edgeBeingAdded) {
-                    controller.addEdge(parentGUI.edgeStartNode.id, id);
-                    parentGUI.edgeStartNode = null;
-                    parentGUI.edgeBeingAdded = false;
-                    updateCallback.apply();
+                    try {
+                        controller.addEdge(parentGUI.edgeStartNode.id, id);
+                        parentGUI.edgeStartNode = null;
+                        parentGUI.edgeBeingAdded = false;
+                        updateCallback.apply();
+                    } catch (Exception ignore) {}
                 } else {
                     parentGUI.edgeBeingAdded = true;
                     parentGUI.edgeStartNode = this;
