@@ -15,6 +15,7 @@ public class UserController {
         if (loadDefault){
             try {
                 load(getClass().getResource("default.json")) ;
+                graphPath = null; // hack to avoid accidentally overwriting default.json (also to achieve expected behaviour)
             } catch (IOException e) {
                 e.printStackTrace();
             }
