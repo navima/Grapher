@@ -25,14 +25,14 @@ public class Graph {
         nodes.put(lastNodeId++,node);
         return lastNodeId;
     }
-    public void removeNode(int id) {
+    public Node removeNode(int id) {
         for (var iterator = edges.entrySet().iterator(); iterator.hasNext();){
             var next = iterator.next().getValue();
             if (next.to == id || next.from == id) {
                 iterator.remove();
             }
         }
-        nodes.remove(id);
+        return nodes.remove(id);
     }
     public Node getNode(int id) {
         return nodes.get(id);
