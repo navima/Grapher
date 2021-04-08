@@ -1,3 +1,5 @@
+package grapher;// CHECKSTYLE:OFF
+
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -18,10 +20,22 @@ public class GUI {
         this.controller = controller;
     }
 
-    File showFilePrompt(Stage stage, String title) {
+    private enum eFileActionType{
+        SAVE, LOAD
+    }
+    File showFilePrompt(Stage stage, String title, eFileActionType type) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select save location");
-        return fileChooser.showOpenDialog(stage);
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Json Files", "*.json"),
+                new FileChooser.ExtensionFilter("All Files", "*.*"));
+        fileChooser.setTitle(title);
+        switch (type){
+            case LOAD:
+                return fileChooser.showOpenDialog(stage);
+            case SAVE:
+                return fileChooser.showSaveDialog(stage);
+        }
+        return null;
     }
 
     eActionMode actionMode = eActionMode.PAN;
@@ -61,8 +75,10 @@ public class GUI {
         // Graph visualizer -------------------------------------------------------------------
         updateGraphPaneContents();
         graphPane.getStyleClass().add("menubar");
-        graphPane.setMinSize(640,480);
-        graphPane.setMaxSize(640,480);
+        //graphPane.setMinSize(640,480);
+        //graphPane.setMaxSize(640,480);
+        graphPane.prefWidthProperty().bind(scene.widthProperty());
+        graphPane.prefHeightProperty().bind(scene.heightProperty());
 
         graphPane.setOnMouseClicked(e -> {
             if (actionMode == eActionMode.NODE_ADD) {
@@ -92,7 +108,17 @@ public class GUI {
             try {
                 var res = controller.save();
                 if(! res)
-                    controller.save(showFilePrompt(stage, "Save To"));
+                    controller.save(showFilePrompt(stage, "Save To",eFileActionType.SAVE));
+            } catch (IOException e) {
+                e.printStackTrace();
+                var alert = new Alert(Alert.AlertType.ERROR,e.toString());
+                alert.showAndWait();
+            }
+        });
+        MenuItem fSaveAs = new MenuItem("Save As...");
+        fSaveAs.setOnAction(actionEvent -> {
+            try {
+                 controller.save(showFilePrompt(stage, "Save To",eFileActionType.SAVE));
             } catch (IOException e) {
                 e.printStackTrace();
                 var alert = new Alert(Alert.AlertType.ERROR,e.toString());
@@ -102,7 +128,7 @@ public class GUI {
         MenuItem fLoad = new MenuItem("Load...");
         fLoad.setOnAction(actionEvent -> {
             try {
-                var res = controller.load(showFilePrompt(stage, "Load From"));
+                var res = controller.load(showFilePrompt(stage, "Load From",eFileActionType.LOAD));
                 if(res)
                     updateGraphPaneContents();
             } catch (IOException e) {
@@ -111,12 +137,12 @@ public class GUI {
                 alert.showAndWait();
             }
         });
-        filemenu.getItems().addAll(fNew, fSave, fLoad);
+        filemenu.getItems().addAll(fNew, fSave,fSaveAs, fLoad);
         bar.getMenus().add(filemenu);
         // --------------------------------------------------------------------------
         bar.getStyleClass().add("menubar");
         root.getChildren().add(bar);
-        // ------------------------------------------------------------------------------------
+        // Toolbar ----------------------------------------------------------------------------
         VBox toolbar = new VBox();
         toolbar.setAlignment(Pos.CENTER_LEFT);
         toolbar.setMinHeight(480);

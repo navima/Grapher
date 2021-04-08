@@ -1,8 +1,8 @@
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import grapher.UserController;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 
@@ -43,36 +43,32 @@ class UserControllerTest {
     void loadFile() {
         var t = new UserController();
         try {
+            ClassLoader classLoader = getClass().getClassLoader();
             assertFalse(t.load((File) null));
-            File file = new File("./asd");
-
             // wrong document type test
             t.reset();
-            try(FileWriter fw = new FileWriter(file)){
-                fw.write("invalid json"); }
+            File file = new File(classLoader.getResource("invalid.json").getFile());
+            File finalFile = file;
             assertThrows(JsonParseException.class,
-                    () -> t.load(file));
+                    () -> t.load(finalFile));
 
             // wrong object type test
             t.reset();
-            try(var fw2 = new FileWriter(file)){
-                fw2.write("""
-                    {"valid_json": "wrong_data"}"""); }
+            file = new File(classLoader.getResource("incorrect.json").getFile());
+            File finalFile1 = file;
             assertThrows(JsonMappingException.class,
-                    () -> t.load(file));
+                    () -> t.load(finalFile1));
 
             // read own save
+            file = new File("test.json");
             var t2 = new UserController(true);
             var t3 = new UserController(false);
             assertTrue(t2.save(file));
             assertTrue(t3.load(file));
-            System.out.println(t2);
-            System.out.println(t3);
             assertEquals(t3, t2);
 
-
             file.delete();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

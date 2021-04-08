@@ -1,3 +1,5 @@
+package grapher;// CHECKSTYLE:OFF
+
 import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
@@ -96,7 +98,7 @@ public class NodeWidget extends Group {
                 textArea.setMaxSize(button.getWidth(),button.getHeight());
                 textArea.setVisible(true);
                 textArea.setText(button.getText());
-                textArea.setPromptText("Node Label");
+                textArea.setPromptText("grapher.Node Label");
                 textArea.requestFocus();
                 textArea.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
                     if(!newFocus){

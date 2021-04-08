@@ -1,14 +1,37 @@
+package grapher;
+
 import java.util.Objects;
 
+/**
+ * Represents a connection between two {@link Node}s.
+ */
 public class Edge {
+    /**
+     * The source grapher.Node of the connection.
+     */
     public int from;
+    /**
+     * The target grapher.Node of the connection.
+     */
     public int to;
+    /**
+     * The text associated with the connection (description, condition, etc.).
+     */
     public String text;
 
+    /**
+     * This constructor constructs a construct representing a meta-construct.
+     * @param from {@link Edge#from}
+     * @param to {@link Edge#to}
+     */
     public Edge(int from, int to) {
         this.from = from;
         this.to = to;
     }
+
+    /**
+     * DO NOT USE, ONLY NEEDED FOR DESERIALIZATION.
+     */
     public Edge(){}
 
     @Override
@@ -26,7 +49,7 @@ public class Edge {
 
     @Override
     public String toString() {
-        return "Edge{" +
+        return "grapher.Edge{" +
                 "from=" + from +
                 ", to=" + to +
                 ", text='" + text + '\'' +

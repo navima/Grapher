@@ -1,16 +1,48 @@
+package grapher;
+
 import java.util.Objects;
 
+/**
+ * Class representing a node.
+ */
 public class Node {
+    /**
+     * X position of node.
+     */
     public double x;
+    /**
+     * Y position of node.
+     */
     public double y;
+    /**
+     * Text (label) associated with node.
+     */
     public String text;
+    /**
+     * Shape of node.
+     */
     public eNodeShape shape;
 
+    /**
+     * Default constructor.
+     * @param x {@link Node#x}
+     * @param y {@link Node#y}
+     */
     public Node(double x, double y) {
         this.x = x;
         this.y = y;
     }
+
+    /**
+     * DO NOT USE, ONLY NEEDED FOR DESERIALIZATION.
+     */
     public Node(){}
+
+    /**
+     * Sets the X and Y coordinates.
+     * @param x New X
+     * @param y New Y
+     */
     public void setXY(double x, double y) { this.x = x; this.y = y;}
 
     @Override

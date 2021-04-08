@@ -1,3 +1,5 @@
+package grapher;// CHECKSTYLE:OFF
+
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -55,7 +57,7 @@ public class EdgeWidget extends Group {
             } else {
                 textArea.setVisible(true);
                 textArea.setText(label.getText());
-                textArea.setPromptText("Edge Label");
+                textArea.setPromptText("grapher.Edge Label");
                 textArea.requestFocus();
                 textArea.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
                     if(!newFocus){

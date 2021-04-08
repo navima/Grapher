@@ -1,3 +1,5 @@
+package grapher;// CHECKSTYLE:OFF
+
 import java.util.*;
 
 public class Graph {
@@ -67,7 +69,7 @@ public class Graph {
 
     @Override
     public String toString() {
-        return "Graph{" +
+        return "grapher.Graph{" +
                 "nodes=" + nodes +
                 ", edges=" + edges +
                 ", lastNodeId=" + lastNodeId +

@@ -1,3 +1,5 @@
+package grapher;// CHECKSTYLE:OFF
+
 import javafx.scene.layout.Pane;
 
 public class GraphPane extends Pane {
