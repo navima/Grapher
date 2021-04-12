@@ -8,13 +8,28 @@ public enum eNodeShape {
     /**
      * Rectangle.
      */
-    RECTANGLE,
+    RECTANGLE("Rectangle"),
     /**
      * Circle.
      */
-    CIRCLE,
+    CIRCLE("Circle"),
     /**
      * Right-pointing triangle.
      */
-    RIGHT_TRI
+    RIGHT_TRI("Right pointing triangle"),
+    /**
+     * Diamond
+     */
+    DIAMOND("Diamond");
+
+    private final String friendlyName;
+
+    @Override
+    public String toString() {
+        return friendlyName;
+    }
+
+    eNodeShape(String friendlyName) {
+        this.friendlyName = friendlyName;
+    }
 }

@@ -40,22 +40,14 @@ public class NodeWidget extends Group {
         setLayoutY(n.y);
 
         var contextMenu = new ContextMenu();
-        var contextMenuItem1 = new MenuItem("Rectangle");
-        contextMenuItem1.setOnAction(e -> {
-            controller.setNodeShape(id, eNodeShape.RECTANGLE);
-            updateCallback.apply();
-        });
-        var contextMenuItem2 = new MenuItem("Circle");
-        contextMenuItem2.setOnAction(e -> {
-            controller.setNodeShape(id, eNodeShape.CIRCLE);
-            updateCallback.apply();
-        });
-        var contextMenuItem3 = new MenuItem("Right Triangle");
-        contextMenuItem3.setOnAction(e -> {
-            controller.setNodeShape(id, eNodeShape.RIGHT_TRI);
-            updateCallback.apply();
-        });
-        contextMenu.getItems().addAll(contextMenuItem1,contextMenuItem2,contextMenuItem3);
+        for (final var elem : eNodeShape.values()) {
+            var contextMenuItem = new MenuItem(elem.toString());
+            contextMenuItem.setOnAction(e -> {
+                controller.setNodeShape(id, elem);
+                updateCallback.apply();
+            });
+            contextMenu.getItems().add(contextMenuItem);
+        }
         button.setContextMenu(contextMenu);
         button.setOnMousePressed(e -> {
             dragStartMouseX = e.getSceneX();
