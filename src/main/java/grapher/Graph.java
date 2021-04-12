@@ -69,7 +69,7 @@ public class Graph {
 
     @Override
     public String toString() {
-        return "grapher.Graph{" +
+        return "Graph{" +
                 "nodes=" + nodes +
                 ", edges=" + edges +
                 ", lastNodeId=" + lastNodeId +

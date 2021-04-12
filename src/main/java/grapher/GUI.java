@@ -75,8 +75,6 @@ public class GUI {
         // Graph visualizer -------------------------------------------------------------------
         updateGraphPaneContents();
         graphPane.getStyleClass().add("menubar");
-        //graphPane.setMinSize(640,480);
-        //graphPane.setMaxSize(640,480);
         graphPane.prefWidthProperty().bind(scene.widthProperty());
         graphPane.prefHeightProperty().bind(scene.heightProperty());
 
@@ -151,6 +149,8 @@ public class GUI {
         toolbar.getStyleClass().add("menubar");
 
 
+
+        
         var bPan = new Button("Pan");
         bPan.setOnAction(e -> actionMode=eActionMode.PAN);
         var bAddN = new Button("Add Node");

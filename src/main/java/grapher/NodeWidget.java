@@ -90,7 +90,7 @@ public class NodeWidget extends Group {
                 textArea.setMaxSize(button.getWidth(),button.getHeight());
                 textArea.setVisible(true);
                 textArea.setText(button.getText());
-                textArea.setPromptText("grapher.Node Label");
+                textArea.setPromptText("Node Label");
                 textArea.requestFocus();
                 textArea.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
                     if(!newFocus){
