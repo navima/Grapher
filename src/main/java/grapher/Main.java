@@ -7,7 +7,7 @@ import javafx.stage.Stage;
  * The main class of the program.
  */
 public class Main extends Application {
-    static UserController controller;
+    static GraphWrapper controller;
     static GUI gui;
 
     /**
@@ -15,7 +15,7 @@ public class Main extends Application {
      * @param args args
      */
     public static void main(String[] args) {
-        controller = new UserController(true);
+        controller = new GraphWrapper(true);
         gui = new GUI(controller);
         launch();
     }

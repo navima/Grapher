@@ -8,7 +8,7 @@ import javafx.scene.shape.Line;
 public class EdgeWidget extends Group {
     final int id;
     final Edge edge;
-    final UserController controller;
+    final GraphWrapper controller;
     final callback updateCallback;
     final double strokeWidthDefault = 2;
     final double strokeWidthWide = 6;
@@ -20,7 +20,7 @@ public class EdgeWidget extends Group {
     @FunctionalInterface
     public interface callback { void apply(); }
 
-    public EdgeWidget(int id, Edge edge, UserController controller, callback updateCallback, GUI parentGUI) {
+    public EdgeWidget(int id, Edge edge, GraphWrapper controller, callback updateCallback, GUI parentGUI) {
         this.id = id;
         this.edge = edge;
         this.controller = controller;

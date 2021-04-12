@@ -9,7 +9,7 @@ import javafx.scene.control.TextArea;
 public class NodeWidget extends Group {
     final int id;
     final Node value;
-    final UserController controller;
+    final GraphWrapper controller;
 
     final Button button = new Button();
     final TextArea textArea = new TextArea();
@@ -23,7 +23,7 @@ public class NodeWidget extends Group {
     private double dragStartTranslateX = 0.0;
     private double dragStartTranslateY = 0.0;
     private boolean wasDragged = false;
-    public NodeWidget(Node n, int id, UserController controller, final callback updateCallback, final GUI parentGUI) {
+    public NodeWidget(Node n, int id, GraphWrapper controller, final callback updateCallback, final GUI parentGUI) {
         super();
         this.getChildren().add(button);
         this.getChildren().add(textArea);

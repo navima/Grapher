@@ -14,10 +14,10 @@ import java.util.HashMap;
 
 
 public class GUI {
-    final UserController controller;
+    final GraphWrapper graphWrapper;
 
-    public GUI(UserController controller) {
-        this.controller = controller;
+    public GUI(GraphWrapper graphWrapper) {
+        this.graphWrapper = graphWrapper;
     }
 
     private enum eFileActionType{
@@ -49,16 +49,16 @@ public class GUI {
         nodeWidgetMap.clear();
         Group dummy2 = new Group();
         Scene dummy = new Scene(dummy2);
-        for (final var node : controller.graph.nodes.entrySet()) {
-            var temp = new NodeWidget(node.getValue(), node.getKey(), controller, this::updateGraphPaneContents, this);
+        for (final var node : graphWrapper.graph.nodes.entrySet()) {
+            var temp = new NodeWidget(node.getValue(), node.getKey(), graphWrapper, this::updateGraphPaneContents, this);
             nodeWidgetMap.put(temp.id, temp);
             dummy2.getChildren().add(temp);
         }
         dummy2.layout();
         dummy2.applyCss();
         dummy2.layout();
-        for (final var edge : controller.graph.edges.entrySet()) {
-            var temp = new EdgeWidget(edge.getKey(), edge.getValue(), controller, this::updateGraphPaneContents, this);
+        for (final var edge : graphWrapper.graph.edges.entrySet()) {
+            var temp = new EdgeWidget(edge.getKey(), edge.getValue(), graphWrapper, this::updateGraphPaneContents, this);
             graphPane.addChild(temp);
         }
         for (var child : nodeWidgetMap.values()){
@@ -81,7 +81,7 @@ public class GUI {
         graphPane.setOnMouseClicked(e -> {
             if (actionMode == eActionMode.NODE_ADD) {
                 if (!graphPane.isPanning) { // don't
-                    controller.addNode(
+                    graphWrapper.addNode(
                             e.getX()-graphPane.getChildTranslateX(),
                             e.getY()-graphPane.getChildTranslateY());
                     updateGraphPaneContents();
@@ -98,15 +98,15 @@ public class GUI {
         Menu filemenu = new Menu("File");
         MenuItem fNew = new MenuItem("New");
         fNew.setOnAction(actionEvent -> {
-            controller.reset();
+            graphWrapper.reset();
             updateGraphPaneContents();
         });
         MenuItem fSave = new MenuItem("Save");
         fSave.setOnAction(actionEvent -> {
             try {
-                var res = controller.save();
+                var res = graphWrapper.save();
                 if(! res)
-                    controller.save(showFilePrompt(stage, "Save To",eFileActionType.SAVE));
+                    graphWrapper.save(showFilePrompt(stage, "Save To",eFileActionType.SAVE));
             } catch (IOException e) {
                 e.printStackTrace();
                 var alert = new Alert(Alert.AlertType.ERROR,e.toString());
@@ -116,7 +116,7 @@ public class GUI {
         MenuItem fSaveAs = new MenuItem("Save As...");
         fSaveAs.setOnAction(actionEvent -> {
             try {
-                 controller.save(showFilePrompt(stage, "Save To",eFileActionType.SAVE));
+                 graphWrapper.save(showFilePrompt(stage, "Save To",eFileActionType.SAVE));
             } catch (IOException e) {
                 e.printStackTrace();
                 var alert = new Alert(Alert.AlertType.ERROR,e.toString());
@@ -126,7 +126,7 @@ public class GUI {
         MenuItem fLoad = new MenuItem("Load...");
         fLoad.setOnAction(actionEvent -> {
             try {
-                var res = controller.load(showFilePrompt(stage, "Load From",eFileActionType.LOAD));
+                var res = graphWrapper.load(showFilePrompt(stage, "Load From",eFileActionType.LOAD));
                 if(res)
                     updateGraphPaneContents();
             } catch (IOException e) {
@@ -143,8 +143,7 @@ public class GUI {
         // Toolbar ----------------------------------------------------------------------------
         VBox toolbar = new VBox();
         toolbar.setAlignment(Pos.CENTER_LEFT);
-        toolbar.setMinHeight(480);
-        toolbar.setMaxHeight(480);
+        toolbar.prefHeightProperty().bind(scene.heightProperty());
         toolbar.setPickOnBounds(false);
         toolbar.getStyleClass().add("menubar");
 

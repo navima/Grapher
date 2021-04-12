@@ -18,7 +18,7 @@ public enum eNodeShape {
      */
     RIGHT_TRI("Right pointing triangle"),
     /**
-     * Diamond
+     * Diamond.
      */
     DIAMOND("Diamond");
 

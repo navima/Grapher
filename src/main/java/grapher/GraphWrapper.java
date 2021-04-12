@@ -12,7 +12,7 @@ import java.util.Objects;
 /**
  * A wrapper/abstraction of a {@link Graph} object, with saving functionality, extra checks and logging.
  */
-public class UserController {
+public class GraphWrapper {
     /**
      * The graph being manipulated.
      */
@@ -25,15 +25,15 @@ public class UserController {
 
     /**
      * Constructs a grapher.UserController.
-     * Should be same as {@link UserController#reset()}
+     * Should be same as {@link GraphWrapper#reset()}
      */
-    public UserController() {}
+    public GraphWrapper() {}
 
     /**
      * Constructs a grapher.UserController.
      * @param loadDefault Whether to load <code>default.json</code> welcome graph.
      */
-    public UserController(boolean loadDefault){
+    public GraphWrapper(boolean loadDefault){
         this();
         if (loadDefault){
             try {
@@ -211,7 +211,7 @@ public class UserController {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        UserController that = (UserController) o;
+        GraphWrapper that = (GraphWrapper) o;
 
         return Objects.equals(graph, that.graph) && Objects.equals(graphPath, that.graphPath);
     }
@@ -225,7 +225,7 @@ public class UserController {
 
     @Override
     public String toString() {
-        return "grapher.UserController{" +
+        return "UserController{" +
                 "graph=" + graph +
                 ", graphPath=" + graphPath +
                 '}';

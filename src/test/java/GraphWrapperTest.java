@@ -1,6 +1,6 @@
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import grapher.UserController;
+import grapher.GraphWrapper;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,11 +8,11 @@ import java.net.URL;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class UserControllerTest {
+class GraphWrapperTest {
 
     @org.junit.jupiter.api.Test
     void saveVoid() {
-        var t = new UserController();
+        var t = new GraphWrapper();
         try {
             assertFalse(t.save());
         } catch (IOException e) {
@@ -22,7 +22,7 @@ class UserControllerTest {
 
     @org.junit.jupiter.api.Test
     void saveFile() {
-        var t = new UserController();
+        var t = new GraphWrapper();
         try {
             var file = new File("./test.json");
             assertTrue(t.save(file));
@@ -41,7 +41,7 @@ class UserControllerTest {
 
     @org.junit.jupiter.api.Test
     void loadFile() {
-        var t = new UserController();
+        var t = new GraphWrapper();
         try {
             ClassLoader classLoader = getClass().getClassLoader();
             assertFalse(t.load((File) null));
@@ -61,8 +61,8 @@ class UserControllerTest {
 
             // read own save
             file = new File("test.json");
-            var t2 = new UserController(true);
-            var t3 = new UserController(false);
+            var t2 = new GraphWrapper(true);
+            var t3 = new GraphWrapper(false);
             assertTrue(t2.save(file));
             assertTrue(t3.load(file));
             assertEquals(t3, t2);
@@ -75,19 +75,19 @@ class UserControllerTest {
 
     @org.junit.jupiter.api.Test
     void loadURL() {
-        var t = new UserController();
+        var t = new GraphWrapper();
         assertThrows(IOException.class, () -> t.load(new URL("file:/asd")));
     }
 
     @org.junit.jupiter.api.Test
     void addEdge() {
-        UserController t = new UserController();
+        GraphWrapper t = new GraphWrapper();
         assertDoesNotThrow(() -> t.addEdge(0, 0));
         t.addNode(0,0);
         t.addNode(0,0);
-        assertThrows(UserController.InvalidOperationException.class,
+        assertThrows(GraphWrapper.InvalidOperationException.class,
                 () -> t.addEdge(9, -9));
-        assertThrows(UserController.InvalidOperationException.class,
+        assertThrows(GraphWrapper.InvalidOperationException.class,
                 () -> t.addEdge(0, -9));
         assertDoesNotThrow(
                 () -> t.addEdge(0, 1));
@@ -97,8 +97,8 @@ class UserControllerTest {
 
     @org.junit.jupiter.api.Test
     void reset() {
-        var t1 = new UserController(false);
-        var t2 = new UserController(true);
+        var t1 = new GraphWrapper(false);
+        var t2 = new GraphWrapper(true);
         t2.reset();
         assertEquals(t2, t1);
     }
