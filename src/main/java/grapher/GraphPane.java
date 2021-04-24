@@ -1,6 +1,7 @@
 package grapher;// CHECKSTYLE:OFF
 
 import javafx.scene.layout.Pane;
+import org.jetbrains.annotations.NotNull;
 
 public class GraphPane extends Pane {
     public boolean isPanning = false;
@@ -31,7 +32,7 @@ public class GraphPane extends Pane {
 
 
     public void clear() {getChildren().clear();}
-    public void addChild(javafx.scene.Node n) {getChildren().add(n); n.setTranslateX(childTranslateX); n.setTranslateY(childTranslateY);}
+    public void addChild(javafx.scene.@NotNull Node n) {getChildren().add(n); n.setTranslateX(childTranslateX); n.setTranslateY(childTranslateY);}
 
     public final double getChildTranslateX(){return childTranslateX;}
     public final double getChildTranslateY(){return childTranslateY;}

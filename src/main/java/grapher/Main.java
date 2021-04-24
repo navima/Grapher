@@ -2,12 +2,14 @@ package grapher;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The main class of the program.
  */
 public class Main extends Application {
-    static GraphWrapper controller;
+    static GraphWrapper graphWrapper;
+    static Controller controller;
     static GUI gui;
 
     /**
@@ -15,13 +17,14 @@ public class Main extends Application {
      * @param args args
      */
     public static void main(String[] args) {
-        controller = new GraphWrapper(true);
+        graphWrapper = new GraphWrapper(true);
+        controller = new Controller(graphWrapper);
         gui = new GUI(controller);
         launch();
     }
 
     @Override
-    public void start(Stage stage) {
+    public void start(@NotNull Stage stage) {
         stage.setScene(gui.show(stage));
         stage.show();
     }

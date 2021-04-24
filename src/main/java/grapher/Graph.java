@@ -1,10 +1,13 @@
 package grapher;// CHECKSTYLE:OFF
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.*;
 
 public class Graph {
-    public final Map<Integer, Node> nodes;
-    public final Map<Integer, Edge> edges;
+    public final @NotNull Map<Integer, Node> nodes;
+    public final @NotNull Map<Integer, Edge> edges;
     private int lastNodeId = 0;
     private int lastEdgeId = 0;
 
@@ -55,7 +58,7 @@ public class Graph {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Graph graph = (Graph) o;
@@ -68,7 +71,7 @@ public class Graph {
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "Graph{" +
                 "nodes=" + nodes +
                 ", edges=" + edges +

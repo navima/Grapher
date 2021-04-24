@@ -1,5 +1,7 @@
 package grapher;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,7 +22,7 @@ public class GraphWrapper {
     /**
      * The path to the currently worked on file.
      */
-    File graphPath = null;
+    @Nullable File graphPath = null;
 
 
     /**
@@ -79,7 +81,7 @@ public class GraphWrapper {
      * @return Whether File was null.
      * @throws IOException On IOException
      */
-    public boolean load(File file) throws IOException {
+    public boolean load(@Nullable File file) throws IOException {
         if (file != null) {
             ObjectMapper mapper = new ObjectMapper();
             graph = mapper.readValue(file, Graph.class);
@@ -95,7 +97,7 @@ public class GraphWrapper {
      * @param src The source URL
      * @throws IOException On IOException
      */
-    public void load(URL src) throws IOException {
+    public void load(@NotNull URL src) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         graph = mapper.readValue(src, Graph.class);
         graphPath = new File(src.getFile());
@@ -207,7 +209,7 @@ public class GraphWrapper {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -224,7 +226,7 @@ public class GraphWrapper {
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "UserController{" +
                 "graph=" + graph +
                 ", graphPath=" + graphPath +

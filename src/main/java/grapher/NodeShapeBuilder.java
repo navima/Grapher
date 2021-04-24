@@ -4,10 +4,11 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 
 public class NodeShapeBuilder {
-    static Shape build(eNodeShape shapeEnum){
+    static @Nullable Shape build(@Nullable eNodeShape shapeEnum){
         if(shapeEnum == null)
             shapeEnum = eNodeShape.RECTANGLE;
         switch (shapeEnum) {

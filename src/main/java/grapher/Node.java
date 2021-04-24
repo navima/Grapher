@@ -1,5 +1,8 @@
 package grapher;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Objects;
 
 /**
@@ -46,7 +49,7 @@ public class Node {
     public void setXY(double x, double y) { this.x = x; this.y = y;}
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Node node = (Node) o;
@@ -59,11 +62,11 @@ public class Node {
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "{" +
                 "x=" + x +
                 ", y=" + y +
-                ", text='" + (text!=null ? text.substring(0, 15)+"..." : null) + '\'' +
+                ", text='" + text + '\'' +
                 '}';
     }
 }

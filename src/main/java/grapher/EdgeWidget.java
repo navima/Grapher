@@ -4,12 +4,13 @@ import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.shape.Line;
+import org.jetbrains.annotations.NotNull;
 
 public class EdgeWidget extends Group {
     final int id;
-    final Edge edge;
-    final GraphWrapper controller;
-    final callback updateCallback;
+    final @NotNull Edge edge;
+    final @NotNull GraphWrapper controller;
+    final @NotNull callback updateCallback;
     final double strokeWidthDefault = 2;
     final double strokeWidthWide = 6;
 
@@ -20,10 +21,10 @@ public class EdgeWidget extends Group {
     @FunctionalInterface
     public interface callback { void apply(); }
 
-    public EdgeWidget(int id, Edge edge, GraphWrapper controller, callback updateCallback, GUI parentGUI) {
+    public EdgeWidget(int id, @NotNull Edge edge, @NotNull GraphWrapper graphWrapper, @NotNull callback updateCallback, @NotNull Controller controller) {
         this.id = id;
         this.edge = edge;
-        this.controller = controller;
+        this.controller = graphWrapper;
         this.updateCallback = updateCallback;
 
         this.getChildren().add(line);
@@ -34,8 +35,8 @@ public class EdgeWidget extends Group {
 
         line.setStrokeWidth(strokeWidthDefault);
 
-        var sourceNodeWidget = parentGUI.nodeWidgetMap.get(edge.from);
-        var targetNodeWidget = parentGUI.nodeWidgetMap.get(edge.to);
+        var sourceNodeWidget = controller.nodeWidgetMap.get(edge.from);
+        var targetNodeWidget = controller.nodeWidgetMap.get(edge.to);
         line.setStartX(sourceNodeWidget.getLayoutX()+sourceNodeWidget.button.getWidth()/2);
         line.setStartY(sourceNodeWidget.getLayoutY()+sourceNodeWidget.button.getHeight()/2);
         line.setEndX(targetNodeWidget.getLayoutX()+targetNodeWidget.button.getWidth()/2);
@@ -51,18 +52,18 @@ public class EdgeWidget extends Group {
 
 
         setOnMouseClicked(e -> {
-            if (parentGUI.actionMode == eActionMode.REMOVE) {
-                controller.removeEdge(id);
+            if (controller.actionMode == eActionMode.REMOVE) {
+                graphWrapper.removeEdge(id);
                 updateCallback.apply();
             } else {
                 textArea.setVisible(true);
                 textArea.setText(label.getText());
-                textArea.setPromptText("grapher.Edge Label");
+                textArea.setPromptText("Edge Label");
                 textArea.requestFocus();
                 textArea.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
                     if(!newFocus){
                         textArea.setVisible(false);
-                        controller.setEdgeText(id, textArea.getText());
+                        graphWrapper.setEdgeText(id, textArea.getText());
                         updateCallback.apply();
                     }
                 });

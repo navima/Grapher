@@ -5,91 +5,30 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-
+import org.jetbrains.annotations.NotNull;
 
 public class GUI {
-    final GraphWrapper graphWrapper;
+    final @NotNull Controller controller;
 
-    public GUI(GraphWrapper graphWrapper) {
-        this.graphWrapper = graphWrapper;
+    public GUI(@NotNull Controller controller) {
+        this.controller = controller;
+        controller.gui = this;
     }
 
-    private enum eFileActionType{
-        SAVE, LOAD
-    }
-    File showFilePrompt(Stage stage, String title, eFileActionType type) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Json Files", "*.json"),
-                new FileChooser.ExtensionFilter("All Files", "*.*"));
-        fileChooser.setTitle(title);
-        switch (type){
-            case LOAD:
-                return fileChooser.showOpenDialog(stage);
-            case SAVE:
-                return fileChooser.showSaveDialog(stage);
-        }
-        return null;
-    }
-
-    eActionMode actionMode = eActionMode.PAN;
-    NodeWidget edgeStartNode = null;
-    boolean edgeBeingAdded = false;
-
-    final HashMap<Integer, NodeWidget> nodeWidgetMap = new HashMap<>();
     final GraphPane graphPane = new GraphPane();
-    void updateGraphPaneContents() {
-        graphPane.clear();
-        nodeWidgetMap.clear();
-        Group dummy2 = new Group();
-        Scene dummy = new Scene(dummy2);
-        for (final var node : graphWrapper.graph.nodes.entrySet()) {
-            var temp = new NodeWidget(node.getValue(), node.getKey(), graphWrapper, this::updateGraphPaneContents, this);
-            nodeWidgetMap.put(temp.id, temp);
-            dummy2.getChildren().add(temp);
-        }
-        dummy2.layout();
-        dummy2.applyCss();
-        dummy2.layout();
-        for (final var edge : graphWrapper.graph.edges.entrySet()) {
-            var temp = new EdgeWidget(edge.getKey(), edge.getValue(), graphWrapper, this::updateGraphPaneContents, this);
-            graphPane.addChild(temp);
-        }
-        for (var child : nodeWidgetMap.values()){
-            graphPane.addChild(child);
-        }
-    }
-
-
-    Scene show(Stage stage) {
+    @NotNull Scene show(@NotNull Stage stage) {
         final var root = new Group();
         final Scene scene = new Scene(root, 640, 480);
         scene.getStylesheets().add("style.css");
         stage.setTitle("Grapher");
         // Graph visualizer -------------------------------------------------------------------
-        updateGraphPaneContents();
+        controller.updateGraphPaneContents();
         graphPane.getStyleClass().add("menubar");
         graphPane.prefWidthProperty().bind(scene.widthProperty());
         graphPane.prefHeightProperty().bind(scene.heightProperty());
 
-        graphPane.setOnMouseClicked(e -> {
-            if (actionMode == eActionMode.NODE_ADD) {
-                if (!graphPane.isPanning) { // don't
-                    graphWrapper.addNode(
-                            e.getX()-graphPane.getChildTranslateX(),
-                            e.getY()-graphPane.getChildTranslateY());
-                    updateGraphPaneContents();
-                }
-            }
-            graphPane.isPanning = false;    // I'm sorry, God.
-            graphPane.requestFocus();
-        });
+        graphPane.setOnMouseClicked(controller::graphPaneOnMouseClicked);
 
         root.getChildren().add(graphPane);
         // Menu strip -------------------------------------------------------------------------
@@ -97,44 +36,13 @@ public class GUI {
         // File menu ----------------------------------------------------------------
         Menu filemenu = new Menu("File");
         MenuItem fNew = new MenuItem("New");
-        fNew.setOnAction(actionEvent -> {
-            graphWrapper.reset();
-            updateGraphPaneContents();
-        });
+        fNew.setOnAction(controller::fileMenuNewFileHandler);
         MenuItem fSave = new MenuItem("Save");
-        fSave.setOnAction(actionEvent -> {
-            try {
-                var res = graphWrapper.save();
-                if(! res)
-                    graphWrapper.save(showFilePrompt(stage, "Save To",eFileActionType.SAVE));
-            } catch (IOException e) {
-                e.printStackTrace();
-                var alert = new Alert(Alert.AlertType.ERROR,e.toString());
-                alert.showAndWait();
-            }
-        });
+        fSave.setOnAction(controller::fileMenuSaveHandler);
         MenuItem fSaveAs = new MenuItem("Save As...");
-        fSaveAs.setOnAction(actionEvent -> {
-            try {
-                 graphWrapper.save(showFilePrompt(stage, "Save To",eFileActionType.SAVE));
-            } catch (IOException e) {
-                e.printStackTrace();
-                var alert = new Alert(Alert.AlertType.ERROR,e.toString());
-                alert.showAndWait();
-            }
-        });
+        fSaveAs.setOnAction(controller::fileMenuSaveAsHandler);
         MenuItem fLoad = new MenuItem("Load...");
-        fLoad.setOnAction(actionEvent -> {
-            try {
-                var res = graphWrapper.load(showFilePrompt(stage, "Load From",eFileActionType.LOAD));
-                if(res)
-                    updateGraphPaneContents();
-            } catch (IOException e) {
-                e.printStackTrace();
-                var alert = new Alert(Alert.AlertType.ERROR,e.toString());
-                alert.showAndWait();
-            }
-        });
+        fLoad.setOnAction(controller::fileMenuLoadHandler);
         filemenu.getItems().addAll(fNew, fSave,fSaveAs, fLoad);
         bar.getMenus().add(filemenu);
         // --------------------------------------------------------------------------
@@ -151,13 +59,13 @@ public class GUI {
 
         
         var bPan = new Button("Pan");
-        bPan.setOnAction(e -> actionMode=eActionMode.PAN);
+        bPan.setOnAction(controller::panHandler);
         var bAddN = new Button("Add Node");
-        bAddN.setOnAction(e -> actionMode=eActionMode.NODE_ADD);
+        bAddN.setOnAction(controller::addNodeHandler);
         var bAddE = new Button("Add Edge");
-        bAddE.setOnAction(e -> actionMode=eActionMode.EDGE_ADD);
+        bAddE.setOnAction(controller::addEdgeHandler);
         var bRemove = new Button("Remove");
-        bRemove.setOnAction(e -> actionMode=eActionMode.REMOVE);
+        bRemove.setOnAction(controller::removeNodeEdgeHandler);
 
         toolbar.getChildren().addAll(bPan,bAddN,bAddE,bRemove);
         root.getChildren().add(toolbar);
