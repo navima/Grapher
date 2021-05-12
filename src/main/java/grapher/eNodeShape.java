@@ -2,7 +2,7 @@ package grapher;
 
 /**
  * Enum describing the shape of a {@link Node}.
- * For UI purposes, use with {@link NodeShapeBuilder}
+ * For UI purposes, use with {@link NodeShapeFactory}
  */
 public enum eNodeShape {
     /**

@@ -44,7 +44,7 @@ public class NodeWidget extends Group {
 
         textArea.setVisible(false);
 
-        button.setShape(NodeShapeBuilder.build(n.shape));
+        button.setShape(NodeShapeFactory.build(n.shape));
 
         button.setText(n.text);
         this.id = id;
