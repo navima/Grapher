@@ -6,3 +6,8 @@
 .button {
     -fx-fill: #e3e3e3;
 }
+
+.toggle-button:selected {
+    -fx-background-color: #0096c9;
+    -fx-text-fill: #ffffff;
+}

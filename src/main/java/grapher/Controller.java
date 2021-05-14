@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -41,7 +42,7 @@ public class Controller {
         try {
             var res = graphWrapper.save();
             if (!res)
-                graphWrapper.save(showFilePrompt("Save To", eFileActionType.SAVE));
+                graphWrapper.save(showFilePrompt("Save", eFileActionType.SAVE));
         } catch (IOException e) {
             e.printStackTrace();
             var alert = new Alert(Alert.AlertType.ERROR, e.toString());
@@ -50,7 +51,7 @@ public class Controller {
     }
     public void fileMenuSaveAsHandler(ActionEvent actionEvent) {
         try {
-            graphWrapper.save(showFilePrompt("Save To", eFileActionType.SAVE));
+            graphWrapper.save(showFilePrompt("Save As", eFileActionType.SAVE));
         } catch (IOException e) {
             e.printStackTrace();
             var alert = new Alert(Alert.AlertType.ERROR, e.toString());
@@ -68,18 +69,23 @@ public class Controller {
             alert.showAndWait();
         }
     }
+    private void activateToolbarButton(ToggleButton b, eActionMode actionMode){
+        this.actionMode = actionMode;
+        b.setSelected(true);
+    }
     public void panHandler(ActionEvent e) {
-        actionMode = eActionMode.PAN;
+        activateToolbarButton(gui.bPan, eActionMode.PAN);
     }
     public void addNodeHandler(ActionEvent e) {
-        actionMode = eActionMode.NODE_ADD;
+        activateToolbarButton(gui.bAddN, eActionMode.NODE_ADD);
     }
     public void addEdgeHandler(ActionEvent e) {
-        actionMode = eActionMode.EDGE_ADD;
+        activateToolbarButton(gui.bAddE, eActionMode.EDGE_ADD);
     }
     public void removeNodeEdgeHandler(ActionEvent e) {
-        actionMode = eActionMode.REMOVE;
+        activateToolbarButton(gui.bRemove, eActionMode.REMOVE);
     }
+
     public enum eFileActionType{
         SAVE, LOAD
     }
