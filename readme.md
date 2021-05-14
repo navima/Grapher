@@ -11,40 +11,38 @@ This is a rudimentary graph-making JFX application.
 * Save, Load graphs in JSON
 
 ## The GUI
-![An example should be here...](img/example.png)
+![Image of the application displaying the example file.](img/example.png)
 ## The corresponding json
 ```json
 {
-    "nodes": {
-        "0": {"x": 168.8, "y": 172.0,
+    "nodes": [
+        {"id": 1, "x": 168.8, "y": 172.0,
             "text": "Hi! I'm a Node!",
-            "shape": null
+            "shape": "RECTANGLE"
         },
-        "1": {"x": 164.8, "y": 324.8,
+        {"id": 2, "x": 164.8, "y": 324.8,
             "text": "Find `humour.db`",
             "shape": "RIGHT_TRI"
         },
-        "2": {"x": 420.8, "y": 317.6,
+        {"id": 3, "x": 420.8, "y": 317.6,
             "text": "The geopolitical influence of\nWest-Kansas is in shambles",
-            "shape": null
+            "shape": "RECTANGLE"
         },
-        "3": {"x": 464.8, "y": 530.4,
+        {"id": 4, "x": 464.8, "y": 530.4,
             "text": "*Terminate*",
             "shape": "CIRCLE"
         },
-        "4": {"x": 164.0, "y": 443.1,
+        {"id": 5, "x": 164.0, "y": 443.1,
             "text": "Hi Node, I'm dad!",
-            "shape": null
+            "shape": "RECTANGLE"
         }
-    },
-    "edges": {
-        "1": {"from": 0, "to": 1, "text": null},
-        "2": {"from": 1, "to": 2, "text": "Not found"},
-        "3": {"from": 1, "to": 4, "text": "Found"},
-        "4": {"from": 4, "to": 3, "text": null},
-        "5": {"from": 2, "to": 3, "text": null}
-    },
-    "lastNodeId": 5,
-    "lastEdgeId": 6
+    ],
+    "edges": [
+        {"id": 1, "from": 0, "to": 1, "text": ""},
+        {"id": 2, "from": 1, "to": 2, "text": "Not found"},
+        {"id": 3, "from": 1, "to": 4, "text": "Found"},
+        {"id": 4, "from": 4, "to": 3, "text": ""},
+        {"id": 5, "from": 2, "to": 3, "text": ""}
+    ],
 }
 ```
