@@ -1,47 +1,52 @@
 {
-    "nodes": {
-        "0": {
-            "x": 196.80000000000007,
-            "y": 200.79999999999993,
+    "nodes": [
+        {
+            "id": 0,
+            "x": 196.8,
+            "y": 200.8,
             "text": "Welcome to Grapher!\nLoad existing graphs from the File menu\nManipulate graphs with the toolbar on the left",
-            "shape": null
+            "shape": "RECTANGLE"
         },
-        "1": {
-            "x": 122.80000000000001,
-            "y": 353.9999999999999,
+        {
+            "id": 1,
+            "x": 122.8,
+            "y": 354.0,
             "text": "Click on Nodes or Edges\nto edit their Label\nClick away to commit",
-            "shape": null
+            "shape": "RECTANGLE"
         },
-        "2": {
-            "x": 424.80000000000007,
-            "y": 357.59999999999997,
+        {
+            "id": 2,
+            "x": 424.8,
+            "y": 357.6,
             "text": "Change Node Shape by\nright-clicking",
             "shape": "CIRCLE"
         },
-        "4": {
-            "x": 88.79999999999993,
-            "y": 460.80000000000007,
+        {
+            "id": 4,
+            "x": 88.8,
+            "y": 460.8,
             "text": "Drag Nodes to change their location\nDrag the Canvas to pan\n",
-            "shape": null
+            "shape": "RECTANGLE"
         }
-    },
-    "edges": {
-        "0": {
+    ],
+    "edges": [
+        {
+            "id": 0,
             "from": 0,
             "to": 1,
-            "text": ""
+            "text": null
         },
-        "1": {
+        {
+            "id": 1,
             "from": 0,
             "to": 2,
             "text": null
         },
-        "2": {
+        {
+            "id": 2,
             "from": 1,
             "to": 4,
-            "text": null
+            "text": " like this!"
         }
-    },
-    "lastNodeId": 5,
-    "lastEdgeId": 3
+    ]
 }

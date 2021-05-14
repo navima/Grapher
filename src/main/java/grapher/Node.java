@@ -1,14 +1,21 @@
 package grapher;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashSet;
 import java.util.Objects;
 
 /**
  * Class representing a node.
  */
+@JsonSerialize(using = NodeSerializer.class)
 public class Node {
+    /**
+     * Unique identifier of node.
+     */
+    public int id;
     /**
      * X position of node.
      */
@@ -24,16 +31,36 @@ public class Node {
     /**
      * Shape of node.
      */
-    public eNodeShape shape;
+    public eNodeShape shape = eNodeShape.RECTANGLE;
+    /**
+     * Edges associated with.
+     */
+    public HashSet<Edge> edges = new HashSet<>();
 
     /**
      * Default constructor.
      * @param x {@link Node#x}
      * @param y {@link Node#y}
+     * @param id {@link Node#id}
      */
-    public Node(double x, double y) {
+    public Node(double x, double y, int id) {
+        this(x, y, id, eNodeShape.RECTANGLE, null);
+    }
+
+    /**
+     * Constructor.
+     * @param x
+     * @param y
+     * @param id
+     * @param shape
+     * @param text
+     */
+    public Node(double x, double y, int id, eNodeShape shape, String text) {
         this.x = x;
         this.y = y;
+        this.id = id;
+        this.shape = shape;
+        this.text = text;
     }
 
     /**
@@ -58,7 +85,7 @@ public class Node {
 
     @Override
     public int hashCode() {
-        return Objects.hash(x, y, text, shape);
+        return Objects.hash(id);
     }
 
     @Override

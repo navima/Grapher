@@ -1,4 +1,4 @@
-package grapher;// CHECKSTYLE:OFF
+package grapher;
 
 import javafx.scene.shape.Shape;
 import org.jetbrains.annotations.Nullable;
@@ -7,6 +7,9 @@ import org.pmw.tinylog.Logger;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Factory for creating {@link Shape} from {@link eNodeShape}.
+ */
 public class NodeShapeFactory {
     static private final Map<eNodeShape, INodeShapeFactory> factoryDictionary = new HashMap<>();
 

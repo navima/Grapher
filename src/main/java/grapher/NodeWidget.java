@@ -13,8 +13,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class NodeWidget extends Group {
-    final int id;
-    final @NotNull Node value;
+    public final @NotNull Node value;
 
     final Button button = new Button();
     final TextArea textArea = new TextArea();
@@ -37,7 +36,7 @@ public class NodeWidget extends Group {
     private double dragStartTranslateX = 0.0;
     private double dragStartTranslateY = 0.0;
     private boolean wasDragged = false;
-    public NodeWidget(@NotNull Node n, int id, final @NotNull callback updateCallback) {
+    public NodeWidget(@NotNull Node n, final @NotNull callback updateCallback) {
         super();
         this.getChildren().add(button);
         this.getChildren().add(textArea);
@@ -47,7 +46,6 @@ public class NodeWidget extends Group {
         button.setShape(NodeShapeFactory.build(n.shape));
 
         button.setText(n.text);
-        this.id = id;
         value = n;
         setLayoutX(n.x);
         setLayoutY(n.y);

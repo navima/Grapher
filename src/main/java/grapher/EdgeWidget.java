@@ -7,9 +7,8 @@ import javafx.scene.shape.Line;
 import org.jetbrains.annotations.NotNull;
 
 public class EdgeWidget extends Group {
-    final int id;
     final @NotNull Edge edge;
-    final @NotNull GraphWrapper controller;
+    final @NotNull IGraph controller;
     final @NotNull callback updateCallback;
     final double strokeWidthDefault = 2;
     final double strokeWidthWide = 6;
@@ -21,10 +20,9 @@ public class EdgeWidget extends Group {
     @FunctionalInterface
     public interface callback { void apply(); }
 
-    public EdgeWidget(int id, @NotNull Edge edge, @NotNull GraphWrapper graphWrapper, @NotNull callback updateCallback, @NotNull Controller controller) {
-        this.id = id;
+    public EdgeWidget(@NotNull Edge edge, @NotNull IGraph IGraph, @NotNull callback updateCallback, @NotNull Controller controller) {
         this.edge = edge;
-        this.controller = graphWrapper;
+        this.controller = IGraph;
         this.updateCallback = updateCallback;
 
         this.getChildren().add(line);
@@ -53,7 +51,7 @@ public class EdgeWidget extends Group {
 
         setOnMouseClicked(e -> {
             if (controller.actionMode == eActionMode.REMOVE) {
-                graphWrapper.removeEdge(id);
+                IGraph.removeEdge(edge);
                 updateCallback.apply();
             } else {
                 textArea.setVisible(true);
@@ -63,7 +61,7 @@ public class EdgeWidget extends Group {
                 textArea.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
                     if(!newFocus){
                         textArea.setVisible(false);
-                        graphWrapper.setEdgeText(id, textArea.getText());
+                        IGraph.setEdgeText(edge, textArea.getText());
                         updateCallback.apply();
                     }
                 });

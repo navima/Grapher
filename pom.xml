@@ -6,7 +6,7 @@
 
     <groupId>gq.nagy</groupId>
     <artifactId>Grapher</artifactId>
-    <version>0.3.0</version>
+    <version>1.0.0</version>
 
     <description>A simple graphmaking application</description>
     <developers><developer><name>Nagy Viktor Márk</name><email>viktor@nagy.gq</email></developer></developers>

@@ -1,60 +1,58 @@
 package grapher;// CHECKSTYLE:OFF
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class Graph {
-    public final @NotNull Map<Integer, Node> nodes;
-    public final @NotNull Map<Integer, Edge> edges;
+@JsonDeserialize(using = GraphDeserializer.class)
+public class Graph{
+    public final @NotNull Set<Node> nodes;
+    public final @NotNull Set<Edge> edges;
     private int lastNodeId = 0;
     private int lastEdgeId = 0;
 
-    public int getLastNodeId() {
-        return lastNodeId;
-    }
-    public int getLastEdgeId() {
-        return lastEdgeId;
-    }
-
     public Graph() {
-        nodes = new HashMap<>();
-        edges = new HashMap<>();
+        nodes = new HashSet<>();
+        edges = new HashSet<>();
     }
 
-    public int addNode(double x, double y) {
-        return addNode(new Node(x, y));
-    }
-    public int addNode(Node node) {
-        nodes.put(lastNodeId++,node);
-        return lastNodeId;
-    }
-    public Node removeNode(int id) {
-        for (var iterator = edges.entrySet().iterator(); iterator.hasNext();){
-            var next = iterator.next().getValue();
-            if (next.to == id || next.from == id) {
-                iterator.remove();
-            }
-        }
-        return nodes.remove(id);
-    }
-    public Node getNode(int id) {
-        return nodes.get(id);
+    public Graph(@NotNull Set<Node> nodes, @NotNull Set<Edge> edges, int lastNodeId, int lastEdgeId) {
+        this.nodes = nodes;
+        this.edges = edges;
+        this.lastNodeId = lastNodeId;
+        this.lastEdgeId = lastEdgeId;
     }
 
-    public int addEdge(int from, int to) {
-        return addEdge(new Edge(from, to));
+    public Node addNode(double x, double y) {
+        var node = new Node(x, y, lastNodeId++);
+        addNode(node);
+        return node;
     }
-    public int addEdge(Edge edge) {
-        edges.put(lastEdgeId++,edge);
-        return lastEdgeId;
+    public void addNode(Node node) {
+        nodes.add(node);
     }
-    public void removeEdge(int id) {
-        edges.remove(id);
+    public void removeNode(Node node) {
+        nodes.remove(node);
+        var edges = (HashSet<Edge>) node.edges.clone();
+        for (var edge : edges)
+            removeEdge(edge);
     }
-    public Edge getEdge(int id) {
-        return edges.get(id);
+    public Edge addEdge(Node from, Node to) {
+        var edge = new Edge(lastEdgeId++, from, to);
+        addEdge(edge);
+        return edge;
+    }
+    public void addEdge(Edge edge) {
+        edges.add(edge);
+        edge.from.edges.add(edge);
+        edge.to.edges.add(edge);
+    }
+    public void removeEdge(Edge edge) {
+        edges.remove(edge);
+        edge.from.edges.remove(edge);
+        edge.to.edges.remove(edge);
     }
 
     @Override

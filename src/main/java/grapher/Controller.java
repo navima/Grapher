@@ -1,4 +1,4 @@
-package grapher;
+package grapher;// CHECKSTYLE:OFF
 
 import javafx.event.ActionEvent;
 import javafx.scene.Group;
@@ -16,10 +16,10 @@ import java.io.IOException;
 import java.util.HashMap;
 
 public class Controller {
-    final GraphWrapper graphWrapper;
+    final IGraph graphWrapper;
     public GUI gui;
 
-    public Controller(GraphWrapper graphWrapper) {
+    public Controller(IGraph graphWrapper) {
         this.graphWrapper = graphWrapper;
     }
     public void graphPaneOnMouseClicked(@NotNull MouseEvent e) {
@@ -108,25 +108,24 @@ public class Controller {
     @Nullable NodeWidget edgeStartNode = null;
     boolean edgeBeingAdded = false;
 
-    final HashMap<Integer, NodeWidget> nodeWidgetMap = new HashMap<>();
+    final HashMap<Node, NodeWidget> nodeWidgetMap = new HashMap<>();
     void updateGraphPaneContents() {
         gui.graphPane.clear();
         nodeWidgetMap.clear();
         Group dummy2 = new Group();
         Scene dummy = new Scene(dummy2);
-        for (final var node : graphWrapper.graph.nodes.entrySet()) {
-            var temp = new NodeWidget(node.getValue(), node.getKey(), this::updateGraphPaneContents);
+        for (final var node : graphWrapper.getNodes()) {
+            var temp = new NodeWidget(node, this::updateGraphPaneContents);
             temp.setOnAction( actionEvent -> {
-                var id = node.getKey();
                 if (actionMode == eActionMode.REMOVE) {
                     actionEvent.consume();
-                    graphWrapper.removeNode(id);
+                    graphWrapper.removeNode(node);
                     updateGraphPaneContents();
                 } else if (actionMode == eActionMode.EDGE_ADD) {
                     actionEvent.consume();
                     if (edgeBeingAdded) {
                         try {
-                            graphWrapper.addEdge(edgeStartNode.id, id);
+                            graphWrapper.addEdge(edgeStartNode.value, node);
                         } catch (Exception ignore) { }
                         edgeStartNode = null;
                         edgeBeingAdded = false;
@@ -137,17 +136,17 @@ public class Controller {
                     }
                 }
             });
-            temp.setOnDragEnded((aDouble, aDouble2) -> graphWrapper.setNodeTranslate(node.getKey(), aDouble, aDouble2));
-            temp.setOnNodeShapeChanged(nodeShape -> graphWrapper.setNodeShape(node.getKey(), nodeShape));
-            temp.setOnTextChanged(s -> graphWrapper.setNodeText(node.getKey(), s));
-            nodeWidgetMap.put(temp.id, temp);
+            temp.setOnDragEnded((aDouble, aDouble2) -> graphWrapper.setNodeTranslate(node, aDouble, aDouble2));
+            temp.setOnNodeShapeChanged(nodeShape -> graphWrapper.setNodeShape(node, nodeShape));
+            temp.setOnTextChanged(s -> graphWrapper.setNodeText(node, s));
+            nodeWidgetMap.put(temp.value, temp);
             dummy2.getChildren().add(temp);
         }
         dummy2.layout();
         dummy2.applyCss();
         dummy2.layout();
-        for (final var edge : graphWrapper.graph.edges.entrySet()) {
-            var temp = new EdgeWidget(edge.getKey(), edge.getValue(), graphWrapper, this::updateGraphPaneContents, this);
+        for (final var edge : graphWrapper.getEdges()) {
+            var temp = new EdgeWidget(edge, graphWrapper, this::updateGraphPaneContents, this);
             gui.graphPane.addChild(temp);
         }
         for (var child : nodeWidgetMap.values()){

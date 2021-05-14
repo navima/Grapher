@@ -1,5 +1,6 @@
 package grapher;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -8,51 +9,65 @@ import java.util.Objects;
 /**
  * Represents a connection between two {@link Node}s.
  */
+@JsonSerialize(using = EdgeSerializer.class)
 public class Edge {
     /**
-     * The source grapher.Node of the connection.
+     * The unique identifier of the connection.
      */
-    public int from;
+    public int id;
     /**
-     * The target grapher.Node of the connection.
+     * The source Node of the connection.
      */
-    public int to;
+    public Node from;
+    /**
+     * The target Node of the connection.
+     */
+    public Node to;
     /**
      * The text associated with the connection (description, condition, etc.).
      */
     public String text;
 
     /**
-     * This constructor constructs a construct representing a meta-construct.
-     * @param from {@link Edge#from}
-     * @param to {@link Edge#to}
+     * Constructor.
+     * @param id
+     * @param from
+     * @param to
      */
-    public Edge(int from, int to) {
-        this.from = from;
-        this.to = to;
+    public Edge(int id, Node from, Node to) {
+        this(id, from, to, null);
     }
 
     /**
-     * DO NOT USE, ONLY NEEDED FOR DESERIALIZATION.
+     * Constructor.
+     * @param id
+     * @param from
+     * @param to
+     * @param text
      */
-    public Edge(){}
+    public Edge(int id, Node from, Node to, String text) {
+        this.id = id;
+        this.from = from;
+        this.to = to;
+        this.text = text;
+    }
 
     @Override
     public boolean equals(@Nullable Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Edge edge = (Edge) o;
-        return from == edge.from && to == edge.to && Objects.equals(text, edge.text);
+        return Objects.equals(from, edge.from) && Objects.equals(to, edge.to) && Objects.equals(text, edge.text);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(from, to, text);
+        return Objects.hash(id);
     }
 
     @Override
     public @NotNull String toString() {
-        return "grapher.Edge{" +
+        return "Edge{" +
                 "from=" + from +
                 ", to=" + to +
                 ", text='" + text + '\'' +

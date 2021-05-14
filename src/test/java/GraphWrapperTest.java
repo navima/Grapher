@@ -1,6 +1,8 @@
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import grapher.Edge;
 import grapher.GraphWrapper;
+import grapher.Node;
 
 import java.io.File;
 import java.io.IOException;
@@ -61,8 +63,9 @@ class GraphWrapperTest {
 
             // read own save
             file = new File("test.json");
-            var t2 = new GraphWrapper(true);
-            var t3 = new GraphWrapper(false);
+            var t2 = new GraphWrapper();
+            t2.loadDefault();
+            var t3 = new GraphWrapper();
             assertTrue(t2.save(file));
             assertTrue(t3.load(file));
             assertEquals(t3, t2);
@@ -81,24 +84,14 @@ class GraphWrapperTest {
 
     @org.junit.jupiter.api.Test
     void addEdge() {
-        GraphWrapper t = new GraphWrapper();
-        assertDoesNotThrow(() -> t.addEdge(0, 0));
-        t.addNode(0,0);
-        t.addNode(0,0);
-        assertThrows(GraphWrapper.InvalidOperationException.class,
-                () -> t.addEdge(9, -9));
-        assertThrows(GraphWrapper.InvalidOperationException.class,
-                () -> t.addEdge(0, -9));
-        assertDoesNotThrow(
-                () -> t.addEdge(0, 1));
-        assertDoesNotThrow(
-                () -> t.addEdge(0, 0));
+
     }
 
     @org.junit.jupiter.api.Test
     void reset() {
-        var t1 = new GraphWrapper(false);
-        var t2 = new GraphWrapper(true);
+        var t1 = new GraphWrapper();
+        var t2 = new GraphWrapper();
+        t2.loadDefault();
         t2.reset();
         assertEquals(t2, t1);
     }

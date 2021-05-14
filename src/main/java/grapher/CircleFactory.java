@@ -1,4 +1,4 @@
-package grapher;
+package grapher;// CHECKSTYLE:OFF
 
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Shape;

@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
  * The main class of the program.
  */
 public class Main extends Application {
-    static GraphWrapper graphWrapper;
+    static IGraph graphWrapper;
     static Controller controller;
     static GUI gui;
 
@@ -17,7 +17,8 @@ public class Main extends Application {
      * @param args args
      */
     public static void main(String[] args) {
-        graphWrapper = new GraphWrapper(true);
+        graphWrapper = new GraphWrapper();
+        graphWrapper.loadDefault();
         controller = new Controller(graphWrapper);
         gui = new GUI(controller);
         launch();
