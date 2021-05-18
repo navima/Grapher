@@ -28,6 +28,9 @@ public class NodeWidget extends Group {
     public void setOnNodeShapeChanged(Consumer<eNodeShape> onNodeShapeChanged) {onNodeShapeChangedHandler = onNodeShapeChanged;}
 
 
+    /**
+     * Invalidate callback.
+     */
     @FunctionalInterface
     public interface callback { void apply(); }
 

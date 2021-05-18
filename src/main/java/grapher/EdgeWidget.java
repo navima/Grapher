@@ -17,6 +17,9 @@ public class EdgeWidget extends Group {
     final Label label = new Label();
     final TextArea textArea = new TextArea();
 
+    /**
+     * Invalidate callback.
+     */
     @FunctionalInterface
     public interface callback { void apply(); }
 

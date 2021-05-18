@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * A wrapper of a {@link Graph} object.
+ * The interface for a {@link Graph} object.
  */
 public interface IGraph {
 

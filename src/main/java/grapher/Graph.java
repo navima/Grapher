@@ -6,6 +6,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+/**
+ * Data structure for a graph.
+ */
 @JsonDeserialize(using = GraphDeserializer.class)
 public class Graph{
     public final @NotNull Set<Node> nodes;
