@@ -14,6 +14,7 @@
     </developers>
 
 
+    <url>https://github.com/navima/Grapher</url>
     <scm>
         <developerConnection>scm:git:https://github.com/navima/Grapher.git</developerConnection>
     </scm>
@@ -70,26 +71,7 @@
         </dependency>
     </dependencies>
     <build>
-        <plugins><!--
-            <plugin>
-                <groupId>com.github.github</groupId>
-                <artifactId>site-maven-plugin</artifactId>
-                <version>0.9</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>site</goal>
-                        </goals>
-                        <phase>site-deploy</phase>
-                        <configuration>
-                            <server>github</server>
-                            <message>Building site for grapher</message>
-                            <merge>true</merge>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>-->
-
+        <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
@@ -111,6 +93,7 @@
                 <version>3.2.4</version>
                 <executions>
                     <execution>
+                        <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
