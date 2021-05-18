@@ -2,7 +2,7 @@ package grapher;
 
 import javafx.scene.shape.Shape;
 import org.jetbrains.annotations.Nullable;
-import org.pmw.tinylog.Logger;
+import org.tinylog.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
