@@ -49,11 +49,11 @@ public class Node {
 
     /**
      * Constructor.
-     * @param x
-     * @param y
-     * @param id
-     * @param shape
-     * @param text
+     * @param x {@link Node#x}
+     * @param y {@link Node#y}
+     * @param id {@link Node#id}
+     * @param shape {@link Node#shape}
+     * @param text {@link Node#text}
      */
     public Node(double x, double y, int id, eNodeShape shape, String text) {
         this.x = x;

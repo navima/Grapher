@@ -15,10 +15,23 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 
+/**
+ * Controller responsible for handling user actions.
+ */
 public class Controller {
+    /**
+     * The manipulated graph.
+     */
     final IGraph graphWrapper;
-    public GUI gui;
+    /**
+     * The GUI we are handling the events of.
+     */
+    public GUI gui; //TODO: Loosen the coupling.
 
+    /**
+     * Default constructor.
+     * @param graphWrapper The graphWrapper we are manipulating.
+     */
     public Controller(IGraph graphWrapper) {
         this.graphWrapper = graphWrapper;
     }
@@ -86,6 +99,9 @@ public class Controller {
         activateToolbarButton(gui.bRemove, eActionMode.REMOVE);
     }
 
+    /**
+     * The type of action performed on a file (save/load).
+     */
     public enum eFileActionType{
         SAVE, LOAD
     }

@@ -24,6 +24,10 @@ public class GraphDeserializer extends StdDeserializer<Graph> {
         this(null);
     }
 
+    /**
+     * Constructor.
+     * @param vc vc
+     */
     protected GraphDeserializer(Class<?> vc) {
         super(vc);
     }

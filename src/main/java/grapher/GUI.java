@@ -15,6 +15,10 @@ import org.jetbrains.annotations.NotNull;
 public class GUI {
     final @NotNull Controller controller;
 
+    /**
+     * Default constructor.
+     * @param controller The controller handling our events.
+     */
     public GUI(@NotNull Controller controller) {
         this.controller = controller;
         controller.gui = this;

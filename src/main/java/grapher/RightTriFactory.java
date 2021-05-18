@@ -3,6 +3,9 @@ package grapher;// CHECKSTYLE:OFF
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Shape;
 
+/**
+ * {@link eNodeShape#RIGHT_TRI} Factory class.
+ */
 public class RightTriFactory implements INodeShapeFactory{
     @Override
     public Shape make() {

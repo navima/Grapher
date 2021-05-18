@@ -32,7 +32,11 @@ public class NodeWidget extends Group {
      * Invalidate callback.
      */
     @FunctionalInterface
-    public interface callback { void apply(); }
+    public interface callback {
+        /**
+         * Invalidate method.
+         */
+        void apply(); }
 
     private double dragStartMouseX = 0.0;
     private double dragStartMouseY = 0.0;

@@ -21,7 +21,11 @@ public class EdgeWidget extends Group {
      * Invalidate callback.
      */
     @FunctionalInterface
-    public interface callback { void apply(); }
+    public interface callback {
+        /**
+         * Invalidate method.
+         */
+        void apply(); }
 
     public EdgeWidget(@NotNull Edge edge, @NotNull IGraph IGraph, @NotNull callback updateCallback, @NotNull Controller controller) {
         this.edge = edge;

@@ -20,6 +20,10 @@ public class NodeSerializer extends StdSerializer<Node> {
         this(null);
     }
 
+    /**
+     * Constructor.
+     * @param t t
+     */
     protected NodeSerializer(Class<Node> t) {
         super(t);
     }

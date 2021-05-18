@@ -18,6 +18,10 @@ public class EdgeSerializer extends StdSerializer<Edge> {
         this(null);
     }
 
+    /**
+     * Constructor.
+     * @param t t
+     */
     protected EdgeSerializer(Class<Edge> t) {
         super(t);
     }

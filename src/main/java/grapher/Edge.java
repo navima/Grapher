@@ -30,9 +30,9 @@ public class Edge {
 
     /**
      * Constructor.
-     * @param id
-     * @param from
-     * @param to
+     * @param id {@link Edge#id}
+     * @param from {@link Edge#from}
+     * @param to {@link Edge#to}
      */
     public Edge(int id, Node from, Node to) {
         this(id, from, to, null);
@@ -40,10 +40,10 @@ public class Edge {
 
     /**
      * Constructor.
-     * @param id
-     * @param from
-     * @param to
-     * @param text
+     * @param id {@link Edge#id}
+     * @param from {@link Edge#from}
+     * @param to {@link Edge#to}
+     * @param text {@link Edge#text}
      */
     public Edge(int id, Node from, Node to, String text) {
         this.id = id;
