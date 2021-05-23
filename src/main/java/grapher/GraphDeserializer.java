@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 
 
 /**
@@ -33,7 +32,7 @@ public class GraphDeserializer extends StdDeserializer<Graph> {
     }
 
     @Override
-    public Graph deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+    public Graph deserialize(JsonParser p, DeserializationContext ctxt) throws JsonProcessingException {
         try {
             final var root = p.getCodec().readTree(p);
 
@@ -72,10 +71,9 @@ public class GraphDeserializer extends StdDeserializer<Graph> {
                 parsedEdgeSet.add(edgeEdge);
             }
 
-            final var graph = new Graph(parsedNodeSet, parsedEdgeSet, lastNodeId, lastEdgeId);
-            return graph;
+            return new Graph(parsedNodeSet, parsedEdgeSet, lastNodeId, lastEdgeId);
 
-        } catch (NullPointerException e){
+        } catch (NullPointerException | IOException e){
             throw JsonMappingException.from(p, "Exception thrown when trying to deserialize Graph object");
         }
     }

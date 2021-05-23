@@ -111,13 +111,15 @@ public class Controller {
                 new FileChooser.ExtensionFilter("Json Files", "*.json"),
                 new FileChooser.ExtensionFilter("All Files", "*.*"));
         fileChooser.setTitle(title);
-        switch (type){
+        //noinspection EnhancedSwitchMigration
+        switch (type) {
             case LOAD:
                 return fileChooser.showOpenDialog(new Stage());
             case SAVE:
                 return fileChooser.showSaveDialog(new Stage());
+            default:
+                throw new IllegalArgumentException();
         }
-        return null;
     }
 
     @NotNull eActionMode actionMode = eActionMode.PAN;
@@ -129,7 +131,7 @@ public class Controller {
         gui.graphPane.clear();
         nodeWidgetMap.clear();
         Group dummy2 = new Group();
-        Scene dummy = new Scene(dummy2);
+        new Scene(dummy2);
         for (final var node : graphWrapper.getNodes()) {
             var temp = new NodeWidget(node, this::updateGraphPaneContents);
             temp.setOnAction( actionEvent -> {
@@ -141,7 +143,9 @@ public class Controller {
                     actionEvent.consume();
                     if (edgeBeingAdded) {
                         try {
-                            graphWrapper.addEdge(edgeStartNode.value, node);
+                            if (edgeStartNode != null) {
+                                graphWrapper.addEdge(edgeStartNode.value, node);
+                            }
                         } catch (Exception ignore) { }
                         edgeStartNode = null;
                         edgeBeingAdded = false;

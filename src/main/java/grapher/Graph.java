@@ -76,7 +76,7 @@ public class Graph{
      */
     public void removeNode(Node node) {
         nodes.remove(node);
-        var edges = (HashSet<Edge>) node.edges.clone();
+        var edges = new HashSet<>(node.edges);
         for (var edge : edges)
             removeEdge(edge);
     }

@@ -1,5 +1,6 @@
 package grapher;// CHECKSTYLE:OFF
 
+import javafx.beans.binding.DoubleBinding;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -16,6 +17,20 @@ public class EdgeWidget extends Group {
     final Line line = new Line();
     final Label label = new Label();
     final TextArea textArea = new TextArea();
+    final NodeWidget fromWidget;
+    final NodeWidget toWidget;
+
+
+    private final DoubleBinding layoutCenterX;
+
+    public DoubleBinding getLayoutCenterXBinding() {
+        return layoutCenterX;
+    }
+    private final DoubleBinding layoutCenterY;
+
+    public DoubleBinding getLayoutCenterYBinding() {
+        return layoutCenterY;
+    }
 
     /**
      * Invalidate callback.
@@ -32,27 +47,45 @@ public class EdgeWidget extends Group {
         this.controller = IGraph;
         this.updateCallback = updateCallback;
 
-        this.getChildren().add(line);
-        this.getChildren().add(label);
-        this.getChildren().add(textArea);
+        fromWidget = controller.nodeWidgetMap.get(edge.from);
+        toWidget = controller.nodeWidgetMap.get(edge.to);
 
-        textArea.setVisible(false);
+        layoutCenterX = new DoubleBinding() {
+            {
+                bind(
+                        fromWidget.getLayoutCenterXBinding(),
+                        toWidget.getLayoutCenterXBinding());
+            }
+            @Override
+            protected double computeValue() {
+                return (fromWidget.getLayoutCenterXBinding().get()+toWidget.getLayoutCenterXBinding().get())/2;
+            }
+        };
+        layoutCenterY = new DoubleBinding() {
+            {
+                bind(
+                        fromWidget.getLayoutCenterYBinding(),
+                        toWidget.getLayoutCenterYBinding());
+            }
+            @Override
+            protected double computeValue() {
+                return (fromWidget.getLayoutCenterYBinding().get()+toWidget.getLayoutCenterYBinding().get())/2;
+            }
+        };
 
         line.setStrokeWidth(strokeWidthDefault);
-
-        var sourceNodeWidget = controller.nodeWidgetMap.get(edge.from);
-        var targetNodeWidget = controller.nodeWidgetMap.get(edge.to);
-        line.setStartX(sourceNodeWidget.getLayoutX()+sourceNodeWidget.button.getWidth()/2);
-        line.setStartY(sourceNodeWidget.getLayoutY()+sourceNodeWidget.button.getHeight()/2);
-        line.setEndX(targetNodeWidget.getLayoutX()+targetNodeWidget.button.getWidth()/2);
-        line.setEndY(targetNodeWidget.getLayoutY()+targetNodeWidget.button.getHeight()/2);
+        line.startXProperty().bind(fromWidget.getLayoutCenterXBinding());
+        line.startYProperty().bind(fromWidget.getLayoutCenterYBinding());
+        line.endXProperty().bind(toWidget.getLayoutCenterXBinding());
+        line.endYProperty().bind(toWidget.getLayoutCenterYBinding());
 
         label.setText(edge.text);
-        label.setLayoutX((line.getStartX()+line.getEndX())/2);
-        label.setLayoutY((line.getStartY()+line.getEndY())/2);
+        label.layoutXProperty().bind(getLayoutCenterXBinding());
+        label.layoutYProperty().bind(getLayoutCenterYBinding());
 
-        textArea.setLayoutX((line.getStartX()+line.getEndX())/2);
-        textArea.setLayoutY((line.getStartY()+line.getEndY())/2);
+        textArea.setVisible(false);
+        textArea.layoutXProperty().bind(getLayoutCenterXBinding());
+        textArea.layoutYProperty().bind(getLayoutCenterYBinding());
         textArea.setPrefSize(150,0);
 
 
@@ -77,5 +110,11 @@ public class EdgeWidget extends Group {
         });
         setOnMouseEntered(e -> line.setStrokeWidth(strokeWidthWide));
         setOnMouseExited(e -> line.setStrokeWidth(strokeWidthDefault));
+
+
+
+        this.getChildren().add(line);
+        this.getChildren().add(label);
+        this.getChildren().add(textArea);
     }
 }
