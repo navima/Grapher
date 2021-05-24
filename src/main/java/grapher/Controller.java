@@ -98,6 +98,14 @@ public class Controller {
     public void removeNodeEdgeHandler(ActionEvent e) {
         activateToolbarButton(gui.bRemove, eActionMode.REMOVE);
     }
+    public void undoHandler(ActionEvent actionEvent) {
+        graphWrapper.undo();
+        updateGraphPaneContents();
+    }
+    public void redoHandler(ActionEvent actionEvent) {
+        graphWrapper.redo();
+        updateGraphPaneContents();
+    }
 
     /**
      * The type of action performed on a file (save/load).

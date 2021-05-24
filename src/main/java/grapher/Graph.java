@@ -4,13 +4,15 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Data structure for a graph.
  */
 @JsonDeserialize(using = GraphDeserializer.class)
-public class Graph{
+public class Graph implements IMementoable<Graph>{
     /**
      * The nodes of the graph.
      */
@@ -48,6 +50,25 @@ public class Graph{
         this.edges = edges;
         this.lastNodeId = lastNodeId;
         this.lastEdgeId = lastEdgeId;
+    }
+
+    public Graph(Graph graph) {
+        nodes = new HashSet<>();
+        edges = new HashSet<>();
+        for(var oldNode : graph.nodes)
+            addNode(Node.copyWithoutEdges(oldNode));
+        for(var oldEdge : graph.edges)
+        {
+            var fromNode = nodes.stream().filter(node -> oldEdge.from.id == node.id).findFirst().get();
+            var toNode = nodes.stream().filter(node -> oldEdge.to.id   == node.id).findFirst().get();
+            var edge = new Edge(oldEdge.id, fromNode, toNode, oldEdge.text);
+            addEdge(edge);
+        }
+        lastNodeId = graph.lastNodeId;
+        lastEdgeId = graph.lastEdgeId;
+        //System.out.println("DEEP COPIED GRAPH.");
+        //System.out.println("OLD NODES, EDGES: "+graph.nodes.size() + ", " + graph.edges.size());
+        //System.out.println("NEW NODES, EDGES: "+nodes.size() + ", " + edges.size());
     }
 
     /**
@@ -130,9 +151,14 @@ public class Graph{
     public @NotNull String toString() {
         return "Graph{" +
                 "nodes=" + nodes +
-                ", edges=" + edges +
+                ", edges=" + edges.stream().map(edge -> edge.id).collect(Collectors.toList()).toString() +
                 ", lastNodeId=" + lastNodeId +
                 ", lastEdgeId=" + lastEdgeId +
                 '}';
+    }
+
+    @Override
+    public GraphMemento getState() {
+        return new GraphMemento(this);
     }
 }

@@ -2,20 +2,16 @@ package grapher;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.tinylog.Logger;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Objects;
 import java.util.Set;
 
 /**
  * The interface for a {@link Graph} object.
  */
-public interface IGraph {
+public interface IGraph extends ICaretaker {
 
     /**
      * Saves graph if path is set.

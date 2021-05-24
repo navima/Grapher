@@ -66,6 +66,13 @@ public class GUI {
         bar.getMenus().add(filemenu);
         // Edit menu ----------------------------------------------------------------
         Menu editmenu = new Menu("_Edit");
+
+        MenuItem eUndo = new MenuItem("_Undo");
+        eUndo.setOnAction(controller::undoHandler);
+        eUndo.setAccelerator(new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN));
+        MenuItem eRedo = new MenuItem("Re_do");
+        eRedo.setOnAction(controller::redoHandler);
+        eRedo.setAccelerator(new KeyCodeCombination(KeyCode.Y, KeyCombination.CONTROL_DOWN));
         MenuItem ePan = new MenuItem("_Pan");
         ePan.setOnAction(controller::panHandler);
         ePan.setAccelerator(new KeyCodeCombination(KeyCode.W));
@@ -78,7 +85,8 @@ public class GUI {
         MenuItem eRemove = new MenuItem("_Remove");
         eRemove.setOnAction(controller::removeNodeEdgeHandler);
         eRemove.setAccelerator(new KeyCodeCombination(KeyCode.X));
-        editmenu.getItems().addAll(ePan, eAddNode, eAddEdge, eRemove);
+
+        editmenu.getItems().addAll(eUndo, eRedo, ePan, eAddNode, eAddEdge, eRemove);
         bar.getMenus().add(editmenu);
         // --------------------------------------------------------------------------
         bar.getStyleClass().add("menubar");

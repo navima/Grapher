@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Class representing a node.
@@ -68,6 +69,10 @@ public class Node {
      */
     public Node(){}
 
+    public static Node copyWithoutEdges(Node other){
+        return new Node(other.x, other.y, other.id, other.shape, other.text);
+    }
+
     /**
      * Sets the X and Y coordinates.
      * @param x New X
@@ -91,9 +96,11 @@ public class Node {
     @Override
     public @NotNull String toString() {
         return "{" +
-                "x=" + x +
+                "id=" + id +
+                ", x=" + x +
                 ", y=" + y +
-                ", text='" + text + '\'' +
+                ", text=\"" + (text!=null ? text.replaceAll("\n", " ") : "")+ "\"" +
+                ", edges=" + edges.stream().map(edge -> edge.id).collect(Collectors.toList()) +
                 '}';
     }
 }

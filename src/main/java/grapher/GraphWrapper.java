@@ -8,14 +8,13 @@ import org.tinylog.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Wraps graph object.
  */
-public class GraphWrapper implements IGraph{
+public class GraphWrapper implements IGraph {
     /**
      * The graph being manipulated.
      */
@@ -24,6 +23,61 @@ public class GraphWrapper implements IGraph{
      * The path to the currently worked on file.
      */
     @Nullable File graphPath = null;
+
+
+    List<HistoryElement<GraphMemento>> history = new ArrayList<>();
+    int historyPosition = 0;
+    @Override
+    public List<GraphMemento> getHistory() {
+        return history.stream().map(HistoryElement::value).toList();
+    }
+
+    @Override
+    public void restoreState(GraphMemento memento) {
+        graph = new Graph(memento.getValue());
+    }
+
+    public void printHistory(){
+        System.out.println("The current history:");
+        for (int i = history.size()-1; i >= 0; i--){
+            if (i == historyPosition)
+                System.out.println("X " + history.get(i).label() + " : " + history.get(i).value());
+            else
+                System.out.println("- " + history.get(i).label() + " : " + history.get(i).value());
+        }
+    }
+
+    @Override
+    public void undo() {
+        if (history.isEmpty() || historyPosition - 1 < 0)
+            return;
+        var prevState = history.get(--historyPosition);
+        restoreState(prevState.value());
+        //printHistory();
+    }
+
+    @Override
+    public void redo(){
+        if (history.isEmpty() || (historyPosition+1) > (history.size() - 1))
+            return;
+        var nextState = history.get(++historyPosition);
+        restoreState(nextState.value());
+        //printHistory();
+    }
+
+    @Override
+    public void captureState(){
+        captureState(null);
+    }
+    public void captureState(String label){
+        if(history.size() - 1 > historyPosition){
+            Logger.info("History is stale. Taking first "+(historyPosition+1)+" elements (from "+history.size()+")");
+            history = history.stream().limit(historyPosition+1).collect(Collectors.toList());
+        }
+        history.add(new HistoryElement<>(label, graph.getState()));
+        historyPosition=history.size()-1;
+        //printHistory();
+    }
 
     @Override
     public boolean save() throws IOException {
@@ -49,6 +103,7 @@ public class GraphWrapper implements IGraph{
             ObjectMapper mapper = new ObjectMapper();
             graph = mapper.readValue(file, Graph.class);
             graphPath = file;
+            captureState("load file");
             Logger.info("Loaded file from: "+file);
             return true;
         }
@@ -60,6 +115,7 @@ public class GraphWrapper implements IGraph{
         ObjectMapper mapper = new ObjectMapper();
         graph = mapper.readValue(src, Graph.class);
         graphPath = new File(src.getFile());
+        captureState("load file");
         Logger.info("Loaded file from: "+src);
     }
 
@@ -86,7 +142,9 @@ public class GraphWrapper implements IGraph{
 
     @Override
     public void addNode(double x, double y) {
-        final var node = graph.addNode(x,y);
+
+        final var node = graph.addNode(x, y);
+        captureState("add node");
         Logger.info("Added Node (" + node + ")");
     }
 
@@ -102,48 +160,63 @@ public class GraphWrapper implements IGraph{
             throw new InvalidOperationException();
         }
         else{
+
             var edge = graph.addEdge(from, to);
+            captureState("add edge");
             Logger.info("Added Edge (" + edge + ")");
         }
     }
 
     @Override
     public void removeNode(Node node){
-        Logger.info("Removed Node (" + node + ")");
+
         graph.removeNode(node);
+        captureState("remove node");
+        Logger.info("Removed Node (" + node + ")");
     }
 
     @Override
     public void setNodeTranslate(Node node, double x, double y) {
-        node.setXY(x, y);
-    }
 
+        node.setXY(x, y);
+        captureState("moved node");
+    }
 
     @Override
     public void removeEdge(Edge edge) {
-        Logger.info("Removed Edge (" + edge + ")");
+
         graph.removeEdge(edge);
+        captureState("remove edge");
+        Logger.info("Removed Edge (" + edge + ")");
     }
 
     @Override
     public void setNodeText(Node node, String text) {
+
         node.text = text;
+        captureState("change node text");
     }
 
     @Override
     public void setEdgeText(Edge edge, String text) {
+
         edge.text = text;
+        captureState("change edge text");
     }
 
     @Override
     public void setNodeShape(Node node, eNodeShape shape) {
+
         node.shape = shape;
+        captureState("change node shape");
     }
 
     @Override
     public void reset() {
+
         graph = new Graph();
         graphPath = null;
+        captureState("reset graph");
     }
 
     @Override
