@@ -52,6 +52,7 @@ public class GraphDeserializer extends StdDeserializer<Graph> {
                     lastNodeId = id;
                 parsedNodeSet.add(nodeNode);
             }
+            lastNodeId++;
 
             final var edges = root.get("edges");
             final var edgesSet = edges.traverse(p.getCodec()).readValueAs(HashSet.class);
@@ -71,7 +72,11 @@ public class GraphDeserializer extends StdDeserializer<Graph> {
                 parsedEdgeSet.add(edgeEdge);
             }
 
-            return new Graph(parsedNodeSet, parsedEdgeSet, lastNodeId, lastEdgeId);
+            var graph = new Graph(parsedNodeSet, new HashSet<>(), lastNodeId, lastEdgeId);
+            for (var edge : parsedEdgeSet){
+                graph.addEdge(edge);
+            }
+            return graph;
 
         } catch (NullPointerException | IOException e){
             throw JsonMappingException.from(p, "Exception thrown when trying to deserialize Graph object");
