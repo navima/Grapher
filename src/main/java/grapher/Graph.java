@@ -1,5 +1,6 @@
 package grapher;// CHECKSTYLE:OFF
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -157,6 +158,7 @@ public class Graph implements IMementoable<Graph>{
                 '}';
     }
 
+    @JsonIgnore
     @Override
     public GraphMemento getState() {
         return new GraphMemento(this);
