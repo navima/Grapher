@@ -5,10 +5,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import javafx.geometry.Point2D;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 
 /**
@@ -67,6 +70,13 @@ public class GraphDeserializer extends StdDeserializer<Graph> {
                 final var from = parsedNodeSet.stream().filter(node -> node.id == fromId).findFirst().get();
                 final var to = parsedNodeSet.stream().filter(node -> node.id == toId).findFirst().get();
                 final var edgeEdge = new Edge(id, from, to, text);
+                if(e2.containsKey("points")){
+                    final var points = (ArrayList<LinkedHashMap<String, Object>>) e2.get("points");
+                    final var parsedPoints = new ArrayList<Point2D>();
+                    for(var elem : points)
+                        parsedPoints.add(new Point2D((double)elem.get("x"), (double)elem.get("y")));
+                    edgeEdge.points.addAll(parsedPoints);
+                }
                 if(id > lastEdgeId)
                     lastEdgeId = id;
                 parsedEdgeSet.add(edgeEdge);

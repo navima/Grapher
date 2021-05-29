@@ -1,5 +1,6 @@
 package grapher;
 
+import javafx.geometry.Point2D;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,6 +67,10 @@ public interface IGraph extends ICaretaker {
      * @param y {@link Node#y}
      */
     void addNode(double x, double y);
+
+    void addPointToEdge(Edge edge, Point2D point2D);
+
+    void updatePointOnEdge(Edge edge, int i, Point2D point2D);
 
     /**
      * Thrown when an invalid operation has been requested. (eg. adding Edge to nonexistent Node).

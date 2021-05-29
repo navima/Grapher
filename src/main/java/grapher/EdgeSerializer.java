@@ -33,6 +33,7 @@ public class EdgeSerializer extends StdSerializer<Edge> {
         gen.writeNumberField("from", value.from.id);
         gen.writeNumberField("to", value.to.id);
         gen.writeStringField("text", value.text);
+        gen.writeObjectField("points", value.points);
         gen.writeEndObject();
     }
 }

@@ -1,9 +1,12 @@
 package grapher;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import javafx.geometry.Point2D;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -27,6 +30,11 @@ public class Edge {
      * The text associated with the connection (description, condition, etc.).
      */
     public String text;
+
+    public List<Point2D> points = new ArrayList<>();
+    {
+        //points.add(new Point2D(0, 0));
+    }
 
     /**
      * Constructor.

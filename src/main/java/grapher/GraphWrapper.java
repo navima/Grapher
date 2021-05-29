@@ -1,6 +1,7 @@
 package grapher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.geometry.Point2D;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
@@ -146,6 +147,18 @@ public class GraphWrapper implements IGraph {
         final var node = graph.addNode(x, y);
         captureState("add node");
         Logger.info("Added Node (" + node + ")");
+    }
+
+    @Override
+    public void addPointToEdge(Edge edge, Point2D point2D) {
+        edge.points.add(point2D);
+        captureState("add point to line");
+    }
+
+    @Override
+    public void updatePointOnEdge(Edge edge, int i, Point2D point2D) {
+        edge.points.set(i, point2D);
+        captureState("modified point of line");
     }
 
     @Override
