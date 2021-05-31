@@ -21,7 +21,7 @@ public class GraphPane extends Pane {
             //System.out.println(e.getX()+" - " + dragStartMouseX+" + "+dragStartTranslateX);
             e.consume();
         });
-        setOnMouseMoved(e -> {
+        setOnMousePressed( e -> {
             dragStartTranslateX = childTranslateX;
             dragStartTranslateY = childTranslateY;
             dragStartMouseX = e.getX();
