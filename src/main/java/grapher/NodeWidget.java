@@ -1,8 +1,6 @@
 package grapher;// CHECKSTYLE:OFF
 
 import javafx.beans.binding.DoubleBinding;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -31,23 +29,26 @@ public class NodeWidget extends Group {
     public void setOnNodeShapeChanged(Consumer<eNodeShape> onNodeShapeChanged) {onNodeShapeChangedHandler = onNodeShapeChanged;}
 
     private final DoubleBinding layoutCenterX = new DoubleBinding() {
+        {
+            super.bind(layoutXProperty());
+        }
         @Override
         protected double computeValue() {
             return getLayoutX()+button.getWidth()/2;
         }
     };
-
     public DoubleBinding getLayoutCenterXBinding() {
         return layoutCenterX;
     }
-
     private final DoubleBinding layoutCenterY = new DoubleBinding() {
+        {
+            super.bind(layoutYProperty());
+        }
         @Override
         protected double computeValue() {
             return getLayoutY()+button.getHeight()/2;
         }
     };
-
     public DoubleBinding getLayoutCenterYBinding() {
         return layoutCenterY;
     }
