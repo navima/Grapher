@@ -1,15 +1,18 @@
 package grapher;// CHECKSTYLE:OFF
 
 import javafx.event.ActionEvent;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.tinylog.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,14 +40,20 @@ public class Controller {
     }
     public void graphPaneOnMouseClicked(@NotNull MouseEvent e) {
         if (actionMode == eActionMode.NODE_ADD) {
-            if (!gui.graphPane.isPanning) { // don't
-                graphWrapper.addNode(
-                        e.getX() - gui.graphPane.getChildTranslateX(),
-                        e.getY() - gui.graphPane.getChildTranslateY());
-                updateGraphPaneContents();
+            if (e.isStillSincePress()) { // don't
+                try {
+                    var invTrans = gui.graphPane.g.getLocalToParentTransform().createInverse();
+                    var res = invTrans.transform(e.getX(), e.getY());
+                    graphWrapper.addNode(
+                            res.getX() - gui.graphPane.getChildTranslateX(),
+                            res.getY() - gui.graphPane.getChildTranslateY());
+                    updateGraphPaneContents();
+
+                } catch (NonInvertibleTransformException nonInvertibleTransformException) {
+                    Logger.error(nonInvertibleTransformException);
+                }
             }
         }
-        gui.graphPane.isPanning = false;    // I'm sorry, God.
         gui.graphPane.requestFocus();
     }
     public void fileMenuNewFileHandler(ActionEvent actionEvent) {
