@@ -68,7 +68,7 @@ public interface IGraph extends ICaretaker {
      */
     void addNode(double x, double y);
 
-    void addPointToEdge(Edge edge, Point2D point2D);
+    void addPointToEdge(Edge edge, int index, Point2D point2D);
 
     void updatePointOnEdge(Edge edge, int i, Point2D point2D);
 

@@ -150,8 +150,8 @@ public class GraphWrapper implements IGraph {
     }
 
     @Override
-    public void addPointToEdge(Edge edge, Point2D point2D) {
-        edge.points.add(point2D);
+    public void addPointToEdge(Edge edge, int index, Point2D point2D) {
+        edge.points.add(index, point2D);
         captureState("add point to line");
     }
 

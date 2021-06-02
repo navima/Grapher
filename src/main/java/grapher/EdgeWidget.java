@@ -1,6 +1,7 @@
 package grapher;// CHECKSTYLE:OFF
 
 import javafx.beans.binding.DoubleBinding;
+import javafx.event.Event;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
@@ -8,14 +9,15 @@ import javafx.scene.control.TextArea;
 import javafx.scene.shape.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class EdgeWidget extends Group {
     final @NotNull Edge edge;
     final @NotNull IGraph graph;
     final @NotNull callback updateCallback;
-    final double strokeWidthDefault = 2;
-    final double strokeWidthWide = 6;
-
-    final Path path = new Path();
+    final List<Path> paths = new ArrayList<>();
+    final List<Circle> pathPoints = new ArrayList<>();
     final Label label = new Label();
     final TextArea textArea = new TextArea();
     final NodeWidget fromWidget;
@@ -23,12 +25,10 @@ public class EdgeWidget extends Group {
 
 
     private final DoubleBinding layoutCenterX;
-
     public DoubleBinding getLayoutCenterXBinding() {
         return layoutCenterX;
     }
     private final DoubleBinding layoutCenterY;
-
     public DoubleBinding getLayoutCenterYBinding() {
         return layoutCenterY;
     }
@@ -43,7 +43,6 @@ public class EdgeWidget extends Group {
          */
         void apply(); }
 
-    boolean wasPathDragged = false;
     public EdgeWidget(@NotNull Edge edge, @NotNull IGraph graph, @NotNull callback updateCallback, @NotNull Controller controller) {
         this.edge = edge;
         this.graph = graph;
@@ -76,26 +75,88 @@ public class EdgeWidget extends Group {
         };
 
 
-        path.setStrokeWidth(strokeWidthDefault);
-        var moveToStart = new MoveTo();
-        moveToStart.xProperty().bind(fromWidget.getLayoutCenterXBinding());
-        moveToStart.yProperty().bind(fromWidget.getLayoutCenterYBinding());
-        var lineToEnd = new LineTo();
-        lineToEnd.xProperty().bind(toWidget.getLayoutCenterXBinding());
-        lineToEnd.yProperty().bind(toWidget.getLayoutCenterYBinding());
-        path.getElements().addAll(moveToStart);
-        for (var point : edge.points) {
-            var lineToNext = new LineTo(point.getX(), point.getY());
-            var moveToNext = new MoveTo(point.getX(), point.getY());
-            path.getElements().addAll(lineToNext, moveToNext);
+        // Manipulating points
+        Circle c0 = new Circle();
+        c0.centerXProperty().bind(fromWidget.getLayoutCenterXBinding());
+        c0.centerYProperty().bind(fromWidget.getLayoutCenterYBinding());
+        pathPoints.add(c0);
+        for (int i = 0; i < edge.points.size(); i++){
+            Circle c = new Circle();
+            pathPoints.add(c);
+            c.setCenterX(edge.points.get(i).getX());
+            c.setCenterY(edge.points.get(i).getY());
         }
-        path.getElements().addAll(lineToEnd);
-        /*
-        line.startXProperty().bind(fromWidget.getLayoutCenterXBinding());
-        line.startYProperty().bind(fromWidget.getLayoutCenterYBinding());
-        line.endXProperty().bind(toWidget.getLayoutCenterXBinding());
-        line.endYProperty().bind(toWidget.getLayoutCenterYBinding());
-        */
+        Circle cN = new Circle();
+        cN.centerXProperty().bind(toWidget.getLayoutCenterXBinding());
+        cN.centerYProperty().bind(toWidget.getLayoutCenterYBinding());
+        pathPoints.add(cN);
+        for (var elem : pathPoints){
+            //style
+            elem.setRadius(1);
+            elem.getStyleClass().add("graph-edge-point");
+            elem.setOnMousePressed(Event::consume);
+            elem.setOnMouseDragged(event -> {
+                elem.setCenterX(event.getX());
+                elem.setCenterY(event.getY());
+                event.consume();
+            });
+            elem.setOnMouseReleased(event -> {
+                if(!event.isStillSincePress())
+                    event.consume();
+            });
+        }
+
+
+        // Edges
+        for(int i = 0; i < pathPoints.size() - 1; i++){
+            final var path = new Path();
+            final var currPoint = pathPoints.get(i);
+            final var nextPoint = pathPoints.get(i + 1);
+            paths.add(path);
+
+            MoveTo moveToStart = new MoveTo();
+            moveToStart.xProperty().bind(currPoint.centerXProperty());
+            moveToStart.yProperty().bind(currPoint.centerYProperty());
+            LineTo lineToNext = new LineTo();
+            lineToNext.xProperty().bind(nextPoint.centerXProperty());
+            lineToNext.yProperty().bind(nextPoint.centerYProperty());
+            path.getElements().addAll(moveToStart, lineToNext);
+
+            path.getStyleClass().add("graph-edge");
+
+            path.setOnMousePressed(event -> {
+                var lineToMouse = new LineTo();
+                lineToMouse.setX(event.getX());
+                lineToMouse.setY(event.getY());
+                path.getElements().add(1, lineToMouse);
+                var moveToMouse = new MoveTo();
+                moveToMouse.setX(event.getX());
+                moveToMouse.setY(event.getY());
+                path.getElements().add(2, moveToMouse);
+                event.consume();
+            });
+            path.setOnMouseDragged(event -> {
+                var lineToMouse = (LineTo)path.getElements().get(1);
+                lineToMouse.setX(event.getX());
+                lineToMouse.setY(event.getY());
+                var moveToMouse = (MoveTo)path.getElements().get(2);
+                moveToMouse.setX(event.getX());
+                moveToMouse.setY(event.getY());
+                event.consume();
+            });
+            final int finalI = i;
+            path.setOnMouseReleased(mouseEvent -> {
+                if(!mouseEvent.isStillSincePress()){
+                    graph.addPointToEdge(edge, finalI, new Point2D(mouseEvent.getX(), mouseEvent.getY()));
+                    mouseEvent.consume();
+                    updateCallback.apply();
+                }
+            });
+        }
+
+        getChildren().addAll(paths);
+        getChildren().addAll(pathPoints);
+
 
         label.setText(edge.text);
         label.layoutXProperty().bind(getLayoutCenterXBinding());
@@ -106,29 +167,6 @@ public class EdgeWidget extends Group {
         textArea.layoutYProperty().bind(getLayoutCenterYBinding());
         textArea.setPrefSize(150,0);
 
-        path.setOnMouseDragged(mouseEvent -> {
-            if(edge.points.size()<1) {
-                graph.addPointToEdge(edge, new Point2D(mouseEvent.getX(), mouseEvent.getY()));
-                mouseEvent.consume();
-                updateCallback.apply();
-                return;
-            }
-            ((LineTo)path.getElements().get(1)).setX(mouseEvent.getX());
-            ((LineTo)path.getElements().get(1)).setY(mouseEvent.getY());
-            ((MoveTo)path.getElements().get(2)).setX(mouseEvent.getX());
-            ((MoveTo)path.getElements().get(2)).setY(mouseEvent.getY());
-            wasPathDragged = true;
-            mouseEvent.consume();
-        });
-        path.setOnMouseReleased(mouseEvent -> {
-            if(wasPathDragged){
-                graph.updatePointOnEdge(edge, 0, new Point2D(mouseEvent.getX(), mouseEvent.getY()));
-                //graph.addPointToEdge(edge, new Point2D(mouseEvent.getX(), mouseEvent.getY()));
-                wasPathDragged = false;
-                mouseEvent.consume();
-                updateCallback.apply();
-            }
-        });
 
 
         setOnMouseClicked(e -> {
@@ -136,26 +174,23 @@ public class EdgeWidget extends Group {
                 graph.removeEdge(edge);
                 updateCallback.apply();
             } else {
-                textArea.setVisible(true);
-                textArea.setText(label.getText());
-                textArea.setPromptText("Edge Label");
-                textArea.requestFocus();
-                textArea.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
-                    if(!newFocus){
-                        textArea.setVisible(false);
-                        graph.setEdgeText(edge, textArea.getText());
-                        updateCallback.apply();
-                    }
-                });
+                if(e.isStillSincePress()){
+                    textArea.setVisible(true);
+                    textArea.setText(label.getText());
+                    textArea.setPromptText("Edge Label");
+                    textArea.requestFocus();
+                    textArea.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
+                        if(!newFocus){
+                            textArea.setVisible(false);
+                            graph.setEdgeText(edge, textArea.getText());
+                            updateCallback.apply();
+                        }
+                    });
+                }
             }
             e.consume();
         });
-        setOnMouseEntered(e -> path.setStrokeWidth(strokeWidthWide));
-        setOnMouseExited(e -> path.setStrokeWidth(strokeWidthDefault));
 
-
-
-        this.getChildren().add(path);
         this.getChildren().add(label);
         this.getChildren().add(textArea);
     }

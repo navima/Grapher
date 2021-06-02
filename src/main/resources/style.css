@@ -11,3 +11,27 @@
     -fx-background-color: #0096c9;
     -fx-text-fill: #ffffff;
 }
+
+.graph-edge-point {
+    -fx-scale-x: 3;
+    -fx-scale-y: 3;
+    -fx-stroke: black;
+    -fx-fill: black;
+}
+
+.graph-edge-point:hover {
+    -fx-scale-x: 4;
+    -fx-scale-y: 4;
+    -fx-stroke: #0096c9;
+    -fx-fill: #0096c9;
+}
+
+.graph-edge {
+    -fx-stroke-width: 2;
+    -fx-stroke-line-cap: round;
+}
+
+.graph-edge:hover {
+    -fx-stroke: #0096c9;
+    -fx-stroke-width: 6;
+}
