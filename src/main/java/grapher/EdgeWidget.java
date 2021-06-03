@@ -4,6 +4,7 @@ import javafx.beans.binding.DoubleBinding;
 import javafx.event.Event;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.shape.*;
@@ -12,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EdgeWidget extends Group {
+public class EdgeWidget extends Parent {
     final @NotNull Edge edge;
     final @NotNull IGraph graph;
     final @NotNull callback updateCallback;
@@ -31,6 +32,10 @@ public class EdgeWidget extends Group {
     private final DoubleBinding layoutCenterY;
     public DoubleBinding getLayoutCenterYBinding() {
         return layoutCenterY;
+    }
+
+    public List<Circle> getPathPoints() {
+        return pathPoints;
     }
 
     /**
@@ -107,10 +112,7 @@ public class EdgeWidget extends Group {
                 elem.setCenterY(event.getY());
                 event.consume();
             });
-            elem.setOnMouseReleased(event -> {
-                if(!event.isStillSincePress())
-                    event.consume();
-            });
+
         }
 
 

@@ -185,6 +185,8 @@ public class Controller {
         for (final var edge : graphWrapper.getEdges()) {
             var temp = new EdgeWidget(edge, graphWrapper, this::updateGraphPaneContents, this);
             gui.graphPane.addChild(temp);
+            for (var pointW : temp.getPathPoints())
+                gui.graphPane.addChild(pointW);
         }
         for (var child : nodeWidgetMap.values()){
             gui.graphPane.addChild(child);

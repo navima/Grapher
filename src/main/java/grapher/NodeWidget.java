@@ -1,19 +1,27 @@
 package grapher;// CHECKSTYLE:OFF
 
+import javafx.beans.Observable;
 import javafx.beans.binding.DoubleBinding;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.css.Styleable;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.AccessibleRole;
 import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public class NodeWidget extends Group {
+public class NodeWidget extends Parent {
+    private static final String DEFAULT_STYLE_CLASS = "graph-node";
     public final @NotNull Node value;
 
     final Button button = new Button();
@@ -53,6 +61,12 @@ public class NodeWidget extends Group {
         return layoutCenterY;
     }
 
+    @Override
+    public javafx.scene.Node getStyleableNode() {
+        return button;
+    }
+
+
     /**
      * Invalidate callback.
      */
@@ -68,8 +82,26 @@ public class NodeWidget extends Group {
     private double dragStartTranslateX = 0.0;
     private double dragStartTranslateY = 0.0;
     private boolean wasDragged = false;
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof NodeWidget other) {
+            return value.equals(other.value);
+        }
+        return super.equals(obj);
+    }
+
     public NodeWidget(@NotNull Node n, final @NotNull callback updateCallback) {
         super();
+        this.getStyleClass().setAll(DEFAULT_STYLE_CLASS);
+        this.getStyleClass().addListener((ListChangeListener<? super String>) change -> {
+            change.next();
+            if (change.wasRemoved())
+                button.getStyleClass().removeAll(change.getRemoved());
+            else if(change.wasAdded())
+                button.getStyleClass().addAll(change.getAddedSubList());
+        });
+
         this.getChildren().add(button);
         this.getChildren().add(textArea);
 
