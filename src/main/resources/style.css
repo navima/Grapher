@@ -35,3 +35,20 @@
     -fx-stroke: #0096c9;
     -fx-stroke-width: 6;
 }
+
+.marquee {
+    -fx-stroke: #0096c9;
+    -fx-fill: rgba(0, 150, 201, 0.2);
+}
+
+.graph-edge-point.selected {
+    -fx-stroke: #0096c9;
+    -fx-fill: #0096c9;
+    -fx-scale-x: 5;
+    -fx-scale-y: 5;
+}
+
+.selected {
+    -fx-background-color: #0096c9;
+    -fx-text-fill: #ffffff;
+}

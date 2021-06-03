@@ -62,7 +62,7 @@ public class Graph implements IMementoable<Graph>{
         {
             var fromNode = nodes.stream().filter(node -> oldEdge.from.id == node.id).findFirst().get();
             var toNode = nodes.stream().filter(node -> oldEdge.to.id   == node.id).findFirst().get();
-            var edge = new Edge(oldEdge.id, fromNode, toNode, oldEdge.text);
+            var edge = new Edge(oldEdge.id, fromNode, toNode, oldEdge.text, new ArrayList<>(oldEdge.points));
             addEdge(edge);
         }
         lastNodeId = graph.lastNodeId;

@@ -43,7 +43,7 @@ public class Edge {
      * @param to {@link Edge#to}
      */
     public Edge(int id, Node from, Node to) {
-        this(id, from, to, null);
+        this(id, from, to, null, new ArrayList<>());
     }
 
     /**
@@ -53,11 +53,12 @@ public class Edge {
      * @param to {@link Edge#to}
      * @param text {@link Edge#text}
      */
-    public Edge(int id, Node from, Node to, String text) {
+    public Edge(int id, Node from, Node to, String text, List<Point2D> points) {
         this.id = id;
         this.from = from;
         this.to = to;
         this.text = text;
+        this.points = points;
     }
 
     @Override

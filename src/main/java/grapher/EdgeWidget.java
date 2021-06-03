@@ -85,6 +85,13 @@ public class EdgeWidget extends Group {
             pathPoints.add(c);
             c.setCenterX(edge.points.get(i).getX());
             c.setCenterY(edge.points.get(i).getY());
+
+            int finalI = i;
+            c.setOnMouseReleased(event -> {
+                if(!event.isStillSincePress())
+                    graph.updatePointOnEdge(edge, finalI, new Point2D(event.getX(), event.getY()));
+                event.consume();
+            });
         }
         Circle cN = new Circle();
         cN.centerXProperty().bind(toWidget.getLayoutCenterXBinding());

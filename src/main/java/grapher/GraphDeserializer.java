@@ -69,7 +69,7 @@ public class GraphDeserializer extends StdDeserializer<Graph> {
                 final var toId = (int) e2.get("to");
                 final var from = parsedNodeSet.stream().filter(node -> node.id == fromId).findFirst().get();
                 final var to = parsedNodeSet.stream().filter(node -> node.id == toId).findFirst().get();
-                final var edgeEdge = new Edge(id, from, to, text);
+                final var edgeEdge = new Edge(id, from, to, text, new ArrayList<>());
                 if(e2.containsKey("points")){
                     final var points = (ArrayList<LinkedHashMap<String, Object>>) e2.get("points");
                     final var parsedPoints = new ArrayList<Point2D>();
