@@ -18,7 +18,7 @@ public class EdgeWidget extends Parent {
     final @NotNull IGraph graph;
     final @NotNull callback updateCallback;
     final List<Path> paths = new ArrayList<>();
-    final List<Circle> pathPoints = new ArrayList<>();
+    final List<EdgePointWidget> pathPoints = new ArrayList<>();
     final Label label = new Label();
     final TextArea textArea = new TextArea();
     final NodeWidget fromWidget;
@@ -34,7 +34,7 @@ public class EdgeWidget extends Parent {
         return layoutCenterY;
     }
 
-    public List<Circle> getPathPoints() {
+    public List<EdgePointWidget> getPathPoints() {
         return pathPoints;
     }
 
@@ -81,38 +81,24 @@ public class EdgeWidget extends Parent {
 
 
         // Manipulating points
-        Circle c0 = new Circle();
-        c0.centerXProperty().bind(fromWidget.getLayoutCenterXBinding());
-        c0.centerYProperty().bind(fromWidget.getLayoutCenterYBinding());
+        EdgePointWidget c0 = new EdgePointWidget(edge, -1);
+        c0.layoutXProperty().bind(fromWidget.getLayoutCenterXBinding());
+        c0.layoutYProperty().bind(fromWidget.getLayoutCenterYBinding());
         pathPoints.add(c0);
         for (int i = 0; i < edge.points.size(); i++){
-            Circle c = new Circle();
+            EdgePointWidget c = new EdgePointWidget(edge, i);
             pathPoints.add(c);
-            c.setCenterX(edge.points.get(i).getX());
-            c.setCenterY(edge.points.get(i).getY());
-
-            int finalI = i;
-            c.setOnMouseReleased(event -> {
-                if(!event.isStillSincePress())
-                    graph.updatePointOnEdge(edge, finalI, new Point2D(event.getX(), event.getY()));
-                event.consume();
-            });
+            c.setLayoutX(edge.points.get(i).getX());
+            c.setLayoutY(edge.points.get(i).getY());
         }
-        Circle cN = new Circle();
-        cN.centerXProperty().bind(toWidget.getLayoutCenterXBinding());
-        cN.centerYProperty().bind(toWidget.getLayoutCenterYBinding());
+        EdgePointWidget cN = new EdgePointWidget(edge, -1);
+        cN.layoutXProperty().bind(toWidget.getLayoutCenterXBinding());
+        cN.layoutYProperty().bind(toWidget.getLayoutCenterYBinding());
         pathPoints.add(cN);
         for (var elem : pathPoints){
             //style
             elem.setRadius(1);
             elem.getStyleClass().add("graph-edge-point");
-            elem.setOnMousePressed(Event::consume);
-            elem.setOnMouseDragged(event -> {
-                elem.setCenterX(event.getX());
-                elem.setCenterY(event.getY());
-                event.consume();
-            });
-
         }
 
 
@@ -124,11 +110,11 @@ public class EdgeWidget extends Parent {
             paths.add(path);
 
             MoveTo moveToStart = new MoveTo();
-            moveToStart.xProperty().bind(currPoint.centerXProperty());
-            moveToStart.yProperty().bind(currPoint.centerYProperty());
+            moveToStart.xProperty().bind(currPoint.layoutXProperty());
+            moveToStart.yProperty().bind(currPoint.layoutYProperty());
             LineTo lineToNext = new LineTo();
-            lineToNext.xProperty().bind(nextPoint.centerXProperty());
-            lineToNext.yProperty().bind(nextPoint.centerYProperty());
+            lineToNext.xProperty().bind(nextPoint.layoutXProperty());
+            lineToNext.yProperty().bind(nextPoint.layoutYProperty());
             path.getElements().addAll(moveToStart, lineToNext);
 
             path.getStyleClass().add("graph-edge");

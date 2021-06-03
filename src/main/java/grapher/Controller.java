@@ -185,11 +185,19 @@ public class Controller {
         for (final var edge : graphWrapper.getEdges()) {
             var temp = new EdgeWidget(edge, graphWrapper, this::updateGraphPaneContents, this);
             gui.graphPane.addChild(temp);
-            for (var pointW : temp.getPathPoints())
-                gui.graphPane.addChild(pointW);
+            for (var pointW : temp.getPathPoints()){
+                var pointSlot = gui.graphPane.addChild(pointW);
+                pointSlot.setOnMoved(actionEvent -> {
+                    graphWrapper.updatePointOnEdge(pointW.parentEdge, pointW.i, new Point2D(pointW.getLayoutX(), pointW.getLayoutY()));
+                });
+            }
+
         }
         for (var child : nodeWidgetMap.values()){
-            gui.graphPane.addChild(child);
+            var childSlot = gui.graphPane.addChild(child);
+            childSlot.setOnMoved(actionEvent -> {
+                graphWrapper.setNodeTranslate(child.value, child.getLayoutX(), child.getLayoutY());
+            });
         }
     }
 }

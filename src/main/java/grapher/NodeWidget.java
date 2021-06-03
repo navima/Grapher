@@ -10,13 +10,11 @@ import javafx.event.EventHandler;
 import javafx.scene.AccessibleRole;
 import javafx.scene.Group;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -24,7 +22,7 @@ public class NodeWidget extends Parent {
     private static final String DEFAULT_STYLE_CLASS = "graph-node";
     public final @NotNull Node value;
 
-    final Button button = new Button();
+    final Label label = new Label();
     final TextArea textArea = new TextArea();
 
     private EventHandler<ActionEvent> onActionHandler;
@@ -42,7 +40,7 @@ public class NodeWidget extends Parent {
         }
         @Override
         protected double computeValue() {
-            return getLayoutX()+button.getWidth()/2;
+            return getLayoutX()+label.getBoundsInLocal().getWidth()/2;
         }
     };
     public DoubleBinding getLayoutCenterXBinding() {
@@ -54,7 +52,7 @@ public class NodeWidget extends Parent {
         }
         @Override
         protected double computeValue() {
-            return getLayoutY()+button.getHeight()/2;
+            return getLayoutY()+label.getBoundsInLocal().getHeight()/2;
         }
     };
     public DoubleBinding getLayoutCenterYBinding() {
@@ -63,7 +61,7 @@ public class NodeWidget extends Parent {
 
     @Override
     public javafx.scene.Node getStyleableNode() {
-        return button;
+        return label;
     }
 
 
@@ -76,12 +74,6 @@ public class NodeWidget extends Parent {
          * Invalidate method.
          */
         void apply(); }
-
-    private double dragStartMouseX = 0.0;
-    private double dragStartMouseY = 0.0;
-    private double dragStartTranslateX = 0.0;
-    private double dragStartTranslateY = 0.0;
-    private boolean wasDragged = false;
 
     @Override
     public boolean equals(Object obj) {
@@ -97,19 +89,21 @@ public class NodeWidget extends Parent {
         this.getStyleClass().addListener((ListChangeListener<? super String>) change -> {
             change.next();
             if (change.wasRemoved())
-                button.getStyleClass().removeAll(change.getRemoved());
+                label.getStyleClass().removeAll(change.getRemoved());
             else if(change.wasAdded())
-                button.getStyleClass().addAll(change.getAddedSubList());
+                label.getStyleClass().addAll(change.getAddedSubList());
         });
 
-        this.getChildren().add(button);
+        //this.getChildren().add(button);
         this.getChildren().add(textArea);
+        this.getChildren().add(label);
 
         textArea.setVisible(false);
 
-        button.setShape(NodeShapeFactory.build(n.shape));
+        label.setShape(NodeShapeFactory.build(n.shape));
+        label.getStyleClass().add("button");
 
-        button.setText(n.text);
+        label.setText(n.text);
         value = n;
         setLayoutX(n.x);
         setLayoutY(n.y);
@@ -124,49 +118,22 @@ public class NodeWidget extends Parent {
             });
             contextMenu.getItems().add(contextMenuItem);
         }
-        button.setContextMenu(contextMenu);
-        button.setOnMousePressed(e -> {
-            dragStartMouseX = e.getSceneX();
-            dragStartMouseY = e.getSceneY();
-            dragStartTranslateX = getLayoutX();
-            dragStartTranslateY = getLayoutY();
-            e.consume();
-        });
-        button.setOnMouseDragged(e -> {
-            setLayoutX(dragStartTranslateX+e.getSceneX()-dragStartMouseX);
-            setLayoutY(dragStartTranslateY+e.getSceneY()-dragStartMouseY);
-            wasDragged = true;
-            layoutCenterX.invalidate();
-            layoutCenterY.invalidate();
-            e.consume();
-            //System.out.println("HELP! IM BEING DRAGGED!!");
-        });
-        button.setOnMouseReleased(e -> {
-            if (wasDragged) {
-                onDragEndedHandler.accept(getLayoutX(), getLayoutY());
-                //graphWrapper.setNodeTranslate(id, getLayoutX(), getLayoutY());
-                updateCallback.apply();
-                wasDragged = false;
-            }
-        });
-        button.setOnAction(e -> {
-            onActionHandler.handle(e);
-            if (!e.isConsumed()) {
-                textArea.setMaxSize(button.getWidth(),button.getHeight());
-                textArea.setVisible(true);
-                textArea.setText(button.getText());
-                textArea.setPromptText("Node Label");
-                textArea.requestFocus();
-                textArea.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
-                    if(!newFocus){
-                        textArea.setVisible(false);
-                        onTextChangedHandler.accept(textArea.getText());
-                        //graphWrapper.setNodeText(id, textArea.getText());
-                        updateCallback.apply();
-                        //button.setText(textArea.getText());
-                    }
-                });
-            }
+        label.setContextMenu(contextMenu);
+        label.setOnMouseClicked(e -> {
+            textArea.setMaxSize(label.getWidth(), label.getHeight());
+            textArea.setVisible(true);
+            textArea.setText(label.getText());
+            textArea.setPromptText("Node Label");
+            textArea.requestFocus();
+            textArea.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
+                if(!newFocus){
+                    textArea.setVisible(false);
+                    onTextChangedHandler.accept(textArea.getText());
+                    //graphWrapper.setNodeText(id, textArea.getText());
+                    updateCallback.apply();
+                    //button.setText(textArea.getText());
+                }
+            });
         });
     }
 }
