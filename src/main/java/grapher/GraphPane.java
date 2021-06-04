@@ -27,6 +27,8 @@ public class GraphPane extends Region {
 
     private double marqueeStartX;
     private double marqueeStartY;
+    
+    private double zoomMultiplier = 0.1;
 
     public final Pane g = new Pane();
     public final Rectangle marquee = new Rectangle();
@@ -127,10 +129,22 @@ public class GraphPane extends Region {
                 e.consume();
             }
         });
-        //setOnMouseReleased(e -> isPanning = false);
         setOnScroll(scrollEvent -> {
-            g.setScaleX(scrollEvent.getDeltaY()/scrollEvent.getMultiplierY()*0.1+g.getScaleX());
-            g.setScaleY(scrollEvent.getDeltaY()/scrollEvent.getMultiplierY()*0.1+g.getScaleY());
+            var ctx = getChildTranslateX();
+            var cty = getChildTranslateY();
+            var glx = g.getLayoutX();
+            var gly = g.getLayoutY();
+            var gsx = g.getScaleX();
+            var gsy = g.getScaleY();
+            var mx = scrollEvent.getX();
+            var my = scrollEvent.getY();
+            setChildTranslate(
+                    ctx+(glx-mx)/gsx,
+                    cty+(gly-my)/gsy);
+            g.setLayoutX(scrollEvent.getX());
+            g.setLayoutY(scrollEvent.getY());
+            g.setScaleX(scrollEvent.getDeltaY()/scrollEvent.getMultiplierY()*getZoomMultiplier()+g.getScaleX());
+            g.setScaleY(scrollEvent.getDeltaY()/scrollEvent.getMultiplierY()*getZoomMultiplier()+g.getScaleY());
         });
     }
 
@@ -153,6 +167,14 @@ public class GraphPane extends Region {
         childTranslateX = x;
         childTranslateY = y;
     }
+
+    public double getZoomMultiplier() {
+        return zoomMultiplier;
+    }
+    public void setZoomMultiplier(double zoomMultiplier) {
+        this.zoomMultiplier = zoomMultiplier;
+    }
+
 
     public static class GraphPaneSlot extends Parent {
         private boolean draggable = true;
