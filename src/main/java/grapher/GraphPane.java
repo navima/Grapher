@@ -1,32 +1,22 @@
 package grapher;// CHECKSTYLE:OFF
 
-import com.sun.javafx.collections.TrackableObservableList;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ModifiableObservableListBase;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
-import javafx.scene.transform.NonInvertibleTransformException;
-import javafx.scene.transform.Transform;
-import javafx.scene.transform.Translate;
 import org.jetbrains.annotations.NotNull;
-import org.tinylog.Logger;
 
-import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-public class GraphPane extends Pane {
+public class GraphPane extends Region {
     private double dragStartMouseX = 0.0;
     private double dragStartMouseY = 0.0;
     private double dragStartTranslateX = 0.0;
@@ -38,12 +28,12 @@ public class GraphPane extends Pane {
     private double marqueeStartX;
     private double marqueeStartY;
 
-    public final Group g = new Group();
+    public final Pane g = new Pane();
     public final Rectangle marquee = new Rectangle();
-    public final List<Node> selectionList = new ArrayList<>();
-    public final ObservableList<Node> selection = new ModifiableObservableListBase<Node>() {
+    public final List<GraphPaneSlot> selectionList = new ArrayList<>();
+    public final ObservableList<GraphPaneSlot> selection = new ModifiableObservableListBase<>() {
         @Override
-        public Node get(int i) {
+        public GraphPaneSlot get(int i) {
             return selectionList.get(i);
         }
 
@@ -53,14 +43,14 @@ public class GraphPane extends Pane {
         }
 
         @Override
-        protected void doAdd(int i, Node node) {
+        protected void doAdd(int i, GraphPaneSlot node) {
             selectionList.add(i, node);
             node.getStyleClass().add("selected");
         }
 
         @Override
-        protected Node doSet(int i, Node node) {
-            Node n = selectionList.get(i);
+        protected GraphPaneSlot doSet(int i, GraphPaneSlot node) {
+            var n = selectionList.get(i);
             n.getStyleClass().remove("selected");
             selectionList.set(i, node);
             node.getStyleClass().add("selected");
@@ -68,8 +58,8 @@ public class GraphPane extends Pane {
         }
 
         @Override
-        protected Node doRemove(int i) {
-            Node n = selectionList.get(i);
+        protected GraphPaneSlot doRemove(int i) {
+            var n = selectionList.get(i);
             selectionList.remove(i);
             n.getStyleClass().remove("selected");
             return n;
@@ -77,8 +67,10 @@ public class GraphPane extends Pane {
     };
 
     public GraphPane() {
-        g.getStyleClass().add("menubar");
+        getStyleClass().add("graph-pane-outer");
+        g.getStyleClass().add("graph-pane-inner");
         getChildren().add(g);
+        g.setPrefSize(150, 150);
 
         marquee.getStyleClass().add("marquee");
 
@@ -94,14 +86,15 @@ public class GraphPane extends Pane {
                 marquee.setWidth(xmax-xmin);
                 marquee.setHeight(ymax-ymin);
                 selection.clear();
-                for(var child : g.getChildren()){
-                    if(marquee.getBoundsInLocal().intersects(child.getBoundsInParent()))
-                        selection.add(child);
+                var gTrans = g.getLocalToParentTransform();
+                for (var child : g.getChildren()){
+                    if (marquee.getBoundsInLocal().intersects(gTrans.transform(child.getBoundsInParent())))
+                        selection.add((GraphPaneSlot) child);
                 }
                 e.consume();
             }
             else if(e.isSecondaryButtonDown()){
-                setChildTranslate(e.getX()-dragStartMouseX+dragStartTranslateX, e.getY()-dragStartMouseY+dragStartTranslateY);
+                setChildTranslate(e.getSceneX()-dragStartMouseX+dragStartTranslateX, e.getSceneY()-dragStartMouseY+dragStartTranslateY);
                 e.consume();
             }
         });
@@ -110,8 +103,6 @@ public class GraphPane extends Pane {
                 getChildren().remove(marquee);
                 selection.clear();
             }
-            System.out.println("selected: ");
-            selection.forEach(System.out::println);
             getChildren().remove(marquee);
             requestFocus();
             e.consume();
@@ -131,8 +122,8 @@ public class GraphPane extends Pane {
             else if (e.isSecondaryButtonDown()){
                 dragStartTranslateX = childTranslateX;
                 dragStartTranslateY = childTranslateY;
-                dragStartMouseX = e.getX();
-                dragStartMouseY = e.getY();
+                dragStartMouseX = e.getSceneX();
+                dragStartMouseY = e.getSceneY();
                 e.consume();
             }
         });
@@ -154,16 +145,25 @@ public class GraphPane extends Pane {
 
     public final double getChildTranslateX(){return childTranslateX;}
     public final double getChildTranslateY(){return childTranslateY;}
-    public final void setChildTranslateX(double x){for (final var elem : g.getChildren()) elem.setTranslateX(x); childTranslateX = x;}
-    public final void setChildTranslateY(double y){for (final var elem : g.getChildren()) elem.setTranslateY(y); childTranslateY = y;}
-    public final void setChildTranslate(double x,double y){for (final var elem : g.getChildren()) {elem.setTranslateX(x);elem.setTranslateY(y);} childTranslateX = x; childTranslateY = y;}
+    public final void setChildTranslate(double x,double y) {
+        for (final var elem : g.getChildren()) {
+            ((GraphPaneSlot)elem).value.setTranslateX(x);
+            ((GraphPaneSlot)elem).value.setTranslateY(y);
+        }
+        childTranslateX = x;
+        childTranslateY = y;
+    }
 
     public static class GraphPaneSlot extends Parent {
+        private boolean draggable = true;
         public final GraphPane parent;
+        private final Node value;
+        private EventHandler<ActionEvent> onMoved;
+        private EventHandler<ActionEvent> onModified;
         private double dragStartMouseX = 0.0;
         private double dragStartMouseY = 0.0;
-        private double dragStartTranslateX = 0.0;
-        private double dragStartTranslateY = 0.0;
+        private double dragStartLayoutX = 0.0;
+        private double dragStartLayoutY = 0.0;
         public GraphPaneSlot(GraphPane parent, Node node) {
             this.parent = parent;
             value = node;
@@ -176,33 +176,44 @@ public class GraphPane extends Pane {
                     value.getStyleClass().addAll(change.getAddedSubList());
             });
             setOnMousePressed(e -> {
-                dragStartMouseX = e.getX();
-                dragStartMouseY = e.getY();
-                dragStartTranslateX = value.getLayoutX();
-                dragStartTranslateY = value.getLayoutY();
-                System.out.println("pressed");
-                e.consume();
-            });
-            setOnMouseDragged(e -> {
-                value.setLayoutX(dragStartTranslateX+e.getX()-dragStartMouseX);
-                value.setLayoutY(dragStartTranslateY+e.getY()-dragStartMouseY);
-                System.out.println("dragged");
-                e.consume();
-                //System.out.println("HELP! IM BEING DRAGGED!!");
-            });
-            setOnMouseReleased(e -> {
-                if (!e.isStillSincePress()){
-                    if(!(getOnMoved() == null))
-                        getOnMoved().handle(new ActionEvent());
-                    System.out.println("released");
+                if(draggable){
+                    if(!parent.selection.contains(this))
+                        parent.selection.add(this);
+                    parent.selection.forEach(elem -> elem.recordMousePressed(e));
                     e.consume();
                 }
             });
-
+            setOnMouseDragged(e -> {
+                if(draggable) {
+                    parent.selection.stream().filter(GraphPaneSlot::isDraggable).forEach(elem -> {
+                        elem.value.setLayoutX(elem.dragStartLayoutX +e.getX()-dragStartMouseX);
+                        elem.value.setLayoutY(elem.dragStartLayoutY +e.getY()-dragStartMouseY);
+                    });
+                    e.consume();
+                    //System.out.println("HELP! IM BEING DRAGGED!!");
+                }
+            });
+            setOnMouseReleased(e -> {
+                if (draggable) {
+                    if (!e.isStillSincePress()){
+                        var temp = new ArrayList<>(parent.selection);
+                        temp.forEach(elem -> {
+                            if(!(elem.getOnMoved() == null))
+                                elem.getOnMoved().handle(new ActionEvent());
+                        });
+                        e.consume();
+                    }
+                }
+            });
         }
-        private final Node value;
-        private EventHandler<ActionEvent> onMoved;
-        private EventHandler<ActionEvent> onModified;
+
+        private void recordMousePressed(javafx.scene.input.MouseEvent e) {
+            dragStartMouseX = e.getX();
+            dragStartMouseY = e.getY();
+            dragStartLayoutX = value.getLayoutX();
+            dragStartLayoutY = value.getLayoutY();
+        }
+
 
         public Node getValue() {
             return value;
@@ -218,6 +229,14 @@ public class GraphPane extends Pane {
         }
         public void setOnModified(EventHandler<ActionEvent> onModified) {
             this.onModified = onModified;
+        }
+
+        public boolean isDraggable() {
+            return draggable;
+        }
+
+        public void setDraggable(boolean draggable) {
+            this.draggable = draggable;
         }
     }
 }

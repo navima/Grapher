@@ -82,6 +82,7 @@ public class EdgeWidget extends Parent {
 
         // Manipulating points
         EdgePointWidget c0 = new EdgePointWidget(edge, -1);
+        c0.setMouseTransparent(true);
         c0.layoutXProperty().bind(fromWidget.getLayoutCenterXBinding());
         c0.layoutYProperty().bind(fromWidget.getLayoutCenterYBinding());
         pathPoints.add(c0);
@@ -92,6 +93,7 @@ public class EdgeWidget extends Parent {
             c.setLayoutY(edge.points.get(i).getY());
         }
         EdgePointWidget cN = new EdgePointWidget(edge, -1);
+        cN.setMouseTransparent(true);
         cN.layoutXProperty().bind(toWidget.getLayoutCenterXBinding());
         cN.layoutYProperty().bind(toWidget.getLayoutCenterYBinding());
         pathPoints.add(cN);

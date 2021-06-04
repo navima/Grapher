@@ -183,13 +183,19 @@ public class Controller {
         dummy2.applyCss();
         dummy2.layout();
         for (final var edge : graphWrapper.getEdges()) {
-            var temp = new EdgeWidget(edge, graphWrapper, this::updateGraphPaneContents, this);
-            gui.graphPane.addChild(temp);
-            for (var pointW : temp.getPathPoints()){
-                var pointSlot = gui.graphPane.addChild(pointW);
-                pointSlot.setOnMoved(actionEvent -> {
-                    graphWrapper.updatePointOnEdge(pointW.parentEdge, pointW.i, new Point2D(pointW.getLayoutX(), pointW.getLayoutY()));
-                });
+            var edgeWidget = new EdgeWidget(edge, graphWrapper, this::updateGraphPaneContents, this);
+            var edgeSlot = gui.graphPane.addChild(edgeWidget);
+            edgeSlot.setDraggable(false);
+            for (var pointWidget : edgeWidget.getPathPoints()){
+                var pointSlot = gui.graphPane.addChild(pointWidget);
+                if ( pointWidget.i != -1) {
+                    pointSlot.setOnMoved(actionEvent -> {
+                        graphWrapper.updatePointOnEdge(pointWidget.parentEdge, pointWidget.i, new Point2D(pointWidget.getLayoutX(), pointWidget.getLayoutY()));
+                        updateGraphPaneContents();
+                    });
+                }else{
+                    pointSlot.setDraggable(false);
+                }
             }
 
         }
@@ -197,6 +203,7 @@ public class Controller {
             var childSlot = gui.graphPane.addChild(child);
             childSlot.setOnMoved(actionEvent -> {
                 graphWrapper.setNodeTranslate(child.value, child.getLayoutX(), child.getLayoutY());
+                updateGraphPaneContents();
             });
         }
     }
