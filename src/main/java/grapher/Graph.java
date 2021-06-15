@@ -152,7 +152,7 @@ public class Graph implements IMementoable<Graph>{
     public @NotNull String toString() {
         return "Graph{" +
                 "nodes=" + nodes +
-                ", edges=" + edges.stream().map(edge -> edge.id).collect(Collectors.toList()).toString() +
+                ", edges=" + edges.stream().map(edge -> edge.id).collect(Collectors.toList()) +
                 ", lastNodeId=" + lastNodeId +
                 ", lastEdgeId=" + lastEdgeId +
                 '}';

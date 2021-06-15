@@ -1,18 +1,12 @@
 package grapher;// CHECKSTYLE:OFF
 
-import javafx.beans.Observable;
 import javafx.beans.binding.DoubleBinding;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
-import javafx.css.Styleable;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.AccessibleRole;
-import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
+import javafx.scene.input.MouseButton;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiConsumer;
@@ -27,8 +21,6 @@ public class NodeWidget extends Parent {
 
     private EventHandler<ActionEvent> onActionHandler;
     public void setOnAction(EventHandler<ActionEvent> onAction) {onActionHandler = onAction;}
-    private BiConsumer<Double, Double> onDragEndedHandler;
-    public void setOnDragEnded(BiConsumer<Double, Double> onDragEnded) {onDragEndedHandler = onDragEnded;}
     private Consumer<String> onTextChangedHandler;
     public void setOnTextChanged(Consumer<String> onTextChanged) {onTextChangedHandler = onTextChanged;}
     private Consumer<eNodeShape> onNodeShapeChangedHandler;
@@ -83,6 +75,11 @@ public class NodeWidget extends Parent {
         return super.equals(obj);
     }
 
+    @Override
+    public String toString() {
+        return value.text;
+    }
+
     public NodeWidget(@NotNull Node n, final @NotNull callback updateCallback) {
         super();
         this.getStyleClass().setAll(DEFAULT_STYLE_CLASS);
@@ -95,8 +92,8 @@ public class NodeWidget extends Parent {
         });
 
         //this.getChildren().add(button);
-        this.getChildren().add(textArea);
         this.getChildren().add(label);
+        this.getChildren().add(textArea);
 
         textArea.setVisible(false);
 
@@ -120,20 +117,26 @@ public class NodeWidget extends Parent {
         }
         label.setContextMenu(contextMenu);
         label.setOnMouseClicked(e -> {
-            textArea.setMaxSize(label.getWidth(), label.getHeight());
-            textArea.setVisible(true);
-            textArea.setText(label.getText());
-            textArea.setPromptText("Node Label");
-            textArea.requestFocus();
-            textArea.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
-                if(!newFocus){
-                    textArea.setVisible(false);
-                    onTextChangedHandler.accept(textArea.getText());
-                    //graphWrapper.setNodeText(id, textArea.getText());
-                    updateCallback.apply();
-                    //button.setText(textArea.getText());
+            var ae = new ActionEvent();
+            onActionHandler.handle(ae);
+            if (!ae.isConsumed()) {
+                if (e.getButton().equals(MouseButton.PRIMARY)) {
+                    e.consume();
+                    textArea.setMinSize(label.getWidth(), label.getHeight());
+                    textArea.setMaxSize(label.getWidth(), label.getHeight());
+                    textArea.setVisible(true);
+                    textArea.setText(label.getText());
+                    textArea.setPromptText("Node Label");
+                    textArea.requestFocus();
+                    textArea.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
+                        if(!newFocus){
+                            textArea.setVisible(false);
+                            onTextChangedHandler.accept(textArea.getText());
+                            updateCallback.apply();
+                        }
+                    });
                 }
-            });
+            }
         });
     }
 }

@@ -145,18 +145,20 @@ public class Controller {
 
     final HashMap<Node, NodeWidget> nodeWidgetMap = new HashMap<>();
     void updateGraphPaneContents() {
+        var oldSelection = gui.graphPane.getSelection().stream().map(GraphPane.GraphPaneSlot::getValue).toList();
         gui.graphPane.clear();
         nodeWidgetMap.clear();
         Group dummy2 = new Group();
         new Scene(dummy2);
         for (final var node : graphWrapper.getNodes()) {
-            var temp = new NodeWidget(node, this::updateGraphPaneContents);
-            temp.setOnAction( actionEvent -> {
+            final var nodeWidget = new NodeWidget(node, this::updateGraphPaneContents);
+            nodeWidget.setOnAction( actionEvent -> {
                 if (actionMode == eActionMode.REMOVE) {
                     actionEvent.consume();
                     graphWrapper.removeNode(node);
                     updateGraphPaneContents();
-                } else if (actionMode == eActionMode.EDGE_ADD) {
+                }
+                else if (actionMode == eActionMode.EDGE_ADD) {
                     actionEvent.consume();
                     if (edgeBeingAdded) {
                         try {
@@ -169,25 +171,25 @@ public class Controller {
                         updateGraphPaneContents();
                     } else {
                         edgeBeingAdded = true;
-                        edgeStartNode = temp;
+                        edgeStartNode = nodeWidget;
                     }
                 }
             });
-            temp.setOnDragEnded((aDouble, aDouble2) -> graphWrapper.setNodeTranslate(node, aDouble, aDouble2));
-            temp.setOnNodeShapeChanged(nodeShape -> graphWrapper.setNodeShape(node, nodeShape));
-            temp.setOnTextChanged(s -> graphWrapper.setNodeText(node, s));
-            nodeWidgetMap.put(temp.value, temp);
-            dummy2.getChildren().add(temp);
+            nodeWidget.setOnNodeShapeChanged(nodeShape -> graphWrapper.setNodeShape(node, nodeShape));
+            nodeWidget.setOnTextChanged(s -> graphWrapper.setNodeText(node, s));
+            nodeWidgetMap.put(nodeWidget.value, nodeWidget);
+            dummy2.getChildren().add(nodeWidget);
         }
         dummy2.layout();
         dummy2.applyCss();
         dummy2.layout();
         for (final var edge : graphWrapper.getEdges()) {
-            var edgeWidget = new EdgeWidget(edge, graphWrapper, this::updateGraphPaneContents, this);
-            var edgeSlot = gui.graphPane.addChild(edgeWidget);
+            final var edgeWidget = new EdgeWidget(edge, graphWrapper, this::updateGraphPaneContents, this);
+            final var edgeSlot = gui.graphPane.addChild(edgeWidget);
             edgeSlot.setDraggable(false);
             for (var pointWidget : edgeWidget.getPathPoints()){
-                var pointSlot = gui.graphPane.addChild(pointWidget);
+                final var pointSlot = gui.graphPane.addChild(pointWidget);
+                oldSelection.stream().filter(pointWidget::equals).findFirst().ifPresent(node -> gui.graphPane.selectAlso(pointSlot));
                 if ( pointWidget.i != -1) {
                     pointSlot.setOnMoved(actionEvent -> {
                         graphWrapper.updatePointOnEdge(pointWidget.parentEdge, pointWidget.i, new Point2D(pointWidget.getLayoutX(), pointWidget.getLayoutY()));
@@ -197,12 +199,12 @@ public class Controller {
                     pointSlot.setDraggable(false);
                 }
             }
-
         }
-        for (var child : nodeWidgetMap.values()){
-            var childSlot = gui.graphPane.addChild(child);
-            childSlot.setOnMoved(actionEvent -> {
-                graphWrapper.setNodeTranslate(child.value, child.getLayoutX(), child.getLayoutY());
+        for (var nodeWidget : nodeWidgetMap.values()){
+            final var nodeSlot = gui.graphPane.addChild(nodeWidget);
+            oldSelection.stream().filter(nodeWidget::equals).findFirst().ifPresent(node -> gui.graphPane.selectAlso(nodeSlot));
+            nodeSlot.setOnMoved(actionEvent -> {
+                graphWrapper.setNodeTranslate(nodeWidget.value, nodeWidget.getLayoutX(), nodeWidget.getLayoutY());
                 updateGraphPaneContents();
             });
         }

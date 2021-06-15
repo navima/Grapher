@@ -14,8 +14,13 @@ import javafx.scene.shape.Rectangle;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+/**
+ * GraphPane is a zoomable, pannable pane that lets its children be moved by the user.
+ * Is preserves child Layout, panning is stored in Translate.
+ */
 public class GraphPane extends Region {
     private double dragStartMouseX = 0.0;
     private double dragStartMouseY = 0.0;
@@ -27,7 +32,7 @@ public class GraphPane extends Region {
 
     private double marqueeStartX;
     private double marqueeStartY;
-    
+
     private double zoomMultiplier = 0.1;
 
     public final Pane g = new Pane();
@@ -73,6 +78,7 @@ public class GraphPane extends Region {
         g.getStyleClass().add("graph-pane-inner");
         getChildren().add(g);
         g.setPrefSize(150, 150);
+        marquee.setMouseTransparent(true);
 
         marquee.getStyleClass().add("marquee");
 
@@ -175,6 +181,22 @@ public class GraphPane extends Region {
         this.zoomMultiplier = zoomMultiplier;
     }
 
+    public final List<GraphPaneSlot> getSelection() {return Collections.unmodifiableList(selectionList);}
+    public final void deselectAll() {selection.clear();}
+    public final void select(GraphPaneSlot node) {
+        if (!selection.contains(node)) {
+            deselectAll();
+            selection.add(node);
+        }
+    }
+    public final void selectAlso(GraphPaneSlot node) {
+        if (!selection.contains(node)) {
+            selection.add(node);
+        }
+    }
+    public final void deselect(GraphPaneSlot node) {
+        selection.remove(node);
+    }
 
     public static class GraphPaneSlot extends Parent {
         private boolean draggable = true;
@@ -199,8 +221,7 @@ public class GraphPane extends Region {
             });
             setOnMousePressed(e -> {
                 if(draggable){
-                    if(!parent.selection.contains(this))
-                        parent.selection.add(this);
+                    select();
                     parent.selection.forEach(elem -> elem.recordMousePressed(e));
                     e.consume();
                 }
@@ -252,6 +273,14 @@ public class GraphPane extends Region {
         public void setOnModified(EventHandler<ActionEvent> onModified) {
             this.onModified = onModified;
         }
+
+        public void select() {
+            parent.select(this);
+        }
+        public void deselect() {
+            parent.deselect(this);
+        }
+        public boolean isSelected() {return parent.selection.contains(this);}
 
         public boolean isDraggable() {
             return draggable;

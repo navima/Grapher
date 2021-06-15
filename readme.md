@@ -43,6 +43,6 @@ This is a rudimentary graph-making JFX application.
         {"id": 3, "from": 1, "to": 4, "text": "Found"},
         {"id": 4, "from": 4, "to": 3, "text": ""},
         {"id": 5, "from": 2, "to": 3, "text": ""}
-    ],
+    ]
 }
 ```

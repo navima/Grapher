@@ -1,9 +1,8 @@
 package grapher;// CHECKSTYLE:OFF
 
 import javafx.beans.binding.DoubleBinding;
-import javafx.event.Event;
 import javafx.geometry.Point2D;
-import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -64,7 +63,8 @@ public class EdgeWidget extends Parent {
             }
             @Override
             protected double computeValue() {
-                return (fromWidget.getLayoutCenterXBinding().get()+toWidget.getLayoutCenterXBinding().get())/2;
+                return getPathPoints().stream().mapToDouble(Node::getLayoutX).average().getAsDouble();
+                //return (fromWidget.getLayoutCenterXBinding().get()+toWidget.getLayoutCenterXBinding().get())/2;
             }
         };
         layoutCenterY = new DoubleBinding() {
@@ -75,7 +75,8 @@ public class EdgeWidget extends Parent {
             }
             @Override
             protected double computeValue() {
-                return (fromWidget.getLayoutCenterYBinding().get()+toWidget.getLayoutCenterYBinding().get())/2;
+                return getPathPoints().stream().mapToDouble(Node::getLayoutY).average().getAsDouble();
+                //return (fromWidget.getLayoutCenterYBinding().get()+toWidget.getLayoutCenterYBinding().get())/2;
             }
         };
 
@@ -99,8 +100,6 @@ public class EdgeWidget extends Parent {
         pathPoints.add(cN);
         for (var elem : pathPoints){
             //style
-            elem.setRadius(1);
-            elem.getStyleClass().add("graph-edge-point");
         }
 
 

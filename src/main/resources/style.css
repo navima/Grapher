@@ -1,6 +1,15 @@
 .menubar {
+    /*-fx-stroke: #000;*/
     /*-fx-border-color: black;*/
-    -fx-fill: #F0F0F0;
+    /*-fx-fill: #F000F0;*/
+}
+.graph-pane-outer {
+    /*-fx-border-color: black;*/
+    /*-fx-background-color: #F000F0;*/
+}
+.graph-pane-inner {
+    /*-fx-border-color: black;*/
+    /*-fx-background-color: #00F000;*/
 }
 
 .button {
