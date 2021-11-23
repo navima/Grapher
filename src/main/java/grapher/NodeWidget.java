@@ -7,8 +7,10 @@ import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
+import javafx.scene.text.Text;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -96,11 +98,16 @@ public class NodeWidget extends Parent {
         this.getChildren().add(textArea);
 
         textArea.setVisible(false);
+        textArea.setPromptText("Node Label");
+        textArea.prefWidthProperty().bind(label.widthProperty());
+        textArea.prefHeightProperty().bind(label.heightProperty());
+        textArea.setText(n.text);
+
+        label.textProperty().bind(textArea.textProperty());
+
 
         label.setShape(NodeShapeFactory.build(n.shape));
         label.getStyleClass().add("button");
-
-        label.setText(n.text);
         value = n;
         setLayoutX(n.x);
         setLayoutY(n.y);
@@ -122,11 +129,7 @@ public class NodeWidget extends Parent {
             if (!ae.isConsumed()) {
                 if (e.getButton().equals(MouseButton.PRIMARY)) {
                     e.consume();
-                    textArea.setMinSize(label.getWidth(), label.getHeight());
-                    textArea.setMaxSize(label.getWidth(), label.getHeight());
                     textArea.setVisible(true);
-                    textArea.setText(label.getText());
-                    textArea.setPromptText("Node Label");
                     textArea.requestFocus();
                     textArea.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
                         if(!newFocus){

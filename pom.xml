@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>gq.nagy</groupId>
     <artifactId>grapher</artifactId>
-    <version>1.2.1</version>
+    <version>1.2.2</version>
     <packaging>jar</packaging>
     <description>A simple graphmaking application</description>
     <developers>
