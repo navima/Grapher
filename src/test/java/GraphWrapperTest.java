@@ -1,8 +1,6 @@
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import grapher.Edge;
 import grapher.GraphWrapper;
-import grapher.Node;
 
 import java.io.File;
 import java.io.IOException;

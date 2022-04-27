@@ -1,4 +1,4 @@
-package grapher;// CHECKSTYLE:OFF
+package grapher.shape;// CHECKSTYLE:OFF
 
 import javafx.scene.shape.Shape;
 
@@ -8,6 +8,7 @@ import javafx.scene.shape.Shape;
 public interface INodeShapeFactory {
     /**
      * Construct a shape.
+     *
      * @return The shape constructed.
      */
     Shape make();

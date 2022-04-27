@@ -1,6 +1,7 @@
-package grapher;
+package grapher.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import grapher.serialization.EdgeSerializer;
 import javafx.geometry.Point2D;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,15 +33,17 @@ public class Edge {
     public String text;
 
     public List<Point2D> points = new ArrayList<>();
+
     {
         //points.add(new Point2D(0, 0));
     }
 
     /**
      * Constructor.
-     * @param id {@link Edge#id}
+     *
+     * @param id   {@link Edge#id}
      * @param from {@link Edge#from}
-     * @param to {@link Edge#to}
+     * @param to   {@link Edge#to}
      */
     public Edge(int id, Node from, Node to) {
         this(id, from, to, null, new ArrayList<>());
@@ -48,9 +51,10 @@ public class Edge {
 
     /**
      * Constructor.
-     * @param id {@link Edge#id}
+     *
+     * @param id   {@link Edge#id}
      * @param from {@link Edge#from}
-     * @param to {@link Edge#to}
+     * @param to   {@link Edge#to}
      * @param text {@link Edge#text}
      */
     public Edge(int id, Node from, Node to, String text, List<Point2D> points) {

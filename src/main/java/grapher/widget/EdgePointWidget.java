@@ -1,5 +1,6 @@
-package grapher;
+package grapher.widget;
 
+import grapher.model.Edge;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
@@ -16,7 +17,7 @@ public class EdgePointWidget extends Parent {
     public EdgePointWidget(Edge parentEdge, int i) {
         this.parentEdge = parentEdge;
         this.i = i;
-        var lab = new Label("" + i + " : "+parentEdge.text);
+        var lab = new Label("" + i + " : " + parentEdge.text);
         this.getChildren().addAll(circle);//, lab);
         circle.setRadius(1);
         circle.getStyleClass().add("graph-edge-point");
@@ -24,7 +25,7 @@ public class EdgePointWidget extends Parent {
             change.next();
             if (change.wasRemoved())
                 circle.getStyleClass().removeAll(change.getRemoved());
-            else if(change.wasAdded())
+            else if (change.wasAdded())
                 circle.getStyleClass().addAll(change.getAddedSubList());
         });
 

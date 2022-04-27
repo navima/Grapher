@@ -1,5 +1,9 @@
 package grapher;// CHECKSTYLE:OFF
 
+import grapher.model.Node;
+import grapher.widget.EdgeWidget;
+import grapher.widget.GraphPane;
+import grapher.widget.NodeWidget;
 import javafx.event.ActionEvent;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
@@ -33,11 +37,13 @@ public class Controller {
 
     /**
      * Default constructor.
+     *
      * @param graphWrapper The graphWrapper we are manipulating.
      */
     public Controller(IGraph graphWrapper) {
         this.graphWrapper = graphWrapper;
     }
+
     public void graphPaneOnMouseClicked(@NotNull MouseEvent e) {
         if (actionMode == eActionMode.NODE_ADD) {
             if (e.isStillSincePress()) { // don't
@@ -56,10 +62,12 @@ public class Controller {
         }
         gui.graphPane.requestFocus();
     }
+
     public void fileMenuNewFileHandler(ActionEvent actionEvent) {
         graphWrapper.reset();
         updateGraphPaneContents();
     }
+
     public void fileMenuSaveHandler(ActionEvent actionEvent) {
         try {
             var res = graphWrapper.save();
@@ -71,6 +79,7 @@ public class Controller {
             alert.showAndWait();
         }
     }
+
     public void fileMenuSaveAsHandler(ActionEvent actionEvent) {
         try {
             graphWrapper.save(showFilePrompt("Save As", eFileActionType.SAVE));
@@ -80,6 +89,7 @@ public class Controller {
             alert.showAndWait();
         }
     }
+
     public void fileMenuLoadHandler(ActionEvent actionEvent) {
         try {
             var res = graphWrapper.load(showFilePrompt("Load From", eFileActionType.LOAD));
@@ -91,26 +101,33 @@ public class Controller {
             alert.showAndWait();
         }
     }
-    private void activateToolbarButton(ToggleButton b, eActionMode actionMode){
+
+    private void activateToolbarButton(ToggleButton b, eActionMode actionMode) {
         this.actionMode = actionMode;
         b.setSelected(true);
     }
+
     public void panHandler(ActionEvent e) {
         activateToolbarButton(gui.bPan, eActionMode.PAN);
     }
+
     public void addNodeHandler(ActionEvent e) {
         activateToolbarButton(gui.bAddN, eActionMode.NODE_ADD);
     }
+
     public void addEdgeHandler(ActionEvent e) {
         activateToolbarButton(gui.bAddE, eActionMode.EDGE_ADD);
     }
+
     public void removeNodeEdgeHandler(ActionEvent e) {
         activateToolbarButton(gui.bRemove, eActionMode.REMOVE);
     }
+
     public void undoHandler(ActionEvent actionEvent) {
         graphWrapper.undo();
         updateGraphPaneContents();
     }
+
     public void redoHandler(ActionEvent actionEvent) {
         graphWrapper.redo();
         updateGraphPaneContents();
@@ -119,9 +136,10 @@ public class Controller {
     /**
      * The type of action performed on a file (save/load).
      */
-    public enum eFileActionType{
+    public enum eFileActionType {
         SAVE, LOAD
     }
+
     public @Nullable File showFilePrompt(String title, @NotNull eFileActionType type) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(
@@ -139,11 +157,13 @@ public class Controller {
         }
     }
 
-    @NotNull eActionMode actionMode = eActionMode.PAN;
+    @NotNull
+    public eActionMode actionMode = eActionMode.PAN;
     @Nullable NodeWidget edgeStartNode = null;
     boolean edgeBeingAdded = false;
 
-    final HashMap<Node, NodeWidget> nodeWidgetMap = new HashMap<>();
+    public final HashMap<Node, NodeWidget> nodeWidgetMap = new HashMap<>();
+
     void updateGraphPaneContents() {
         var oldSelection = gui.graphPane.getSelection().stream().map(GraphPane.GraphPaneSlot::getValue).toList();
         gui.graphPane.clear();
@@ -152,20 +172,20 @@ public class Controller {
         new Scene(dummy2);
         for (final var node : graphWrapper.getNodes()) {
             final var nodeWidget = new NodeWidget(node, this::updateGraphPaneContents);
-            nodeWidget.setOnAction( actionEvent -> {
+            nodeWidget.setOnAction(actionEvent -> {
                 if (actionMode == eActionMode.REMOVE) {
                     actionEvent.consume();
                     graphWrapper.removeNode(node);
                     updateGraphPaneContents();
-                }
-                else if (actionMode == eActionMode.EDGE_ADD) {
+                } else if (actionMode == eActionMode.EDGE_ADD) {
                     actionEvent.consume();
                     if (edgeBeingAdded) {
                         try {
                             if (edgeStartNode != null) {
                                 graphWrapper.addEdge(edgeStartNode.value, node);
                             }
-                        } catch (Exception ignore) { }
+                        } catch (Exception ignore) {
+                        }
                         edgeStartNode = null;
                         edgeBeingAdded = false;
                         updateGraphPaneContents();
@@ -187,20 +207,20 @@ public class Controller {
             final var edgeWidget = new EdgeWidget(edge, graphWrapper, this::updateGraphPaneContents, this);
             final var edgeSlot = gui.graphPane.addChild(edgeWidget);
             edgeSlot.setDraggable(false);
-            for (var pointWidget : edgeWidget.getPathPoints()){
+            for (var pointWidget : edgeWidget.getPathPoints()) {
                 final var pointSlot = gui.graphPane.addChild(pointWidget);
                 oldSelection.stream().filter(pointWidget::equals).findFirst().ifPresent(node -> gui.graphPane.selectAlso(pointSlot));
-                if ( pointWidget.i != -1) {
+                if (pointWidget.i != -1) {
                     pointSlot.setOnMoved(actionEvent -> {
                         graphWrapper.updatePointOnEdge(pointWidget.parentEdge, pointWidget.i, new Point2D(pointWidget.getLayoutX(), pointWidget.getLayoutY()));
                         updateGraphPaneContents();
                     });
-                }else{
+                } else {
                     pointSlot.setDraggable(false);
                 }
             }
         }
-        for (var nodeWidget : nodeWidgetMap.values()){
+        for (var nodeWidget : nodeWidgetMap.values()) {
             final var nodeSlot = gui.graphPane.addChild(nodeWidget);
             oldSelection.stream().filter(nodeWidget::equals).findFirst().ifPresent(node -> gui.graphPane.selectAlso(nodeSlot));
             nodeSlot.setOnMoved(actionEvent -> {

@@ -1,8 +1,9 @@
-package grapher;
+package grapher.serialization;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import grapher.model.Edge;
 
 import java.io.IOException;
 
@@ -14,12 +15,13 @@ public class EdgeSerializer extends StdSerializer<Edge> {
     /**
      * Default constructor.
      */
-    public EdgeSerializer(){
+    public EdgeSerializer() {
         this(null);
     }
 
     /**
      * Constructor.
+     *
      * @param t t
      */
     protected EdgeSerializer(Class<Edge> t) {

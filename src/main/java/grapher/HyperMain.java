@@ -6,6 +6,7 @@ package grapher;
 public class HyperMain {
     /**
      * The main entry point of the program.
+     *
      * @param args args
      */
     public static void main(String[] args) {

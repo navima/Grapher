@@ -1,4 +1,4 @@
-package grapher;
+package grapher.shape;
 
 import javafx.scene.shape.Shape;
 import org.jetbrains.annotations.Nullable;
@@ -20,15 +20,15 @@ public class NodeShapeFactory {
         factoryDictionary.put(eNodeShape.DIAMOND, new DiamondFactory());
     }
 
-    static @Nullable Shape build(@Nullable eNodeShape shapeEnum){
+    public static @Nullable Shape build(@Nullable eNodeShape shapeEnum) {
         var factory = factoryDictionary.get(shapeEnum);
-        if(factory == null){
+        if (factory == null) {
             if (shapeEnum == null)
-                Logger.error("NodeShapeBuilder: eNodeShape "+"null"+" has no matching case.");
+                Logger.error("NodeShapeBuilder: eNodeShape " + "null" + " has no matching case.");
             else
-                Logger.error("NodeShapeBuilder: eNodeShape "+shapeEnum.name()+" has no matching case.");
+                Logger.error("NodeShapeBuilder: eNodeShape " + shapeEnum.name() + " has no matching case.");
             return factoryDictionary.get(eNodeShape.RECTANGLE).make();
-        }else
+        } else
             return factory.make();
     }
 }

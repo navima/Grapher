@@ -1,17 +1,20 @@
-package grapher;// CHECKSTYLE:OFF
+package grapher.widget;// CHECKSTYLE:OFF
 
+import grapher.model.Node;
+import grapher.shape.NodeShapeFactory;
+import grapher.shape.eNodeShape;
 import javafx.beans.binding.DoubleBinding;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Parent;
-import javafx.scene.control.*;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseButton;
-import javafx.scene.text.Text;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class NodeWidget extends Parent {
@@ -22,33 +25,49 @@ public class NodeWidget extends Parent {
     final TextArea textArea = new TextArea();
 
     private EventHandler<ActionEvent> onActionHandler;
-    public void setOnAction(EventHandler<ActionEvent> onAction) {onActionHandler = onAction;}
+
+    public void setOnAction(EventHandler<ActionEvent> onAction) {
+        onActionHandler = onAction;
+    }
+
     private Consumer<String> onTextChangedHandler;
-    public void setOnTextChanged(Consumer<String> onTextChanged) {onTextChangedHandler = onTextChanged;}
+
+    public void setOnTextChanged(Consumer<String> onTextChanged) {
+        onTextChangedHandler = onTextChanged;
+    }
+
     private Consumer<eNodeShape> onNodeShapeChangedHandler;
-    public void setOnNodeShapeChanged(Consumer<eNodeShape> onNodeShapeChanged) {onNodeShapeChangedHandler = onNodeShapeChanged;}
+
+    public void setOnNodeShapeChanged(Consumer<eNodeShape> onNodeShapeChanged) {
+        onNodeShapeChangedHandler = onNodeShapeChanged;
+    }
 
     private final DoubleBinding layoutCenterX = new DoubleBinding() {
         {
             super.bind(layoutXProperty());
         }
+
         @Override
         protected double computeValue() {
-            return getLayoutX()+label.getBoundsInLocal().getWidth()/2;
+            return getLayoutX() + label.getBoundsInLocal().getWidth() / 2;
         }
     };
+
     public DoubleBinding getLayoutCenterXBinding() {
         return layoutCenterX;
     }
+
     private final DoubleBinding layoutCenterY = new DoubleBinding() {
         {
             super.bind(layoutYProperty());
         }
+
         @Override
         protected double computeValue() {
-            return getLayoutY()+label.getBoundsInLocal().getHeight()/2;
+            return getLayoutY() + label.getBoundsInLocal().getHeight() / 2;
         }
     };
+
     public DoubleBinding getLayoutCenterYBinding() {
         return layoutCenterY;
     }
@@ -67,11 +86,12 @@ public class NodeWidget extends Parent {
         /**
          * Invalidate method.
          */
-        void apply(); }
+        void apply();
+    }
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof NodeWidget other) {
+        if (obj instanceof NodeWidget other) {
             return value.equals(other.value);
         }
         return super.equals(obj);
@@ -89,7 +109,7 @@ public class NodeWidget extends Parent {
             change.next();
             if (change.wasRemoved())
                 label.getStyleClass().removeAll(change.getRemoved());
-            else if(change.wasAdded())
+            else if (change.wasAdded())
                 label.getStyleClass().addAll(change.getAddedSubList());
         });
 
@@ -132,7 +152,7 @@ public class NodeWidget extends Parent {
                     textArea.setVisible(true);
                     textArea.requestFocus();
                     textArea.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
-                        if(!newFocus){
+                        if (!newFocus) {
                             textArea.setVisible(false);
                             onTextChangedHandler.accept(textArea.getText());
                             updateCallback.apply();

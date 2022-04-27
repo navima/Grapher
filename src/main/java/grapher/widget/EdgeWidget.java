@@ -1,12 +1,18 @@
-package grapher;// CHECKSTYLE:OFF
+package grapher.widget;// CHECKSTYLE:OFF
 
+import grapher.Controller;
+import grapher.IGraph;
+import grapher.eActionMode;
+import grapher.model.Edge;
 import javafx.beans.binding.DoubleBinding;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.scene.shape.*;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -25,10 +31,13 @@ public class EdgeWidget extends Parent {
 
 
     private final DoubleBinding layoutCenterX;
+
     public DoubleBinding getLayoutCenterXBinding() {
         return layoutCenterX;
     }
+
     private final DoubleBinding layoutCenterY;
+
     public DoubleBinding getLayoutCenterYBinding() {
         return layoutCenterY;
     }
@@ -45,7 +54,8 @@ public class EdgeWidget extends Parent {
         /**
          * Invalidate method.
          */
-        void apply(); }
+        void apply();
+    }
 
     public EdgeWidget(@NotNull Edge edge, @NotNull IGraph graph, @NotNull callback updateCallback, @NotNull Controller controller) {
         this.edge = edge;
@@ -61,6 +71,7 @@ public class EdgeWidget extends Parent {
                         fromWidget.getLayoutCenterXBinding(),
                         toWidget.getLayoutCenterXBinding());
             }
+
             @Override
             protected double computeValue() {
                 return getPathPoints().stream().mapToDouble(Node::getLayoutX).average().getAsDouble();
@@ -73,6 +84,7 @@ public class EdgeWidget extends Parent {
                         fromWidget.getLayoutCenterYBinding(),
                         toWidget.getLayoutCenterYBinding());
             }
+
             @Override
             protected double computeValue() {
                 return getPathPoints().stream().mapToDouble(Node::getLayoutY).average().getAsDouble();
@@ -87,7 +99,7 @@ public class EdgeWidget extends Parent {
         c0.layoutXProperty().bind(fromWidget.getLayoutCenterXBinding());
         c0.layoutYProperty().bind(fromWidget.getLayoutCenterYBinding());
         pathPoints.add(c0);
-        for (int i = 0; i < edge.points.size(); i++){
+        for (int i = 0; i < edge.points.size(); i++) {
             EdgePointWidget c = new EdgePointWidget(edge, i);
             pathPoints.add(c);
             c.setLayoutX(edge.points.get(i).getX());
@@ -98,13 +110,13 @@ public class EdgeWidget extends Parent {
         cN.layoutXProperty().bind(toWidget.getLayoutCenterXBinding());
         cN.layoutYProperty().bind(toWidget.getLayoutCenterYBinding());
         pathPoints.add(cN);
-        for (var elem : pathPoints){
+        for (var elem : pathPoints) {
             //style
         }
 
 
         // Edges
-        for(int i = 0; i < pathPoints.size() - 1; i++){
+        for (int i = 0; i < pathPoints.size() - 1; i++) {
             final var path = new Path();
             final var currPoint = pathPoints.get(i);
             final var nextPoint = pathPoints.get(i + 1);
@@ -132,17 +144,17 @@ public class EdgeWidget extends Parent {
                 event.consume();
             });
             path.setOnMouseDragged(event -> {
-                var lineToMouse = (LineTo)path.getElements().get(1);
+                var lineToMouse = (LineTo) path.getElements().get(1);
                 lineToMouse.setX(event.getX());
                 lineToMouse.setY(event.getY());
-                var moveToMouse = (MoveTo)path.getElements().get(2);
+                var moveToMouse = (MoveTo) path.getElements().get(2);
                 moveToMouse.setX(event.getX());
                 moveToMouse.setY(event.getY());
                 event.consume();
             });
             final int finalI = i;
             path.setOnMouseReleased(mouseEvent -> {
-                if(!mouseEvent.isStillSincePress()){
+                if (!mouseEvent.isStillSincePress()) {
                     graph.addPointToEdge(edge, finalI, new Point2D(mouseEvent.getX(), mouseEvent.getY()));
                     mouseEvent.consume();
                     updateCallback.apply();
@@ -161,8 +173,7 @@ public class EdgeWidget extends Parent {
         textArea.setVisible(false);
         textArea.layoutXProperty().bind(getLayoutCenterXBinding());
         textArea.layoutYProperty().bind(getLayoutCenterYBinding());
-        textArea.setPrefSize(150,0);
-
+        textArea.setPrefSize(150, 0);
 
 
         setOnMouseClicked(e -> {
@@ -170,13 +181,13 @@ public class EdgeWidget extends Parent {
                 graph.removeEdge(edge);
                 updateCallback.apply();
             } else {
-                if(e.isStillSincePress()){
+                if (e.isStillSincePress()) {
                     textArea.setVisible(true);
                     textArea.setText(label.getText());
                     textArea.setPromptText("Edge Label");
                     textArea.requestFocus();
                     textArea.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
-                        if(!newFocus){
+                        if (!newFocus) {
                             textArea.setVisible(false);
                             graph.setEdgeText(edge, textArea.getText());
                             updateCallback.apply();

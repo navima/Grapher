@@ -1,4 +1,4 @@
-package grapher;// CHECKSTYLE:OFF
+package grapher.shape;// CHECKSTYLE:OFF
 
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;

@@ -1,4 +1,4 @@
-package grapher;// CHECKSTYLE:OFF
+package grapher.shape;// CHECKSTYLE:OFF
 
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Shape;
@@ -6,7 +6,7 @@ import javafx.scene.shape.Shape;
 /**
  * {@link eNodeShape#DIAMOND} Factory class.
  */
-public class DiamondFactory implements INodeShapeFactory{
+public class DiamondFactory implements INodeShapeFactory {
     @Override
     public Shape make() {
         var pDia = new Polygon();

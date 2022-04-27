@@ -1,5 +1,6 @@
 package grapher;// CHECKSTYLE:OFF
 
+import grapher.widget.GraphPane;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -16,6 +17,7 @@ public class GUI {
 
     /**
      * Default constructor.
+     *
      * @param controller The controller handling our events.
      */
     public GUI(@NotNull Controller controller) {
@@ -30,6 +32,7 @@ public class GUI {
     public ToggleButton bAddE;
     public ToggleButton bRemove;
     final GraphPane graphPane = new GraphPane();
+
     @NotNull Scene show(@NotNull Stage stage) {
         final var root = new Group();
         final Scene scene = new Scene(root, 640, 480);
@@ -61,7 +64,7 @@ public class GUI {
         fLoad.setOnAction(controller::fileMenuLoadHandler);
         fLoad.setAccelerator(new KeyCodeCombination(KeyCode.L, KeyCombination.CONTROL_DOWN));
 
-        filemenu.getItems().addAll(fNew, fSave,fSaveAs, fLoad);
+        filemenu.getItems().addAll(fNew, fSave, fSaveAs, fLoad);
         bar.getMenus().add(filemenu);
         // Edit menu ----------------------------------------------------------------
         Menu editmenu = new Menu("_Edit");
@@ -98,8 +101,6 @@ public class GUI {
         toolbar.getStyleClass().add("menubar");
 
 
-
-
         toolboxGroup = new ToggleGroup();
 
         bPan = new ToggleButton("Pan");
@@ -115,7 +116,7 @@ public class GUI {
         bRemove.setToggleGroup(toolboxGroup);
         bRemove.setOnAction(controller::removeNodeEdgeHandler);
 
-        toolbar.getChildren().addAll(bPan,bAddN,bAddE,bRemove);
+        toolbar.getChildren().addAll(bPan, bAddN, bAddE, bRemove);
         root.getChildren().add(toolbar);
         // ------------------------------------------------------------------------------------
 

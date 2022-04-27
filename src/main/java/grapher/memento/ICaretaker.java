@@ -1,4 +1,4 @@
-package grapher;
+package grapher.memento;
 
 import java.util.List;
 

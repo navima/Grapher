@@ -1,4 +1,6 @@
-package grapher;
+package grapher.shape;
+
+import grapher.model.Node;
 
 /**
  * Enum describing the shape of a {@link Node}.

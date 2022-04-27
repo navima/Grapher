@@ -1,6 +1,11 @@
 package grapher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import grapher.memento.GraphMemento;
+import grapher.model.Edge;
+import grapher.model.Graph;
+import grapher.model.Node;
+import grapher.shape.eNodeShape;
 import javafx.geometry.Point2D;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,6 +33,7 @@ public class GraphWrapper implements IGraph {
 
     List<HistoryElement<GraphMemento>> history = new ArrayList<>();
     int historyPosition = 0;
+
     @Override
     public List<GraphMemento> getHistory() {
         return history.stream().map(HistoryElement::value).toList();
@@ -38,9 +44,9 @@ public class GraphWrapper implements IGraph {
         graph = new Graph(memento.getValue());
     }
 
-    public void printHistory(){
+    public void printHistory() {
         System.out.println("The current history:");
-        for (int i = history.size()-1; i >= 0; i--){
+        for (int i = history.size() - 1; i >= 0; i--) {
             if (i == historyPosition)
                 System.out.println("X " + history.get(i).label() + " : " + history.get(i).value());
             else
@@ -58,8 +64,8 @@ public class GraphWrapper implements IGraph {
     }
 
     @Override
-    public void redo(){
-        if (history.isEmpty() || (historyPosition+1) > (history.size() - 1))
+    public void redo() {
+        if (history.isEmpty() || (historyPosition + 1) > (history.size() - 1))
             return;
         var nextState = history.get(++historyPosition);
         restoreState(nextState.value());
@@ -67,16 +73,17 @@ public class GraphWrapper implements IGraph {
     }
 
     @Override
-    public void captureState(){
+    public void captureState() {
         captureState(null);
     }
-    public void captureState(String label){
-        if(history.size() - 1 > historyPosition){
-            Logger.info("History is stale. Taking first "+(historyPosition+1)+" elements (from "+history.size()+")");
-            history = history.stream().limit(historyPosition+1).collect(Collectors.toList());
+
+    public void captureState(String label) {
+        if (history.size() - 1 > historyPosition) {
+            Logger.info("History is stale. Taking first " + (historyPosition + 1) + " elements (from " + history.size() + ")");
+            history = history.stream().limit(historyPosition + 1).collect(Collectors.toList());
         }
         history.add(new HistoryElement<>(label, graph.getState()));
-        historyPosition=history.size()-1;
+        historyPosition = history.size() - 1;
         //printHistory();
     }
 
@@ -84,10 +91,10 @@ public class GraphWrapper implements IGraph {
     public boolean save() throws IOException {
         if (graphPath == null)
             return false;
-        else{
+        else {
             ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(graphPath, graph);
-            Logger.info("Overwritten save at: "+graphPath);
+            Logger.info("Overwritten save at: " + graphPath);
             return true;
         }
     }
@@ -105,7 +112,7 @@ public class GraphWrapper implements IGraph {
             graph = mapper.readValue(file, Graph.class);
             graphPath = file;
             captureState("load file");
-            Logger.info("Loaded file from: "+file);
+            Logger.info("Loaded file from: " + file);
             return true;
         }
         return false;
@@ -117,7 +124,7 @@ public class GraphWrapper implements IGraph {
         graph = mapper.readValue(src, Graph.class);
         graphPath = new File(src.getFile());
         captureState("load file");
-        Logger.info("Loaded file from: "+src);
+        Logger.info("Loaded file from: " + src);
     }
 
     @Override
@@ -167,12 +174,10 @@ public class GraphWrapper implements IGraph {
             Logger.warn("Tried to connect Node with itself");
             return;
         }
-        if (from == null || to == null)
-        {
+        if (from == null || to == null) {
             Logger.warn("Tried to connect from or to null Node");
             throw new InvalidOperationException();
-        }
-        else{
+        } else {
 
             var edge = graph.addEdge(from, to);
             captureState("add edge");
@@ -181,7 +186,7 @@ public class GraphWrapper implements IGraph {
     }
 
     @Override
-    public void removeNode(Node node){
+    public void removeNode(Node node) {
 
         graph.removeNode(node);
         captureState("remove node");

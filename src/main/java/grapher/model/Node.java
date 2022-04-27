@@ -1,6 +1,8 @@
-package grapher;
+package grapher.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import grapher.serialization.NodeSerializer;
+import grapher.shape.eNodeShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,8 +42,9 @@ public class Node {
 
     /**
      * Default constructor.
-     * @param x {@link Node#x}
-     * @param y {@link Node#y}
+     *
+     * @param x  {@link Node#x}
+     * @param y  {@link Node#y}
      * @param id {@link Node#id}
      */
     public Node(double x, double y, int id) {
@@ -50,11 +53,12 @@ public class Node {
 
     /**
      * Constructor.
-     * @param x {@link Node#x}
-     * @param y {@link Node#y}
-     * @param id {@link Node#id}
+     *
+     * @param x     {@link Node#x}
+     * @param y     {@link Node#y}
+     * @param id    {@link Node#id}
      * @param shape {@link Node#shape}
-     * @param text {@link Node#text}
+     * @param text  {@link Node#text}
      */
     public Node(double x, double y, int id, eNodeShape shape, String text) {
         this.x = x;
@@ -67,18 +71,23 @@ public class Node {
     /**
      * DO NOT USE, ONLY NEEDED FOR DESERIALIZATION.
      */
-    public Node(){}
+    public Node() {
+    }
 
-    public static Node copyWithoutEdges(Node other){
+    public static Node copyWithoutEdges(Node other) {
         return new Node(other.x, other.y, other.id, other.shape, other.text);
     }
 
     /**
      * Sets the X and Y coordinates.
+     *
      * @param x New X
      * @param y New Y
      */
-    public void setXY(double x, double y) { this.x = x; this.y = y;}
+    public void setXY(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
 
     @Override
     public boolean equals(@Nullable Object o) {
@@ -99,7 +108,7 @@ public class Node {
                 "id=" + id +
                 ", x=" + x +
                 ", y=" + y +
-                ", text=\"" + (text!=null ? text.replaceAll("\n", " ") : "")+ "\"" +
+                ", text=\"" + (text != null ? text.replaceAll("\n", " ") : "") + "\"" +
                 ", edges=" + edges.stream().map(edge -> edge.id).collect(Collectors.toList()) +
                 '}';
     }

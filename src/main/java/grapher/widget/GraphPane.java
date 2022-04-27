@@ -1,11 +1,10 @@
-package grapher;// CHECKSTYLE:OFF
+package grapher.widget;// CHECKSTYLE:OFF
 
 import javafx.collections.ListChangeListener;
 import javafx.collections.ModifiableObservableListBase;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
@@ -84,30 +83,29 @@ public class GraphPane extends Region {
 
         setMouseTransparent(false);
         setOnMouseDragged(e -> {
-            if(e.isPrimaryButtonDown()){
+            if (e.isPrimaryButtonDown()) {
                 var xmin = Math.min(e.getX(), marqueeStartX);
                 var ymin = Math.min(e.getY(), marqueeStartY);
                 var xmax = Math.max(e.getX(), marqueeStartX);
                 var ymax = Math.max(e.getY(), marqueeStartY);
                 marquee.setX(xmin);
                 marquee.setY(ymin);
-                marquee.setWidth(xmax-xmin);
-                marquee.setHeight(ymax-ymin);
+                marquee.setWidth(xmax - xmin);
+                marquee.setHeight(ymax - ymin);
                 selection.clear();
                 var gTrans = g.getLocalToParentTransform();
-                for (var child : g.getChildren()){
+                for (var child : g.getChildren()) {
                     if (marquee.getBoundsInLocal().intersects(gTrans.transform(child.getBoundsInParent())))
                         selection.add((GraphPaneSlot) child);
                 }
                 e.consume();
-            }
-            else if(e.isSecondaryButtonDown()){
-                setChildTranslate(e.getSceneX()-dragStartMouseX+dragStartTranslateX, e.getSceneY()-dragStartMouseY+dragStartTranslateY);
+            } else if (e.isSecondaryButtonDown()) {
+                setChildTranslate(e.getSceneX() - dragStartMouseX + dragStartTranslateX, e.getSceneY() - dragStartMouseY + dragStartTranslateY);
                 e.consume();
             }
         });
         setOnMouseReleased(e -> {
-            if(e.isStillSincePress() && isFocused()){
+            if (e.isStillSincePress() && isFocused()) {
                 getChildren().remove(marquee);
                 selection.clear();
             }
@@ -115,7 +113,7 @@ public class GraphPane extends Region {
             requestFocus();
             e.consume();
         });
-        setOnMousePressed( e -> {
+        setOnMousePressed(e -> {
             if (e.isPrimaryButtonDown()) {
                 getChildren().remove(marquee);
                 marquee.setX(e.getX());
@@ -126,8 +124,7 @@ public class GraphPane extends Region {
                 marqueeStartY = e.getY();
                 getChildren().add(marquee);
                 e.consume();
-            }
-            else if (e.isSecondaryButtonDown()){
+            } else if (e.isSecondaryButtonDown()) {
                 dragStartTranslateX = childTranslateX;
                 dragStartTranslateY = childTranslateY;
                 dragStartMouseX = e.getSceneX();
@@ -145,16 +142,20 @@ public class GraphPane extends Region {
             var mx = scrollEvent.getX();
             var my = scrollEvent.getY();
             setChildTranslate(
-                    ctx+(glx-mx)/gsx,
-                    cty+(gly-my)/gsy);
+                    ctx + (glx - mx) / gsx,
+                    cty + (gly - my) / gsy);
             g.setLayoutX(scrollEvent.getX());
             g.setLayoutY(scrollEvent.getY());
-            g.setScaleX(scrollEvent.getDeltaY()/scrollEvent.getMultiplierY()*getZoomMultiplier()+g.getScaleX());
-            g.setScaleY(scrollEvent.getDeltaY()/scrollEvent.getMultiplierY()*getZoomMultiplier()+g.getScaleY());
+            g.setScaleX(scrollEvent.getDeltaY() / scrollEvent.getMultiplierY() * getZoomMultiplier() + g.getScaleX());
+            g.setScaleY(scrollEvent.getDeltaY() / scrollEvent.getMultiplierY() * getZoomMultiplier() + g.getScaleY());
         });
     }
 
-    public void clear() {g.getChildren().clear(); selection.clear();}
+    public void clear() {
+        g.getChildren().clear();
+        selection.clear();
+    }
+
     public GraphPaneSlot addChild(javafx.scene.@NotNull Node n) {
         GraphPaneSlot graphPaneSlot = new GraphPaneSlot(this, n);
         g.getChildren().add(graphPaneSlot);
@@ -163,12 +164,18 @@ public class GraphPane extends Region {
         return graphPaneSlot;
     }
 
-    public final double getChildTranslateX(){return childTranslateX;}
-    public final double getChildTranslateY(){return childTranslateY;}
-    public final void setChildTranslate(double x,double y) {
+    public final double getChildTranslateX() {
+        return childTranslateX;
+    }
+
+    public final double getChildTranslateY() {
+        return childTranslateY;
+    }
+
+    public final void setChildTranslate(double x, double y) {
         for (final var elem : g.getChildren()) {
-            ((GraphPaneSlot)elem).value.setTranslateX(x);
-            ((GraphPaneSlot)elem).value.setTranslateY(y);
+            ((GraphPaneSlot) elem).value.setTranslateX(x);
+            ((GraphPaneSlot) elem).value.setTranslateY(y);
         }
         childTranslateX = x;
         childTranslateY = y;
@@ -177,23 +184,32 @@ public class GraphPane extends Region {
     public double getZoomMultiplier() {
         return zoomMultiplier;
     }
+
     public void setZoomMultiplier(double zoomMultiplier) {
         this.zoomMultiplier = zoomMultiplier;
     }
 
-    public final List<GraphPaneSlot> getSelection() {return Collections.unmodifiableList(selectionList);}
-    public final void deselectAll() {selection.clear();}
+    public final List<GraphPaneSlot> getSelection() {
+        return Collections.unmodifiableList(selectionList);
+    }
+
+    public final void deselectAll() {
+        selection.clear();
+    }
+
     public final void select(GraphPaneSlot node) {
         if (!selection.contains(node)) {
             deselectAll();
             selection.add(node);
         }
     }
+
     public final void selectAlso(GraphPaneSlot node) {
         if (!selection.contains(node)) {
             selection.add(node);
         }
     }
+
     public final void deselect(GraphPaneSlot node) {
         selection.remove(node);
     }
@@ -208,6 +224,7 @@ public class GraphPane extends Region {
         private double dragStartMouseY = 0.0;
         private double dragStartLayoutX = 0.0;
         private double dragStartLayoutY = 0.0;
+
         public GraphPaneSlot(GraphPane parent, Node node) {
             this.parent = parent;
             value = node;
@@ -216,21 +233,21 @@ public class GraphPane extends Region {
                 change.next();
                 if (change.wasRemoved())
                     value.getStyleClass().removeAll(change.getRemoved());
-                else if(change.wasAdded())
+                else if (change.wasAdded())
                     value.getStyleClass().addAll(change.getAddedSubList());
             });
             setOnMousePressed(e -> {
-                if(draggable){
+                if (draggable) {
                     select();
                     parent.selection.forEach(elem -> elem.recordMousePressed(e));
                     e.consume();
                 }
             });
             setOnMouseDragged(e -> {
-                if(draggable) {
+                if (draggable) {
                     parent.selection.stream().filter(GraphPaneSlot::isDraggable).forEach(elem -> {
-                        elem.value.setLayoutX(elem.dragStartLayoutX +e.getX()-dragStartMouseX);
-                        elem.value.setLayoutY(elem.dragStartLayoutY +e.getY()-dragStartMouseY);
+                        elem.value.setLayoutX(elem.dragStartLayoutX + e.getX() - dragStartMouseX);
+                        elem.value.setLayoutY(elem.dragStartLayoutY + e.getY() - dragStartMouseY);
                     });
                     e.consume();
                     //System.out.println("HELP! IM BEING DRAGGED!!");
@@ -238,10 +255,10 @@ public class GraphPane extends Region {
             });
             setOnMouseReleased(e -> {
                 if (draggable) {
-                    if (!e.isStillSincePress()){
+                    if (!e.isStillSincePress()) {
                         var temp = new ArrayList<>(parent.selection);
                         temp.forEach(elem -> {
-                            if(!(elem.getOnMoved() == null))
+                            if (!(elem.getOnMoved() == null))
                                 elem.getOnMoved().handle(new ActionEvent());
                         });
                         e.consume();
@@ -261,15 +278,19 @@ public class GraphPane extends Region {
         public Node getValue() {
             return value;
         }
+
         public EventHandler<ActionEvent> getOnMoved() {
             return onMoved;
         }
+
         public void setOnMoved(EventHandler<ActionEvent> onMoved) {
             this.onMoved = onMoved;
         }
+
         public EventHandler<ActionEvent> getOnModified() {
             return onModified;
         }
+
         public void setOnModified(EventHandler<ActionEvent> onModified) {
             this.onModified = onModified;
         }
@@ -277,10 +298,14 @@ public class GraphPane extends Region {
         public void select() {
             parent.select(this);
         }
+
         public void deselect() {
             parent.deselect(this);
         }
-        public boolean isSelected() {return parent.selection.contains(this);}
+
+        public boolean isSelected() {
+            return parent.selection.contains(this);
+        }
 
         public boolean isDraggable() {
             return draggable;

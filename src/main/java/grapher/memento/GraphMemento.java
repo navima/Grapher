@@ -1,9 +1,12 @@
-package grapher;
+package grapher.memento;
+
+import grapher.model.Graph;
 
 public class GraphMemento implements IMemento<Graph> {
-    public GraphMemento(Graph inGraph){
+    public GraphMemento(Graph inGraph) {
         value = new Graph(inGraph);
     }
+
     private final Graph value;
 
     public final Graph getValue() {
