@@ -25,7 +25,7 @@ public class NodeShapeFactory {
         return Optional.ofNullable(factoryDictionary.get(shapeEnum))
                 .map(INodeShapeFactory::make)
                 .orElseGet(() -> {
-                    Logger.warn("NodeShapeBuilder: eNodeShape " + shapeEnum + " has no matching case.");
+                    Logger.warn("NodeShapeBuilder: eNodeShape {} has no matching case", shapeEnum);
                     return factoryDictionary.get(eNodeShape.RECTANGLE).make();
                 });
     }

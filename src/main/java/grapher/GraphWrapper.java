@@ -8,6 +8,7 @@ import grapher.model.Graph;
 import grapher.model.Node;
 import grapher.shape.eNodeShape;
 import javafx.geometry.Point2D;
+import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
@@ -40,13 +41,15 @@ public class GraphWrapper implements IGraph {
     }
 
     public void printHistory() {
-        System.out.println("The current history:");
+        var sb = new StringBuilder();
+        sb.append("The current history:\n");
         for (int i = history.size() - 1; i >= 0; i--) {
             if (i == historyPosition)
-                System.out.println("X " + history.get(i).label() + " : " + history.get(i).value());
+                sb.append("X " + history.get(i).label() + " : " + history.get(i).value() + "\n");
             else
-                System.out.println("- " + history.get(i).label() + " : " + history.get(i).value());
+                sb.append("- " + history.get(i).label() + " : " + history.get(i).value() + "\n");
         }
+        System.out.println(sb);
     }
 
     @Override
@@ -74,7 +77,7 @@ public class GraphWrapper implements IGraph {
 
     public void captureState(String label) {
         if (history.size() - 1 > historyPosition) {
-            Logger.info("History is stale. Taking first " + (historyPosition + 1) + " elements (from " + history.size() + ")");
+            Logger.info("History is stale. Taking first {} elements (from {})", historyPosition + 1, history.size());
             history = history.stream().limit(historyPosition + 1).collect(Collectors.toList());
         }
         history.add(new HistoryElement<>(label, graph.getState()));
@@ -89,7 +92,7 @@ public class GraphWrapper implements IGraph {
         else {
             ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(graphPath, graph);
-            Logger.info("Overwritten save at: " + graphPath);
+            Logger.info("Overwritten save at: {}", graphPath);
             return true;
         }
     }
@@ -107,7 +110,7 @@ public class GraphWrapper implements IGraph {
             graph = mapper.readValue(file, Graph.class);
             graphPath = file;
             captureState("load file");
-            Logger.info("Loaded file from: " + file);
+            Logger.info("Loaded file from: {}", file);
             return true;
         }
         return false;
@@ -119,7 +122,7 @@ public class GraphWrapper implements IGraph {
         graph = mapper.readValue(src, Graph.class);
         graphPath = new File(src.getFile());
         captureState("load file");
-        Logger.info("Loaded file from: " + src);
+        Logger.info("Loaded file from: {}", src);
     }
 
     @Override
@@ -148,7 +151,7 @@ public class GraphWrapper implements IGraph {
 
         final var node = graph.addNode(x, y);
         captureState("add node");
-        Logger.info("Added Node (" + node + ")");
+        Logger.info("Added Node ({})", node);
     }
 
     @Override
@@ -176,7 +179,7 @@ public class GraphWrapper implements IGraph {
 
             var edge = graph.addEdge(from, to);
             captureState("add edge");
-            Logger.info("Added Edge (" + edge + ")");
+            Logger.info("Added Edge ({})", edge);
         }
     }
 
@@ -185,7 +188,7 @@ public class GraphWrapper implements IGraph {
 
         graph.removeNode(node);
         captureState("remove node");
-        Logger.info("Removed Node (" + node + ")");
+        Logger.info("Removed Node ({})", node);
     }
 
     @Override
@@ -207,7 +210,7 @@ public class GraphWrapper implements IGraph {
 
         graph.removeEdge(edge);
         captureState("remove edge");
-        Logger.info("Removed Edge (" + edge + ")");
+        Logger.info("Removed Edge ({})", edge);
     }
 
     @Override
