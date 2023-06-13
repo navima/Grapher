@@ -2,10 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>gq.nagy</groupId>
     <artifactId>grapher</artifactId>
     <version>1.2.2</version>
+
     <packaging>jar</packaging>
+
     <description>A simple graphmaking application</description>
     <developers>
         <developer>
@@ -14,19 +17,19 @@
         </developer>
     </developers>
 
-
     <url>https://github.com/navima/Grapher</url>
     <scm>
         <developerConnection>scm:git:https://github.com/navima/Grapher.git</developerConnection>
     </scm>
+
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.outputEncoding>UTF-8</project.build.outputEncoding>
-        <maven.compiler.source>16</maven.compiler.source>
-        <maven.compiler.target>16</maven.compiler.target>
-        <maven.compiler.release>16</maven.compiler.release>
+        <maven.compiler.source>20</maven.compiler.source>
+        <maven.compiler.target>20</maven.compiler.target>
+        <maven.compiler.release>20</maven.compiler.release>
         <exec.mainClass>grapher.HyperMain</exec.mainClass>
-
     </properties>
 
     <dependencies>
@@ -38,41 +41,41 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>16</version>
+            <version>19.0.2.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.12.1</version>
+            <version>2.15.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>2.12.1</version>
+            <version>2.14.2</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.7.0</version>
+            <version>5.9.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.tinylog</groupId>
             <artifactId>tinylog-api</artifactId>
-            <version>2.2.1</version>
+            <version>2.6.2</version>
         </dependency>
         <dependency>
             <groupId>org.tinylog</groupId>
             <artifactId>tinylog-impl</artifactId>
-            <version>2.2.1</version>
+            <version>2.6.2</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>20.1.0</version>
+            <version>24.0.1</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
@@ -88,9 +91,9 @@
                 <version>3.8.1</version>
                 <groupId>org.apache.maven.plugins</groupId>
                 <configuration>
-                    <source>16</source>
-                    <release>16</release>
-                    <target>16</target>
+                    <source>20</source>
+                    <release>20</release>
+                    <target>20</target>
                 </configuration>
             </plugin>
             <plugin>
