@@ -3,9 +3,6 @@ package grapher.model;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import grapher.serialization.EdgeSerializer;
 import javafx.geometry.Point2D;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -16,13 +13,11 @@ import java.util.Objects;
  * Represents a connection between two {@link Node}s.
  */
 @JsonSerialize(using = EdgeSerializer.class)
-@ToString
 public class Edge {
     public int id;
     public Node from;
     public Node to;
     public String text;
-
     public List<Point2D> points;
 
     public Edge(int id, Node from, Node to) {
@@ -48,5 +43,9 @@ public class Edge {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public String toString() {
+        return "Edge(id=" + this.id + ", from=" + this.from.id + ", to=" + this.to.id + ", text=" + this.text + ", points=" + this.points + ")";
     }
 }

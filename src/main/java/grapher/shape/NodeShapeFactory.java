@@ -6,6 +6,7 @@ import org.tinylog.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Factory for creating {@link Shape} from {@link eNodeShape}.
@@ -21,14 +22,11 @@ public class NodeShapeFactory {
     }
 
     public static @Nullable Shape build(@Nullable eNodeShape shapeEnum) {
-        var factory = factoryDictionary.get(shapeEnum);
-        if (factory == null) {
-            if (shapeEnum == null)
-                Logger.error("NodeShapeBuilder: eNodeShape " + "null" + " has no matching case.");
-            else
-                Logger.error("NodeShapeBuilder: eNodeShape " + shapeEnum.name() + " has no matching case.");
-            return factoryDictionary.get(eNodeShape.RECTANGLE).make();
-        } else
-            return factory.make();
+        return Optional.ofNullable(factoryDictionary.get(shapeEnum))
+                .map(INodeShapeFactory::make)
+                .orElseGet(() -> {
+                    Logger.warn("NodeShapeBuilder: eNodeShape " + shapeEnum + " has no matching case.");
+                    return factoryDictionary.get(eNodeShape.RECTANGLE).make();
+                });
     }
 }

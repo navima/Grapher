@@ -13,6 +13,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -21,43 +22,32 @@ import java.util.List;
 public class EdgeWidget extends Parent {
     final @NotNull Edge edge;
     final @NotNull IGraph graph;
-    final @NotNull callback updateCallback;
+    final @NotNull EdgeWidget.Callback updateCallback;
     final List<Path> paths = new ArrayList<>();
+    @Getter
     final List<EdgePointWidget> pathPoints = new ArrayList<>();
     final Label label = new Label();
     final TextArea textArea = new TextArea();
     final NodeWidget fromWidget;
     final NodeWidget toWidget;
+    @Getter
+    private final DoubleBinding layoutCenterXBinding;
+    @Getter
+    private final DoubleBinding layoutCenterYBinding;
 
-
-    private final DoubleBinding layoutCenterX;
-
-    public DoubleBinding getLayoutCenterXBinding() {
-        return layoutCenterX;
-    }
-
-    private final DoubleBinding layoutCenterY;
-
-    public DoubleBinding getLayoutCenterYBinding() {
-        return layoutCenterY;
-    }
-
-    public List<EdgePointWidget> getPathPoints() {
-        return pathPoints;
-    }
 
     /**
      * Invalidate callback.
      */
     @FunctionalInterface
-    public interface callback {
+    public interface Callback {
         /**
          * Invalidate method.
          */
         void apply();
     }
 
-    public EdgeWidget(@NotNull Edge edge, @NotNull IGraph graph, @NotNull callback updateCallback, @NotNull Controller controller) {
+    public EdgeWidget(@NotNull Edge edge, @NotNull IGraph graph, @NotNull EdgeWidget.Callback updateCallback, @NotNull Controller controller) {
         this.edge = edge;
         this.graph = graph;
         this.updateCallback = updateCallback;
@@ -65,7 +55,7 @@ public class EdgeWidget extends Parent {
         fromWidget = controller.nodeWidgetMap.get(edge.from);
         toWidget = controller.nodeWidgetMap.get(edge.to);
 
-        layoutCenterX = new DoubleBinding() {
+        layoutCenterXBinding = new DoubleBinding() {
             {
                 bind(
                         fromWidget.getLayoutCenterXBinding(),
@@ -78,7 +68,7 @@ public class EdgeWidget extends Parent {
                 //return (fromWidget.getLayoutCenterXBinding().get()+toWidget.getLayoutCenterXBinding().get())/2;
             }
         };
-        layoutCenterY = new DoubleBinding() {
+        layoutCenterYBinding = new DoubleBinding() {
             {
                 bind(
                         fromWidget.getLayoutCenterYBinding(),

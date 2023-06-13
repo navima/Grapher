@@ -22,33 +22,14 @@ public class Node {
     public int id;
     public double x;
     public double y;
-
     public String text;
-
     public eNodeShape shape = eNodeShape.RECTANGLE;
-
     public HashSet<Edge> edges = new HashSet<>();
 
-    /**
-     * Default constructor.
-     *
-     * @param x  {@link Node#x}
-     * @param y  {@link Node#y}
-     * @param id {@link Node#id}
-     */
     public Node(double x, double y, int id) {
         this(x, y, id, eNodeShape.RECTANGLE, null);
     }
 
-    /**
-     * Constructor.
-     *
-     * @param x     {@link Node#x}
-     * @param y     {@link Node#y}
-     * @param id    {@link Node#id}
-     * @param shape {@link Node#shape}
-     * @param text  {@link Node#text}
-     */
     public Node(double x, double y, int id, eNodeShape shape, String text) {
         this.x = x;
         this.y = y;
