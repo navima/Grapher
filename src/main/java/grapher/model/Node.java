@@ -3,6 +3,8 @@ package grapher.model;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import grapher.serialization.NodeSerializer;
 import grapher.shape.eNodeShape;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,30 +16,17 @@ import java.util.stream.Collectors;
  * Class representing a node.
  */
 @JsonSerialize(using = NodeSerializer.class)
+@NoArgsConstructor
+@ToString
 public class Node {
-    /**
-     * Unique identifier of node.
-     */
     public int id;
-    /**
-     * X position of node.
-     */
     public double x;
-    /**
-     * Y position of node.
-     */
     public double y;
-    /**
-     * Text (label) associated with node.
-     */
+
     public String text;
-    /**
-     * Shape of node.
-     */
+
     public eNodeShape shape = eNodeShape.RECTANGLE;
-    /**
-     * Edges associated with.
-     */
+
     public HashSet<Edge> edges = new HashSet<>();
 
     /**
@@ -68,12 +57,6 @@ public class Node {
         this.text = text;
     }
 
-    /**
-     * DO NOT USE, ONLY NEEDED FOR DESERIALIZATION.
-     */
-    public Node() {
-    }
-
     public static Node copyWithoutEdges(Node other) {
         return new Node(other.x, other.y, other.id, other.shape, other.text);
     }
@@ -100,16 +83,5 @@ public class Node {
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    @Override
-    public @NotNull String toString() {
-        return "{" +
-                "id=" + id +
-                ", x=" + x +
-                ", y=" + y +
-                ", text=\"" + (text != null ? text.replaceAll("\n", " ") : "") + "\"" +
-                ", edges=" + edges.stream().map(edge -> edge.id).collect(Collectors.toList()) +
-                '}';
     }
 }

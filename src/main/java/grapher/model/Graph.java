@@ -5,6 +5,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import grapher.memento.GraphMemento;
 import grapher.memento.IMementoable;
 import grapher.serialization.GraphDeserializer;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,63 +22,30 @@ import java.util.stream.Collectors;
  * Data structure for a graph.
  */
 @JsonDeserialize(using = GraphDeserializer.class)
+@ToString
+@EqualsAndHashCode
+@AllArgsConstructor
+@NoArgsConstructor
 public class Graph implements IMementoable<Graph> {
-    /**
-     * The nodes of the graph.
-     */
-    public final @NotNull Set<Node> nodes;
-    /**
-     * The edges of the graph.
-     */
-    public final @NotNull Set<Edge> edges;
-    /**
-     * The largest conflicting Node id.
-     */
-    private int lastNodeId = 0;
-    /**
-     * The largest conflicting Edge id.
-     */
-    private int lastEdgeId = 0;
+    public Set<Node> nodes = new HashSet<>();
+    public Set<Edge> edges = new HashSet<>();
+    private int lastNodeId;
+    private int lastEdgeId;
 
     /**
-     * Default constructor.
+     * Copy constructor.
      */
-    public Graph() {
-        nodes = new HashSet<>();
-        edges = new HashSet<>();
-    }
-
-    /**
-     * Cosntructor / Builder used for serialization.
-     *
-     * @param nodes      {@link Graph#nodes}
-     * @param edges      {@link Graph#edges}
-     * @param lastNodeId {@link Graph#lastNodeId}
-     * @param lastEdgeId {@link Graph#lastEdgeId}
-     */
-    public Graph(@NotNull Set<Node> nodes, @NotNull Set<Edge> edges, int lastNodeId, int lastEdgeId) {
-        this.nodes = nodes;
-        this.edges = edges;
-        this.lastNodeId = lastNodeId;
-        this.lastEdgeId = lastEdgeId;
-    }
-
-    public Graph(Graph graph) {
-        nodes = new HashSet<>();
-        edges = new HashSet<>();
-        for (var oldNode : graph.nodes)
+    public Graph(Graph oldGraph) {
+        for (var oldNode : oldGraph.nodes)
             addNode(Node.copyWithoutEdges(oldNode));
-        for (var oldEdge : graph.edges) {
+        for (var oldEdge : oldGraph.edges) {
             var fromNode = nodes.stream().filter(node -> oldEdge.from.id == node.id).findFirst().get();
             var toNode = nodes.stream().filter(node -> oldEdge.to.id == node.id).findFirst().get();
             var edge = new Edge(oldEdge.id, fromNode, toNode, oldEdge.text, new ArrayList<>(oldEdge.points));
             addEdge(edge);
         }
-        lastNodeId = graph.lastNodeId;
-        lastEdgeId = graph.lastEdgeId;
-        //System.out.println("DEEP COPIED GRAPH.");
-        //System.out.println("OLD NODES, EDGES: "+graph.nodes.size() + ", " + graph.edges.size());
-        //System.out.println("NEW NODES, EDGES: "+nodes.size() + ", " + edges.size());
+        lastNodeId = oldGraph.lastNodeId;
+        lastEdgeId = oldGraph.lastEdgeId;
     }
 
     /**
@@ -144,29 +115,6 @@ public class Graph implements IMementoable<Graph> {
         edges.remove(edge);
         edge.from.edges.remove(edge);
         edge.to.edges.remove(edge);
-    }
-
-    @Override
-    public boolean equals(@Nullable Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Graph graph = (Graph) o;
-        return lastNodeId == graph.lastNodeId && lastEdgeId == graph.lastEdgeId && Objects.equals(nodes, graph.nodes) && Objects.equals(edges, graph.edges);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(nodes, edges, lastNodeId, lastEdgeId);
-    }
-
-    @Override
-    public @NotNull String toString() {
-        return "Graph{" +
-                "nodes=" + nodes +
-                ", edges=" + edges.stream().map(edge -> edge.id).collect(Collectors.toList()) +
-                ", lastNodeId=" + lastNodeId +
-                ", lastEdgeId=" + lastEdgeId +
-                '}';
     }
 
     @JsonIgnore

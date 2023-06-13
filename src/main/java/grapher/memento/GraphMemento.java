@@ -1,22 +1,15 @@
 package grapher.memento;
 
 import grapher.model.Graph;
+import lombok.Getter;
+import lombok.ToString;
 
+@ToString
 public class GraphMemento implements IMemento<Graph> {
-    public GraphMemento(Graph inGraph) {
-        value = new Graph(inGraph);
-    }
-
+    @Getter
     private final Graph value;
 
-    public final Graph getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return "GraphMemento{" +
-                "value=" + value +
-                '}';
+    public GraphMemento(Graph inGraph) {
+        value = new Graph(inGraph);
     }
 }

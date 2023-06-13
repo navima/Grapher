@@ -2,6 +2,7 @@ package grapher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import grapher.memento.GraphMemento;
+import grapher.memento.HistoryElement;
 import grapher.model.Edge;
 import grapher.model.Graph;
 import grapher.model.Node;
@@ -21,13 +22,7 @@ import java.util.stream.Collectors;
  * Wraps graph object.
  */
 public class GraphWrapper implements IGraph {
-    /**
-     * The graph being manipulated.
-     */
     Graph graph = new Graph();
-    /**
-     * The path to the currently worked on file.
-     */
     @Nullable File graphPath = null;
 
 
