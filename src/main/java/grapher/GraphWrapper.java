@@ -189,6 +189,13 @@ public class GraphWrapper implements IGraph {
     }
 
     @Override
+    public void removePointFromEdge(Edge edge, int n) {
+        graph.removeEdgeNode(edge, n);
+        captureState("remove edge point");
+        Logger.info("Removed {}-th Point from Edge ({})", n, edge);
+    }
+
+    @Override
     public void setNodeTranslate(Node node, double x, double y) {
 
         node.setXY(x, y);

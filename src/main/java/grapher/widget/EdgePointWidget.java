@@ -2,9 +2,12 @@ package grapher.widget;
 
 import grapher.model.Edge;
 import javafx.collections.ListChangeListener;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.shape.Circle;
+import lombok.Setter;
 
 import java.util.Objects;
 
@@ -13,6 +16,8 @@ public class EdgePointWidget extends Parent {
     public Edge parentEdge;
     public int i;
     public Circle circle = new Circle();
+    @Setter
+    EventHandler<ActionEvent> onAction;
 
     public EdgePointWidget(Edge parentEdge, int i) {
         this.parentEdge = parentEdge;
@@ -29,6 +34,14 @@ public class EdgePointWidget extends Parent {
                 circle.getStyleClass().addAll(change.getAddedSubList());
         });
 
+        setOnMouseClicked(e -> {
+            if (e.isStillSincePress()) {
+                var ae = new ActionEvent();
+                onAction.handle(ae);
+                if (ae.isConsumed())
+                    e.consume();
+            }
+        });
     }
 
     @Override

@@ -122,4 +122,11 @@ public class Graph implements IMementoable<Graph> {
     public GraphMemento getState() {
         return new GraphMemento(this);
     }
+
+    /**
+     * Removes n-th point from an edge.
+     */
+    public void removeEdgeNode(Edge edge, int n) {
+        edge.points.remove(n);
+    }
 }

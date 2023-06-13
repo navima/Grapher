@@ -72,7 +72,7 @@ public class Controller {
         try {
             var res = graphWrapper.save();
             if (!res)
-                graphWrapper.save(showFilePrompt("Save", eFileActionType.SAVE));
+                graphWrapper.save(showFilePrompt("Save", EFileActionType.SAVE));
         } catch (IOException e) {
             e.printStackTrace();
             var alert = new Alert(Alert.AlertType.ERROR, e.toString());
@@ -82,7 +82,7 @@ public class Controller {
 
     public void fileMenuSaveAsHandler(ActionEvent actionEvent) {
         try {
-            graphWrapper.save(showFilePrompt("Save As", eFileActionType.SAVE));
+            graphWrapper.save(showFilePrompt("Save As", EFileActionType.SAVE));
         } catch (IOException e) {
             e.printStackTrace();
             var alert = new Alert(Alert.AlertType.ERROR, e.toString());
@@ -92,7 +92,7 @@ public class Controller {
 
     public void fileMenuLoadHandler(ActionEvent actionEvent) {
         try {
-            var res = graphWrapper.load(showFilePrompt("Load From", eFileActionType.LOAD));
+            var res = graphWrapper.load(showFilePrompt("Load From", EFileActionType.LOAD));
             if (res)
                 updateGraphPaneContents();
         } catch (IOException e) {
@@ -136,11 +136,11 @@ public class Controller {
     /**
      * The type of action performed on a file (save/load).
      */
-    public enum eFileActionType {
+    public enum EFileActionType {
         SAVE, LOAD
     }
 
-    public @Nullable File showFilePrompt(String title, @NotNull eFileActionType type) {
+    public @Nullable File showFilePrompt(String title, @NotNull Controller.EFileActionType type) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Json Files", "*.json"),
@@ -214,6 +214,13 @@ public class Controller {
                     pointSlot.setOnMoved(actionEvent -> {
                         graphWrapper.updatePointOnEdge(pointWidget.parentEdge, pointWidget.i, new Point2D(pointWidget.getLayoutX(), pointWidget.getLayoutY()));
                         updateGraphPaneContents();
+                    });
+                    pointWidget.setOnAction(actionEvent -> {
+                        if (actionMode == eActionMode.REMOVE) {
+                            actionEvent.consume();
+                            graphWrapper.removePointFromEdge(edge, pointWidget.i);
+                            updateGraphPaneContents();
+                        }
                     });
                 } else {
                     pointSlot.setDraggable(false);
