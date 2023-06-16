@@ -9,24 +9,24 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Factory for creating {@link Shape} from {@link eNodeShape}.
+ * Factory for creating {@link Shape} from {@link ENodeShape}.
  */
 public class NodeShapeFactory {
-    static private final Map<eNodeShape, INodeShapeFactory> factoryDictionary = new HashMap<>();
+    static private final Map<ENodeShape, INodeShapeFactory> factoryDictionary = new HashMap<>();
 
     static {
-        factoryDictionary.put(eNodeShape.RECTANGLE, new RectangleFactory());
-        factoryDictionary.put(eNodeShape.CIRCLE, new CircleFactory());
-        factoryDictionary.put(eNodeShape.RIGHT_TRI, new RightTriFactory());
-        factoryDictionary.put(eNodeShape.DIAMOND, new DiamondFactory());
+        factoryDictionary.put(ENodeShape.RECTANGLE, new RectangleFactory());
+        factoryDictionary.put(ENodeShape.CIRCLE, new CircleFactory());
+        factoryDictionary.put(ENodeShape.RIGHT_TRI, new RightTriFactory());
+        factoryDictionary.put(ENodeShape.DIAMOND, new DiamondFactory());
     }
 
-    public static @Nullable Shape build(@Nullable eNodeShape shapeEnum) {
+    public static @Nullable Shape build(@Nullable ENodeShape shapeEnum) {
         return Optional.ofNullable(factoryDictionary.get(shapeEnum))
                 .map(INodeShapeFactory::make)
                 .orElseGet(() -> {
                     Logger.warn("NodeShapeBuilder: eNodeShape {} has no matching case", shapeEnum);
-                    return factoryDictionary.get(eNodeShape.RECTANGLE).make();
+                    return factoryDictionary.get(ENodeShape.RECTANGLE).make();
                 });
     }
 }

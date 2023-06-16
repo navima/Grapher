@@ -1,29 +1,19 @@
 package grapher.shape;
 
 import grapher.model.Node;
+import lombok.Getter;
 
 /**
  * Enum describing the shape of a {@link Node}.
  * For UI purposes, use with {@link NodeShapeFactory}
  */
-public enum eNodeShape {
-    /**
-     * Rectangle.
-     */
+public enum ENodeShape {
     RECTANGLE("Rectangle"),
-    /**
-     * Circle.
-     */
     CIRCLE("Circle"),
-    /**
-     * Right-pointing triangle.
-     */
     RIGHT_TRI("Right pointing triangle"),
-    /**
-     * Diamond.
-     */
     DIAMOND("Diamond");
 
+    @Getter
     private final String friendlyName;
 
     @Override
@@ -31,7 +21,7 @@ public enum eNodeShape {
         return friendlyName;
     }
 
-    eNodeShape(String friendlyName) {
+    ENodeShape(String friendlyName) {
         this.friendlyName = friendlyName;
     }
 }

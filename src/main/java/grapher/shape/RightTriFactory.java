@@ -4,7 +4,7 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Shape;
 
 /**
- * {@link eNodeShape#RIGHT_TRI} Factory class.
+ * {@link ENodeShape#RIGHT_TRI} Factory class.
  */
 public class RightTriFactory implements INodeShapeFactory {
     @Override

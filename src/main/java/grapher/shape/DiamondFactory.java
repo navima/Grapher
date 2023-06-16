@@ -4,7 +4,7 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Shape;
 
 /**
- * {@link eNodeShape#DIAMOND} Factory class.
+ * {@link ENodeShape#DIAMOND} Factory class.
  */
 public class DiamondFactory implements INodeShapeFactory {
     @Override

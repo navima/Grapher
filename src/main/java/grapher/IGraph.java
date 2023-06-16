@@ -4,7 +4,7 @@ import grapher.memento.ICaretaker;
 import grapher.model.Edge;
 import grapher.model.Graph;
 import grapher.model.Node;
-import grapher.shape.eNodeShape;
+import grapher.shape.ENodeShape;
 import javafx.geometry.Point2D;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -146,7 +146,7 @@ public interface IGraph extends ICaretaker {
      * @param node  Node to act on
      * @param shape New shape
      */
-    void setNodeShape(Node node, eNodeShape shape);
+    void setNodeShape(Node node, ENodeShape shape);
 
     /**
      * Resets controller to default state. (blank graph, no path).

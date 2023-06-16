@@ -4,7 +4,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Shape;
 
 /**
- * {@link eNodeShape#CIRCLE} Factory class.
+ * {@link ENodeShape#CIRCLE} Factory class.
  */
 public class CircleFactory implements INodeShapeFactory {
     @Override

@@ -2,15 +2,13 @@ package grapher.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import grapher.serialization.NodeSerializer;
-import grapher.shape.eNodeShape;
+import grapher.shape.ENodeShape;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * Class representing a node.
@@ -23,14 +21,14 @@ public class Node {
     public double x;
     public double y;
     public String text;
-    public eNodeShape shape = eNodeShape.RECTANGLE;
+    public ENodeShape shape = ENodeShape.RECTANGLE;
     public HashSet<Edge> edges = new HashSet<>();
 
     public Node(double x, double y, int id) {
-        this(x, y, id, eNodeShape.RECTANGLE, null);
+        this(x, y, id, ENodeShape.RECTANGLE, null);
     }
 
-    public Node(double x, double y, int id, eNodeShape shape, String text) {
+    public Node(double x, double y, int id, ENodeShape shape, String text) {
         this.x = x;
         this.y = y;
         this.id = id;

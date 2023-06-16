@@ -6,7 +6,7 @@ import grapher.memento.HistoryElement;
 import grapher.model.Edge;
 import grapher.model.Graph;
 import grapher.model.Node;
-import grapher.shape.eNodeShape;
+import grapher.shape.ENodeShape;
 import javafx.geometry.Point2D;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -226,7 +226,7 @@ public class GraphManipulator implements IGraph {
     }
 
     @Override
-    public void setNodeShape(Node node, eNodeShape shape) {
+    public void setNodeShape(Node node, ENodeShape shape) {
 
         node.shape = shape;
         captureState("change node shape");

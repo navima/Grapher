@@ -2,10 +2,10 @@ package grapher.widget;// CHECKSTYLE:OFF
 
 import grapher.model.Node;
 import grapher.shape.NodeShapeFactory;
-import grapher.shape.eNodeShape;
+import grapher.shape.ENodeShape;
 import grapher.util.Callback;
+import grapher.util.StyleChangeListenerFactory;
 import javafx.beans.binding.DoubleBinding;
-import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Parent;
@@ -14,36 +14,32 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseButton;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 
+/**
+ * Widget representing a node.
+ */
+@EqualsAndHashCode(callSuper = true)
 public class NodeWidget extends Parent {
     private static final String DEFAULT_STYLE_CLASS = "graph-node";
+    @EqualsAndHashCode.Include
     public final @NotNull Node value;
-
-    final Label label = new Label();
-    final TextArea textArea = new TextArea();
-
-    private EventHandler<ActionEvent> onActionHandler;
-
-    public void setOnAction(EventHandler<ActionEvent> onAction) {
-        onActionHandler = onAction;
-    }
-
-    private Consumer<String> onTextChangedHandler;
-
-    public void setOnTextChanged(Consumer<String> onTextChanged) {
-        onTextChangedHandler = onTextChanged;
-    }
-
-    private Consumer<eNodeShape> onNodeShapeChangedHandler;
-
-    public void setOnNodeShapeChanged(Consumer<eNodeShape> onNodeShapeChanged) {
-        onNodeShapeChangedHandler = onNodeShapeChanged;
-    }
-
-    private final DoubleBinding layoutCenterX = new DoubleBinding() {
+    private final Label label = new Label();
+    private final TextArea textArea = new TextArea();
+    @Setter
+    private EventHandler<ActionEvent> onAction;
+    @Setter
+    private Consumer<String> onTextChanged;
+    @Setter
+    private Consumer<ENodeShape> onNodeShapeChanged;
+    @Getter
+    private final DoubleBinding layoutCenterXBinding = new DoubleBinding() {
         {
             super.bind(layoutXProperty());
         }
@@ -53,12 +49,8 @@ public class NodeWidget extends Parent {
             return getLayoutX() + label.getBoundsInLocal().getWidth() / 2;
         }
     };
-
-    public DoubleBinding getLayoutCenterXBinding() {
-        return layoutCenterX;
-    }
-
-    private final DoubleBinding layoutCenterY = new DoubleBinding() {
+    @Getter
+    private final DoubleBinding layoutCenterYBinding = new DoubleBinding() {
         {
             super.bind(layoutYProperty());
         }
@@ -69,21 +61,9 @@ public class NodeWidget extends Parent {
         }
     };
 
-    public DoubleBinding getLayoutCenterYBinding() {
-        return layoutCenterY;
-    }
-
     @Override
     public javafx.scene.Node getStyleableNode() {
         return label;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof NodeWidget other) {
-            return value.equals(other.value);
-        }
-        return super.equals(obj);
     }
 
     @Override
@@ -94,15 +74,8 @@ public class NodeWidget extends Parent {
     public NodeWidget(@NotNull Node n, final @NotNull Callback updateCallback) {
         super();
         this.getStyleClass().setAll(DEFAULT_STYLE_CLASS);
-        this.getStyleClass().addListener((ListChangeListener<? super String>) change -> {
-            change.next();
-            if (change.wasRemoved())
-                label.getStyleClass().removeAll(change.getRemoved());
-            else if (change.wasAdded())
-                label.getStyleClass().addAll(change.getAddedSubList());
-        });
+        this.getStyleClass().addListener(StyleChangeListenerFactory.copierListener(label));
 
-        //this.getChildren().add(button);
         this.getChildren().add(label);
         this.getChildren().add(textArea);
 
@@ -111,22 +84,27 @@ public class NodeWidget extends Parent {
         textArea.prefWidthProperty().bind(label.widthProperty());
         textArea.prefHeightProperty().bind(label.heightProperty());
         textArea.setText(n.text);
+        textArea.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
+            if (!newFocus) {
+                textArea.setVisible(false);
+                onTextChanged.accept(textArea.getText());
+                updateCallback.call();
+            }
+        });
 
         label.textProperty().bind(textArea.textProperty());
-
-
         label.setShape(NodeShapeFactory.build(n.shape));
         label.getStyleClass().add("button");
+
         value = n;
         setLayoutX(n.x);
         setLayoutY(n.y);
 
         var contextMenu = new ContextMenu();
-        for (final var elem : eNodeShape.values()) {
-            var contextMenuItem = new MenuItem(elem.toString());
+        for (final var nodeShape : ENodeShape.values()) {
+            var contextMenuItem = new MenuItem(nodeShape.getFriendlyName());
             contextMenuItem.setOnAction(e -> {
-                onNodeShapeChangedHandler.accept(elem);
-                //graphWrapper.setNodeShape(id, elem);
+                onNodeShapeChanged.accept(nodeShape);
                 updateCallback.call();
             });
             contextMenu.getItems().add(contextMenuItem);
@@ -134,19 +112,12 @@ public class NodeWidget extends Parent {
         label.setContextMenu(contextMenu);
         label.setOnMouseClicked(e -> {
             var ae = new ActionEvent();
-            onActionHandler.handle(ae);
+            onAction.handle(ae);
             if (!ae.isConsumed()) {
-                if (e.getButton().equals(MouseButton.PRIMARY)) {
+                if (e.getButton() == MouseButton.PRIMARY) {
                     e.consume();
                     textArea.setVisible(true);
                     textArea.requestFocus();
-                    textArea.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
-                        if (!newFocus) {
-                            textArea.setVisible(false);
-                            onTextChangedHandler.accept(textArea.getText());
-                            updateCallback.call();
-                        }
-                    });
                 }
             }
         });

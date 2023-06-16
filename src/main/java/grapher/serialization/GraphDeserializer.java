@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import grapher.model.Edge;
 import grapher.model.Graph;
 import grapher.model.Node;
-import grapher.shape.eNodeShape;
+import grapher.shape.ENodeShape;
 import javafx.geometry.Point2D;
 
 import java.io.IOException;
@@ -53,7 +53,7 @@ public class GraphDeserializer extends StdDeserializer<Graph> {
                 final var x = (double) n2.get("x");
                 final var y = (double) n2.get("y");
                 final var text = (String) n2.get("text");
-                final var shape = eNodeShape.valueOf((String) n2.get("shape"));
+                final var shape = ENodeShape.valueOf((String) n2.get("shape"));
                 final var nodeNode = new Node(x, y, id, shape, text);
                 if (id > lastNodeId)
                     lastNodeId = id;
