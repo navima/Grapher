@@ -8,7 +8,6 @@ import grapher.model.Graph;
 import grapher.model.Node;
 import grapher.shape.eNodeShape;
 import javafx.geometry.Point2D;
-import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
@@ -22,13 +21,12 @@ import java.util.stream.Collectors;
 /**
  * Wraps graph object.
  */
-public class GraphWrapper implements IGraph {
-    Graph graph = new Graph();
-    @Nullable File graphPath = null;
-
-
-    List<HistoryElement<GraphMemento>> history = new ArrayList<>();
-    int historyPosition = 0;
+public class GraphManipulator implements IGraph {
+    public Graph graph = new Graph();
+    @Nullable
+    public File graphPath = null;
+    public List<HistoryElement<GraphMemento>> history = new ArrayList<>();
+    public int historyPosition = 0;
 
     @Override
     public List<GraphMemento> getHistory() {
@@ -246,7 +244,7 @@ public class GraphWrapper implements IGraph {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        GraphWrapper that = (GraphWrapper) o;
+        GraphManipulator that = (GraphManipulator) o;
         return Objects.equals(graph, that.graph) && Objects.equals(graphPath, that.graphPath);
     }
 

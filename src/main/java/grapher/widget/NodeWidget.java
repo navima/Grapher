@@ -3,6 +3,7 @@ package grapher.widget;// CHECKSTYLE:OFF
 import grapher.model.Node;
 import grapher.shape.NodeShapeFactory;
 import grapher.shape.eNodeShape;
+import grapher.util.Callback;
 import javafx.beans.binding.DoubleBinding;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
@@ -77,18 +78,6 @@ public class NodeWidget extends Parent {
         return label;
     }
 
-
-    /**
-     * Invalidate callback.
-     */
-    @FunctionalInterface
-    public interface callback {
-        /**
-         * Invalidate method.
-         */
-        void apply();
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof NodeWidget other) {
@@ -102,7 +91,7 @@ public class NodeWidget extends Parent {
         return value.text;
     }
 
-    public NodeWidget(@NotNull Node n, final @NotNull callback updateCallback) {
+    public NodeWidget(@NotNull Node n, final @NotNull Callback updateCallback) {
         super();
         this.getStyleClass().setAll(DEFAULT_STYLE_CLASS);
         this.getStyleClass().addListener((ListChangeListener<? super String>) change -> {
@@ -138,7 +127,7 @@ public class NodeWidget extends Parent {
             contextMenuItem.setOnAction(e -> {
                 onNodeShapeChangedHandler.accept(elem);
                 //graphWrapper.setNodeShape(id, elem);
-                updateCallback.apply();
+                updateCallback.call();
             });
             contextMenu.getItems().add(contextMenuItem);
         }
@@ -155,7 +144,7 @@ public class NodeWidget extends Parent {
                         if (!newFocus) {
                             textArea.setVisible(false);
                             onTextChangedHandler.accept(textArea.getText());
-                            updateCallback.apply();
+                            updateCallback.call();
                         }
                     });
                 }

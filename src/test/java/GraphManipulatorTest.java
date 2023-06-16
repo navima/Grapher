@@ -1,6 +1,6 @@
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import grapher.GraphWrapper;
+import grapher.GraphManipulator;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,11 +8,11 @@ import java.net.URL;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class GraphWrapperTest {
+class GraphManipulatorTest {
 
     @org.junit.jupiter.api.Test
     void saveVoid() {
-        var t = new GraphWrapper();
+        var t = new GraphManipulator();
         try {
             assertFalse(t.save());
         } catch (IOException e) {
@@ -22,7 +22,7 @@ class GraphWrapperTest {
 
     @org.junit.jupiter.api.Test
     void saveFile() {
-        var t = new GraphWrapper();
+        var t = new GraphManipulator();
         try {
             var file = new File("./test.json");
             assertTrue(t.save(file));
@@ -41,7 +41,7 @@ class GraphWrapperTest {
 
     @org.junit.jupiter.api.Test
     void loadFile() {
-        var t = new GraphWrapper();
+        var t = new GraphManipulator();
         try {
             ClassLoader classLoader = getClass().getClassLoader();
             assertFalse(t.load((File) null));
@@ -61,9 +61,9 @@ class GraphWrapperTest {
 
             // read own save
             file = new File("test.json");
-            var t2 = new GraphWrapper();
+            var t2 = new GraphManipulator();
             t2.loadDefault();
-            var t3 = new GraphWrapper();
+            var t3 = new GraphManipulator();
             assertTrue(t2.save(file));
             assertTrue(t3.load(file));
             assertEquals(t3, t2);
@@ -76,7 +76,7 @@ class GraphWrapperTest {
 
     @org.junit.jupiter.api.Test
     void loadURL() {
-        var t = new GraphWrapper();
+        var t = new GraphManipulator();
         assertThrows(IOException.class, () -> t.load(new URL("file:/asd")));
     }
 
@@ -87,8 +87,8 @@ class GraphWrapperTest {
 
     @org.junit.jupiter.api.Test
     void reset() {
-        var t1 = new GraphWrapper();
-        var t2 = new GraphWrapper();
+        var t1 = new GraphManipulator();
+        var t2 = new GraphManipulator();
         t2.loadDefault();
         t2.reset();
         assertEquals(t2, t1);

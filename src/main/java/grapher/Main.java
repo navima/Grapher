@@ -8,19 +8,12 @@ import org.jetbrains.annotations.NotNull;
  * The main class of the program.
  */
 public class Main extends Application {
-    static IGraph graphWrapper;
-    static Controller controller;
-    static GUI gui;
+    private static GUI gui;
 
-    /**
-     * The main entry point of the program.
-     *
-     * @param args args
-     */
     public static void main(String[] args) {
-        graphWrapper = new GraphWrapper();
+        IGraph graphWrapper = new GraphManipulator();
         graphWrapper.loadDefault();
-        controller = new Controller(graphWrapper);
+        Controller controller = new Controller(graphWrapper);
         gui = new GUI(controller);
         launch();
     }

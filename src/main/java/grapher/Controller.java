@@ -45,7 +45,7 @@ public class Controller {
     }
 
     public void graphPaneOnMouseClicked(@NotNull MouseEvent e) {
-        if (actionMode == eActionMode.NODE_ADD) {
+        if (actionMode == EActionMode.NODE_ADD) {
             if (e.isStillSincePress()) { // don't
                 try {
                     var invTrans = gui.graphPane.g.getLocalToParentTransform().createInverse();
@@ -102,25 +102,25 @@ public class Controller {
         }
     }
 
-    private void activateToolbarButton(ToggleButton b, eActionMode actionMode) {
+    private void activateToolbarButton(ToggleButton b, EActionMode actionMode) {
         this.actionMode = actionMode;
         b.setSelected(true);
     }
 
     public void panHandler(ActionEvent e) {
-        activateToolbarButton(gui.bPan, eActionMode.PAN);
+        activateToolbarButton(gui.bPan, EActionMode.PAN);
     }
 
     public void addNodeHandler(ActionEvent e) {
-        activateToolbarButton(gui.bAddN, eActionMode.NODE_ADD);
+        activateToolbarButton(gui.bAddN, EActionMode.NODE_ADD);
     }
 
     public void addEdgeHandler(ActionEvent e) {
-        activateToolbarButton(gui.bAddE, eActionMode.EDGE_ADD);
+        activateToolbarButton(gui.bAddE, EActionMode.EDGE_ADD);
     }
 
     public void removeNodeEdgeHandler(ActionEvent e) {
-        activateToolbarButton(gui.bRemove, eActionMode.REMOVE);
+        activateToolbarButton(gui.bRemove, EActionMode.REMOVE);
     }
 
     public void undoHandler(ActionEvent actionEvent) {
@@ -158,7 +158,7 @@ public class Controller {
     }
 
     @NotNull
-    public eActionMode actionMode = eActionMode.PAN;
+    public EActionMode actionMode = EActionMode.PAN;
     @Nullable NodeWidget edgeStartNode = null;
     boolean edgeBeingAdded = false;
 
@@ -173,11 +173,11 @@ public class Controller {
         for (final var node : graphWrapper.getNodes()) {
             final var nodeWidget = new NodeWidget(node, this::updateGraphPaneContents);
             nodeWidget.setOnAction(actionEvent -> {
-                if (actionMode == eActionMode.REMOVE) {
+                if (actionMode == EActionMode.REMOVE) {
                     actionEvent.consume();
                     graphWrapper.removeNode(node);
                     updateGraphPaneContents();
-                } else if (actionMode == eActionMode.EDGE_ADD) {
+                } else if (actionMode == EActionMode.EDGE_ADD) {
                     actionEvent.consume();
                     if (edgeBeingAdded) {
                         try {
@@ -216,7 +216,7 @@ public class Controller {
                         updateGraphPaneContents();
                     });
                     pointWidget.setOnAction(actionEvent -> {
-                        if (actionMode == eActionMode.REMOVE) {
+                        if (actionMode == EActionMode.REMOVE) {
                             actionEvent.consume();
                             graphWrapper.removePointFromEdge(edge, pointWidget.i);
                             updateGraphPaneContents();

@@ -2,8 +2,9 @@ package grapher.widget;// CHECKSTYLE:OFF
 
 import grapher.Controller;
 import grapher.IGraph;
-import grapher.eActionMode;
+import grapher.EActionMode;
 import grapher.model.Edge;
+import grapher.util.Callback;
 import javafx.beans.binding.DoubleBinding;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
@@ -19,38 +20,22 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Widget representing an edge between nodes.
+ */
 public class EdgeWidget extends Parent {
-    final @NotNull Edge edge;
-    final @NotNull IGraph graph;
-    final @NotNull EdgeWidget.Callback updateCallback;
-    final List<Path> paths = new ArrayList<>();
     @Getter
-    final List<EdgePointWidget> pathPoints = new ArrayList<>();
-    final Label label = new Label();
-    final TextArea textArea = new TextArea();
-    final NodeWidget fromWidget;
-    final NodeWidget toWidget;
+    final private List<EdgePointWidget> pathPoints = new ArrayList<>();
+    final private Label label = new Label();
+    final private TextArea textArea = new TextArea();
+    final private NodeWidget fromWidget;
+    final private NodeWidget toWidget;
     @Getter
     private final DoubleBinding layoutCenterXBinding;
     @Getter
     private final DoubleBinding layoutCenterYBinding;
 
-
-    /**
-     * Invalidate callback.
-     */
-    @FunctionalInterface
-    public interface Callback {
-        /**
-         * Invalidate method.
-         */
-        void apply();
-    }
-
-    public EdgeWidget(@NotNull Edge edge, @NotNull IGraph graph, @NotNull EdgeWidget.Callback updateCallback, @NotNull Controller controller) {
-        this.edge = edge;
-        this.graph = graph;
-        this.updateCallback = updateCallback;
+    public EdgeWidget(@NotNull Edge edge, @NotNull IGraph graph, @NotNull Callback updateCallback, @NotNull Controller controller) {
 
         fromWidget = controller.nodeWidgetMap.get(edge.from);
         toWidget = controller.nodeWidgetMap.get(edge.to);
@@ -106,6 +91,7 @@ public class EdgeWidget extends Parent {
 
 
         // Edges
+        List<Path> paths = new ArrayList<>();
         for (int i = 0; i < pathPoints.size() - 1; i++) {
             final var path = new Path();
             final var currPoint = pathPoints.get(i);
@@ -147,7 +133,7 @@ public class EdgeWidget extends Parent {
                 if (!mouseEvent.isStillSincePress()) {
                     graph.addPointToEdge(edge, finalI, new Point2D(mouseEvent.getX(), mouseEvent.getY()));
                     mouseEvent.consume();
-                    updateCallback.apply();
+                    updateCallback.call();
                 }
             });
         }
@@ -167,9 +153,9 @@ public class EdgeWidget extends Parent {
 
 
         setOnMouseClicked(e -> {
-            if (controller.actionMode == eActionMode.REMOVE) {
+            if (controller.actionMode == EActionMode.REMOVE) {
                 graph.removeEdge(edge);
-                updateCallback.apply();
+                updateCallback.call();
             } else {
                 if (e.isStillSincePress()) {
                     textArea.setVisible(true);
@@ -180,7 +166,7 @@ public class EdgeWidget extends Parent {
                         if (!newFocus) {
                             textArea.setVisible(false);
                             graph.setEdgeText(edge, textArea.getText());
-                            updateCallback.apply();
+                            updateCallback.call();
                         }
                     });
                 }
