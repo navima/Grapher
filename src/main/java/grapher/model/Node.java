@@ -3,6 +3,7 @@ package grapher.model;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import grapher.serialization.NodeSerializer;
 import grapher.shape.ENodeShape;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.Nullable;
@@ -16,7 +17,9 @@ import java.util.Objects;
 @JsonSerialize(using = NodeSerializer.class)
 @NoArgsConstructor
 @ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Node {
+    @EqualsAndHashCode.Include
     public int id;
     public double x;
     public double y;
@@ -49,18 +52,5 @@ public class Node {
     public void setXY(double x, double y) {
         this.x = x;
         this.y = y;
-    }
-
-    @Override
-    public boolean equals(@Nullable Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Node node = (Node) o;
-        return Double.compare(node.x, x) == 0 && Double.compare(node.y, y) == 0 && Objects.equals(text, node.text) && shape == node.shape;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 }

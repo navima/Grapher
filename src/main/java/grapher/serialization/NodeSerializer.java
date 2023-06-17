@@ -11,19 +11,10 @@ import java.io.IOException;
  * Class for serializing {@link Node}.
  */
 public class NodeSerializer extends StdSerializer<Node> {
-
-    /**
-     * Default constructor.
-     */
     public NodeSerializer() {
         this(null);
     }
 
-    /**
-     * Constructor.
-     *
-     * @param t t
-     */
     protected NodeSerializer(Class<Node> t) {
         super(t);
     }

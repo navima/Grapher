@@ -8,22 +8,13 @@ import grapher.model.Edge;
 import java.io.IOException;
 
 /**
- * Class for serializing Edge.
+ * Serializes edge using IDs to avoid cyclic reference.
  */
 public class EdgeSerializer extends StdSerializer<Edge> {
-
-    /**
-     * Default constructor.
-     */
     public EdgeSerializer() {
         this(null);
     }
 
-    /**
-     * Constructor.
-     *
-     * @param t t
-     */
     protected EdgeSerializer(Class<Edge> t) {
         super(t);
     }

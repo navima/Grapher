@@ -21,7 +21,7 @@ public class NodeShapeFactory {
         factoryDictionary.put(ENodeShape.DIAMOND, new DiamondFactory());
     }
 
-    public static @Nullable Shape build(@Nullable ENodeShape shapeEnum) {
+    public static Shape build(@Nullable ENodeShape shapeEnum) {
         return Optional.ofNullable(factoryDictionary.get(shapeEnum))
                 .map(INodeShapeFactory::make)
                 .orElseGet(() -> {

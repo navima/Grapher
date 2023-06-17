@@ -21,9 +21,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
-/**
- * Widget representing a node.
- */
 @EqualsAndHashCode(callSuper = true)
 public class NodeWidget extends Parent {
     private static final String DEFAULT_STYLE_CLASS = "graph-node";

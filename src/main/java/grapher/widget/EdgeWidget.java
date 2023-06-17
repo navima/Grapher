@@ -20,9 +20,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Widget representing an edge between nodes.
- */
 public class EdgeWidget extends Parent {
     @Getter
     final private List<EdgePointWidget> pathPoints = new ArrayList<>();
