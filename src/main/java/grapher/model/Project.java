@@ -1,6 +1,7 @@
 package grapher.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import grapher.model.settings.Settings;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 

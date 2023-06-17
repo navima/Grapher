@@ -1,6 +1,7 @@
 package grapher;// CHECKSTYLE:OFF
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import grapher.dialog.ProjectSettingsDialogPanel;
 import grapher.model.Node;
 import grapher.model.Project;
 import grapher.widget.EdgeWidget;
@@ -183,6 +184,10 @@ public class Controller {
 
     public void graphNameChangeHandler(String text) {
         currentManipulator.setGraphName(text);
+    }
+
+    public void fileMenuProjectSettingsHandler(ActionEvent actionEvent) {
+        new ProjectSettingsDialogPanel(project.settings).show();
     }
 
     /**

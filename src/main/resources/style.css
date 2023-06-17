@@ -61,3 +61,7 @@
     -fx-background-color: #0096c9;
     -fx-text-fill: #ffffff;
 }
+
+.border-bottom {
+    -fx-border-color: transparent transparent black transparent
+}

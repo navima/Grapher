@@ -73,7 +73,7 @@ public class GUI {
         return scene;
     }
 
-    public void updateGraphTabs(){
+    public void updateGraphTabs() {
         tabPane.getTabs().removeIf(tab -> tab.getUserData() == graphTabMarker);
         tabPane.getTabs().addAll(1, controller.manipulators.stream().map(this::generateTabAndGraphPane).toList());
     }
@@ -213,11 +213,13 @@ public class GUI {
         var fSaveAs = new MenuItem("Sa_ve As...");
         fSaveAs.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHIFT_DOWN, KeyCombination.CONTROL_DOWN));
         fSaveAs.setOnAction(controller::fileMenuSaveAsHandler);
+        var fProjectSettings = new MenuItem("_Project Settings");
+        fProjectSettings.setOnAction(controller::fileMenuProjectSettingsHandler);
         var fLoad = new MenuItem("_Load...");
         fLoad.setOnAction(controller::fileMenuLoadHandler);
         fLoad.setAccelerator(new KeyCodeCombination(KeyCode.L, KeyCombination.CONTROL_DOWN));
 
-        filemenu.getItems().addAll(fNew, fSave, fSaveAs, fLoad);
+        filemenu.getItems().addAll(fNew, fSave, fSaveAs, fProjectSettings, fLoad);
         return filemenu;
     }
 }
