@@ -5,6 +5,7 @@ import grapher.serialization.EdgeSerializer;
 import javafx.geometry.Point2D;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,7 +25,7 @@ public class Edge {
     @NonNull
     public Node to;
     public String text;
-    public List<Point2D> points;
+    public List<Point2D> points = new ArrayList<>();
 
     public String toString() {
         return "Edge(id=" + this.id + ", from=" + this.from.id + ", to=" + this.to.id + ", text=" + this.text + ", points=" + this.points + ")";

@@ -78,6 +78,7 @@ public class GraphDeserializer extends StdDeserializer<Graph> {
                     lastEdgeId = id;
                 parsedEdgeSet.add(edgeEdge);
             }
+            lastEdgeId++;
 
             var name = "";
             try {

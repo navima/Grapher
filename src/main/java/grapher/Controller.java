@@ -22,7 +22,9 @@ import org.tinylog.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Controller responsible for handling user actions.
@@ -31,7 +33,8 @@ public class Controller {
     /**
      * The manipulated graph.
      */
-    private final GraphManipulator currentGraph;
+    private GraphManipulator currentManipulator;
+    public final List<GraphManipulator> manipulators = new ArrayList<>();
     public Project project;
     /**
      * The GUI we are handling the events of.
@@ -42,20 +45,37 @@ public class Controller {
     public Controller(ObjectMapper mapper) {
         this.mapper = mapper;
         project = new Project();
-        currentGraph = new GraphManipulator();
-        currentGraph.loadDefault();
-        project.graphs.add(currentGraph.graph);
+        currentManipulator = addGraphManipulator();
+        currentManipulator.loadDefault();
+    }
+
+    private void clearProject() {
+        currentManipulator = null;
+        manipulators.clear();
+        project = null;
+    }
+
+    private void loadProject(Project project) {
+        clearProject();
+        this.project = project;
+        for (var graph : project.graphs) {
+            var manipulator = addGraphManipulator();
+            manipulator.graph = graph;
+        }
+        currentManipulator = manipulators.get(0);
+        gui.updateGraphTabs();
+        updateGraphPaneContents();
     }
 
     public void graphPaneOnMouseClicked(@NotNull MouseEvent e) {
         if (actionMode == EActionMode.NODE_ADD) {
             if (e.isStillSincePress()) { // don't
                 try {
-                    var invTrans = gui.graphPane.g.getLocalToParentTransform().createInverse();
+                    var invTrans = gui.currentGraphPane.g.getLocalToParentTransform().createInverse();
                     var res = invTrans.transform(e.getX(), e.getY());
-                    currentGraph.addNode(
-                            res.getX() - gui.graphPane.getChildTranslateX(),
-                            res.getY() - gui.graphPane.getChildTranslateY());
+                    currentManipulator.addNode(
+                            res.getX() - gui.currentGraphPane.getChildTranslateX(),
+                            res.getY() - gui.currentGraphPane.getChildTranslateY());
                     updateGraphPaneContents();
 
                 } catch (NonInvertibleTransformException nonInvertibleTransformException) {
@@ -63,29 +83,35 @@ public class Controller {
                 }
             }
         }
-        gui.graphPane.requestFocus();
+        gui.currentGraphPane.requestFocus();
     }
 
     public void fileMenuNewFileHandler(ActionEvent actionEvent) {
-        currentGraph.reset();
+        currentManipulator.reset();
         updateGraphPaneContents();
     }
 
     public void fileMenuSaveHandler(ActionEvent actionEvent) {
-        /*try {
-            var res = currentGraph.save();
-            if (!res)
-                currentGraph.save(showFilePrompt("Save", EFileActionType.SAVE));
+        try {
+            if (project.source != null) {
+                updateGraphs();
+                mapper.writeValue(project.source, project);
+            } else
+                fileMenuSaveAsHandler(actionEvent);
         } catch (IOException e) {
             e.printStackTrace();
             var alert = new Alert(Alert.AlertType.ERROR, e.toString());
             alert.showAndWait();
-        }*/
+        }
     }
 
     public void fileMenuSaveAsHandler(ActionEvent actionEvent) {
         try {
-            mapper.writeValue(showFilePrompt("Save Project As", EFileActionType.SAVE), project);
+            File file = showFilePrompt("Save Project As", EFileActionType.SAVE);
+            if (file == null) return;
+            project.source = file;
+            updateGraphs();
+            mapper.writeValue(file, project);
         } catch (IOException e) {
             e.printStackTrace();
             var alert = new Alert(Alert.AlertType.ERROR, e.toString());
@@ -95,7 +121,11 @@ public class Controller {
 
     public void fileMenuLoadHandler(ActionEvent actionEvent) {
         try {
-            project = mapper.readValue(showFilePrompt("Load Project", EFileActionType.LOAD), Project.class);
+            File file = showFilePrompt("Load Project", EFileActionType.LOAD);
+            if (file == null) return;
+            project = mapper.readValue(file, Project.class);
+            project.source = file;
+            loadProject(project);
             Logger.info("Loaded project: {}", project);
             updateGraphPaneContents();
         } catch (IOException e) {
@@ -103,6 +133,10 @@ public class Controller {
             var alert = new Alert(Alert.AlertType.ERROR, e.toString());
             alert.showAndWait();
         }
+    }
+
+    private void updateGraphs() {
+        project.graphs = manipulators.stream().map(graphManipulator -> graphManipulator.graph).toList();
     }
 
     private void activateToolbarButton(ToggleButton b, EActionMode actionMode) {
@@ -127,13 +161,28 @@ public class Controller {
     }
 
     public void undoHandler(ActionEvent actionEvent) {
-        currentGraph.undo();
+        currentManipulator.undo();
         updateGraphPaneContents();
     }
 
     public void redoHandler(ActionEvent actionEvent) {
-        currentGraph.redo();
+        currentManipulator.redo();
         updateGraphPaneContents();
+    }
+
+    public GraphManipulator addGraphManipulator() {
+        GraphManipulator manipulator = new GraphManipulator(manipulators.size());
+        manipulators.add(manipulator);
+        return manipulator;
+    }
+
+    public void changeActiveGraph(GraphManipulator manipulator) {
+        currentManipulator = manipulator;
+        updateGraphPaneContents();
+    }
+
+    public void graphNameChangeHandler(String text) {
+        currentManipulator.setGraphName(text);
     }
 
     /**
@@ -167,24 +216,24 @@ public class Controller {
     public final HashMap<Node, NodeWidget> nodeWidgetMap = new HashMap<>();
 
     void updateGraphPaneContents() {
-        var oldSelection = gui.graphPane.getSelection().stream().map(GraphPane.GraphPaneSlot::getValue).toList();
-        gui.graphPane.clear();
+        var oldSelection = gui.currentGraphPane.getSelection().stream().map(GraphPane.GraphPaneSlot::getValue).toList();
+        gui.currentGraphPane.clear();
         nodeWidgetMap.clear();
         Group dummy2 = new Group();
         new Scene(dummy2);
-        for (final var node : currentGraph.getNodes()) {
+        for (final var node : currentManipulator.getNodes()) {
             final var nodeWidget = new NodeWidget(node, this::updateGraphPaneContents);
             nodeWidget.setOnAction(actionEvent -> {
                 if (actionMode == EActionMode.REMOVE) {
                     actionEvent.consume();
-                    currentGraph.removeNode(node);
+                    currentManipulator.removeNode(node);
                     updateGraphPaneContents();
                 } else if (actionMode == EActionMode.EDGE_ADD) {
                     actionEvent.consume();
                     if (edgeBeingAdded) {
                         try {
                             if (edgeStartNode != null) {
-                                currentGraph.addEdge(edgeStartNode.value, node);
+                                currentManipulator.addEdge(edgeStartNode.value, node);
                             }
                         } catch (Exception ignore) {
                         }
@@ -197,30 +246,30 @@ public class Controller {
                     }
                 }
             });
-            nodeWidget.setOnNodeShapeChanged(nodeShape -> currentGraph.setNodeShape(node, nodeShape));
-            nodeWidget.setOnTextChanged(s -> currentGraph.setNodeText(node, s));
+            nodeWidget.setOnNodeShapeChanged(nodeShape -> currentManipulator.setNodeShape(node, nodeShape));
+            nodeWidget.setOnTextChanged(s -> currentManipulator.setNodeText(node, s));
             nodeWidgetMap.put(nodeWidget.value, nodeWidget);
             dummy2.getChildren().add(nodeWidget);
         }
         dummy2.layout();
         dummy2.applyCss();
         dummy2.layout();
-        for (final var edge : currentGraph.getEdges()) {
-            final var edgeWidget = new EdgeWidget(edge, currentGraph, this::updateGraphPaneContents, this);
-            final var edgeSlot = gui.graphPane.addChild(edgeWidget);
+        for (final var edge : currentManipulator.getEdges()) {
+            final var edgeWidget = new EdgeWidget(edge, currentManipulator, this::updateGraphPaneContents, this);
+            final var edgeSlot = gui.currentGraphPane.addChild(edgeWidget);
             edgeSlot.setDraggable(false);
             for (var pointWidget : edgeWidget.getPathPoints()) {
-                final var pointSlot = gui.graphPane.addChild(pointWidget);
-                oldSelection.stream().filter(pointWidget::equals).findFirst().ifPresent(node -> gui.graphPane.selectAlso(pointSlot));
+                final var pointSlot = gui.currentGraphPane.addChild(pointWidget);
+                oldSelection.stream().filter(pointWidget::equals).findFirst().ifPresent(node -> gui.currentGraphPane.selectAlso(pointSlot));
                 if (pointWidget.i != -1) {
                     pointSlot.setOnMoved(actionEvent -> {
-                        currentGraph.updatePointOnEdge(pointWidget.parentEdge, pointWidget.i, new Point2D(pointWidget.getLayoutX(), pointWidget.getLayoutY()));
+                        currentManipulator.updatePointOnEdge(pointWidget.parentEdge, pointWidget.i, new Point2D(pointWidget.getLayoutX(), pointWidget.getLayoutY()));
                         updateGraphPaneContents();
                     });
                     pointWidget.setOnAction(actionEvent -> {
                         if (actionMode == EActionMode.REMOVE) {
                             actionEvent.consume();
-                            currentGraph.removePointFromEdge(edge, pointWidget.i);
+                            currentManipulator.removePointFromEdge(edge, pointWidget.i);
                             updateGraphPaneContents();
                         }
                     });
@@ -230,10 +279,10 @@ public class Controller {
             }
         }
         for (var nodeWidget : nodeWidgetMap.values()) {
-            final var nodeSlot = gui.graphPane.addChild(nodeWidget);
-            oldSelection.stream().filter(nodeWidget::equals).findFirst().ifPresent(node -> gui.graphPane.selectAlso(nodeSlot));
+            final var nodeSlot = gui.currentGraphPane.addChild(nodeWidget);
+            oldSelection.stream().filter(nodeWidget::equals).findFirst().ifPresent(node -> gui.currentGraphPane.selectAlso(nodeSlot));
             nodeSlot.setOnMoved(actionEvent -> {
-                currentGraph.setNodeTranslate(nodeWidget.value, nodeWidget.getLayoutX(), nodeWidget.getLayoutY());
+                currentManipulator.setNodeTranslate(nodeWidget.value, nodeWidget.getLayoutX(), nodeWidget.getLayoutY());
                 updateGraphPaneContents();
             });
         }

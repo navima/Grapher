@@ -86,6 +86,8 @@ public interface IGraph extends ICaretaker {
 
     void removePointFromEdge(Edge edge, int i);
 
+    void setGraphName(String text);
+
     /**
      * Thrown when an invalid operation has been requested. (eg. adding Edge to nonexistent Node).
      */

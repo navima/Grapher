@@ -11,6 +11,7 @@ import javafx.geometry.Point2D;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
+import org.tinylog.TaggedLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,14 +20,21 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Wraps graph object and provides convenience methods for manipulating it.
+ * Wraps graph object and provides convenience methods and history management.
  */
 public class GraphManipulator implements IGraph {
+    private final TaggedLogger logger;
+    public final int id;
     public Graph graph = new Graph();
     @Nullable
     public File graphPath = null;
     public List<HistoryElement<GraphMemento>> history = new ArrayList<>();
     public int historyPosition = 0;
+
+    public GraphManipulator(int id) {
+        this.id = id;
+        logger = Logger.tag("GraphManipulator" + id);
+    }
 
     @Override
     public List<GraphMemento> getHistory() {
@@ -75,7 +83,7 @@ public class GraphManipulator implements IGraph {
 
     public void captureState(String label) {
         if (history.size() - 1 > historyPosition) {
-            Logger.info("History is stale. Taking first {} elements (from {})", historyPosition + 1, history.size());
+            logger.info("History is stale. Taking first {} elements (from {})", historyPosition + 1, history.size());
             history = history.stream().limit(historyPosition + 1).collect(Collectors.toList());
         }
         history.add(new HistoryElement<>(label, graph.getState()));
@@ -91,7 +99,7 @@ public class GraphManipulator implements IGraph {
         else {
             ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(graphPath, graph);
-            Logger.info("Overwritten save at: {}", graphPath);
+            logger.info("Overwritten save at: {}", graphPath);
             return true;
         }
     }
@@ -111,7 +119,7 @@ public class GraphManipulator implements IGraph {
             graph = mapper.readValue(file, Graph.class);
             graphPath = file;
             captureState("load file");
-            Logger.info("Loaded file from: {}", file);
+            logger.info("Loaded file from: {}", file);
             return true;
         }
         return false;
@@ -124,7 +132,7 @@ public class GraphManipulator implements IGraph {
         graph = mapper.readValue(src, Graph.class);
         graphPath = new File(src.getFile());
         captureState("load file");
-        Logger.info("Loaded file from: {}", src);
+        logger.info("Loaded file from: {}", src);
     }
 
     @Deprecated
@@ -151,10 +159,9 @@ public class GraphManipulator implements IGraph {
 
     @Override
     public void addNode(double x, double y) {
-
         final var node = graph.addNode(x, y);
         captureState("add node");
-        Logger.info("Added Node ({})", node);
+        logger.info("Added Node ({})", node);
     }
 
     @Override
@@ -172,17 +179,16 @@ public class GraphManipulator implements IGraph {
     @Override
     public void addEdge(Node from, Node to) throws InvalidOperationException {
         if (from == to) {
-            Logger.warn("Tried to connect Node with itself");
+            logger.warn("Tried to connect Node with itself");
             return;
         }
         if (from == null || to == null) {
-            Logger.warn("Tried to connect from or to null Node");
+            logger.warn("Tried to connect from or to null Node");
             throw new InvalidOperationException();
         } else {
-
             var edge = graph.addEdge(from, to);
             captureState("add edge");
-            Logger.info("Added Edge ({})", edge);
+            logger.info("Added Edge ({})", edge);
         }
     }
 
@@ -191,14 +197,21 @@ public class GraphManipulator implements IGraph {
 
         graph.removeNode(node);
         captureState("remove node");
-        Logger.info("Removed Node ({})", node);
+        logger.info("Removed Node ({})", node);
     }
 
     @Override
     public void removePointFromEdge(Edge edge, int n) {
         graph.removeEdgeNode(edge, n);
         captureState("remove edge point");
-        Logger.info("Removed {}-th Point from Edge ({})", n, edge);
+        logger.info("Removed {}-th Point from Edge ({})", n, edge);
+    }
+
+    @Override
+    public void setGraphName(String text) {
+        graph.name = text;
+        captureState("change name");
+        logger.info("Changed graph name to {}", text);
     }
 
     @Override
@@ -213,7 +226,7 @@ public class GraphManipulator implements IGraph {
 
         graph.removeEdge(edge);
         captureState("remove edge");
-        Logger.info("Removed Edge ({})", edge);
+        logger.info("Removed Edge ({})", edge);
     }
 
     @Override

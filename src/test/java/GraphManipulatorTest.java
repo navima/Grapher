@@ -12,7 +12,7 @@ class GraphManipulatorTest {
 
     @org.junit.jupiter.api.Test
     void saveVoid() {
-        var t = new GraphManipulator();
+        var t = new GraphManipulator(1);
         try {
             assertFalse(t.save());
         } catch (IOException e) {
@@ -22,7 +22,7 @@ class GraphManipulatorTest {
 
     @org.junit.jupiter.api.Test
     void saveFile() {
-        var t = new GraphManipulator();
+        var t = new GraphManipulator(1);
         try {
             var file = new File("./test.json");
             assertTrue(t.save(file));
@@ -41,7 +41,7 @@ class GraphManipulatorTest {
 
     @org.junit.jupiter.api.Test
     void loadFile() {
-        var t = new GraphManipulator();
+        var t = new GraphManipulator(1);
         try {
             ClassLoader classLoader = getClass().getClassLoader();
             assertFalse(t.load((File) null));
@@ -61,9 +61,9 @@ class GraphManipulatorTest {
 
             // read own save
             file = new File("test.json");
-            var t2 = new GraphManipulator();
+            var t2 = new GraphManipulator(1);
             t2.loadDefault();
-            var t3 = new GraphManipulator();
+            var t3 = new GraphManipulator(1);
             assertTrue(t2.save(file));
             assertTrue(t3.load(file));
             assertEquals(t3, t2);
@@ -76,7 +76,7 @@ class GraphManipulatorTest {
 
     @org.junit.jupiter.api.Test
     void loadURL() {
-        var t = new GraphManipulator();
+        var t = new GraphManipulator(1);
         assertThrows(IOException.class, () -> t.load(new URL("file:/asd")));
     }
 
@@ -87,8 +87,8 @@ class GraphManipulatorTest {
 
     @org.junit.jupiter.api.Test
     void reset() {
-        var t1 = new GraphManipulator();
-        var t2 = new GraphManipulator();
+        var t1 = new GraphManipulator(1);
+        var t2 = new GraphManipulator(1);
         t2.loadDefault();
         t2.reset();
         assertEquals(t2, t1);
