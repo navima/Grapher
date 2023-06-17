@@ -1,11 +1,10 @@
 package grapher.widget;
 
 import grapher.model.Edge;
-import javafx.collections.ListChangeListener;
+import grapher.util.StyleChangeListenerFactory;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Parent;
-import javafx.scene.control.Label;
 import javafx.scene.shape.Circle;
 import lombok.Setter;
 
@@ -22,17 +21,10 @@ public class EdgePointWidget extends Parent {
     public EdgePointWidget(Edge parentEdge, int i) {
         this.parentEdge = parentEdge;
         this.i = i;
-        var lab = new Label("" + i + " : " + parentEdge.text);
-        this.getChildren().addAll(circle);//, lab);
+        this.getChildren().addAll(circle);
         circle.setRadius(1);
         circle.getStyleClass().add("graph-edge-point");
-        this.getStyleClass().addListener((ListChangeListener<? super String>) change -> {
-            change.next();
-            if (change.wasRemoved())
-                circle.getStyleClass().removeAll(change.getRemoved());
-            else if (change.wasAdded())
-                circle.getStyleClass().addAll(change.getAddedSubList());
-        });
+        this.getStyleClass().addListener(StyleChangeListenerFactory.copierListener(circle));
 
         setOnMouseClicked(e -> {
             if (e.isStillSincePress()) {

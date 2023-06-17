@@ -42,28 +42,24 @@ public class EdgeWidget extends Parent {
 
         layoutCenterXBinding = new DoubleBinding() {
             {
-                bind(
-                        fromWidget.getLayoutCenterXBinding(),
+                bind(fromWidget.getLayoutCenterXBinding(),
                         toWidget.getLayoutCenterXBinding());
             }
 
             @Override
             protected double computeValue() {
                 return getPathPoints().stream().mapToDouble(Node::getLayoutX).average().getAsDouble();
-                //return (fromWidget.getLayoutCenterXBinding().get()+toWidget.getLayoutCenterXBinding().get())/2;
             }
         };
         layoutCenterYBinding = new DoubleBinding() {
             {
-                bind(
-                        fromWidget.getLayoutCenterYBinding(),
+                bind(fromWidget.getLayoutCenterYBinding(),
                         toWidget.getLayoutCenterYBinding());
             }
 
             @Override
             protected double computeValue() {
                 return getPathPoints().stream().mapToDouble(Node::getLayoutY).average().getAsDouble();
-                //return (fromWidget.getLayoutCenterYBinding().get()+toWidget.getLayoutCenterYBinding().get())/2;
             }
         };
 
