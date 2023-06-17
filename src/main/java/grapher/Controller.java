@@ -32,13 +32,16 @@ public class Controller {
      * The manipulated graph.
      */
     private final GraphManipulator currentGraph;
-    private final Project project = new Project();
+    public Project project;
     /**
      * The GUI we are handling the events of.
      */
     public GUI gui; //TODO: Loosen the coupling.
+    private final ObjectMapper mapper;
 
-    public Controller() {
+    public Controller(ObjectMapper mapper) {
+        this.mapper = mapper;
+        project = new Project();
         currentGraph = new GraphManipulator();
         currentGraph.loadDefault();
         project.graphs.add(currentGraph.graph);
@@ -69,7 +72,7 @@ public class Controller {
     }
 
     public void fileMenuSaveHandler(ActionEvent actionEvent) {
-        try {
+        /*try {
             var res = currentGraph.save();
             if (!res)
                 currentGraph.save(showFilePrompt("Save", EFileActionType.SAVE));
@@ -77,14 +80,12 @@ public class Controller {
             e.printStackTrace();
             var alert = new Alert(Alert.AlertType.ERROR, e.toString());
             alert.showAndWait();
-        }
+        }*/
     }
 
     public void fileMenuSaveAsHandler(ActionEvent actionEvent) {
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.writeValue(showFilePrompt("Save Project", EFileActionType.SAVE), project);
-            currentGraph.save(showFilePrompt("Save As", EFileActionType.SAVE));
+            mapper.writeValue(showFilePrompt("Save Project As", EFileActionType.SAVE), project);
         } catch (IOException e) {
             e.printStackTrace();
             var alert = new Alert(Alert.AlertType.ERROR, e.toString());
@@ -94,13 +95,9 @@ public class Controller {
 
     public void fileMenuLoadHandler(ActionEvent actionEvent) {
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            var project = mapper.readValue(showFilePrompt("Load Project", EFileActionType.LOAD), Project.class);
-            Logger.info("Loaded file into project {}", project);
-
-            var res = currentGraph.load(showFilePrompt("Load From", EFileActionType.LOAD));
-            if (res)
-                updateGraphPaneContents();
+            project = mapper.readValue(showFilePrompt("Load Project", EFileActionType.LOAD), Project.class);
+            Logger.info("Loaded project: {}", project);
+            updateGraphPaneContents();
         } catch (IOException e) {
             e.printStackTrace();
             var alert = new Alert(Alert.AlertType.ERROR, e.toString());
@@ -167,7 +164,6 @@ public class Controller {
     public EActionMode actionMode = EActionMode.PAN;
     @Nullable NodeWidget edgeStartNode = null;
     boolean edgeBeingAdded = false;
-
     public final HashMap<Node, NodeWidget> nodeWidgetMap = new HashMap<>();
 
     void updateGraphPaneContents() {

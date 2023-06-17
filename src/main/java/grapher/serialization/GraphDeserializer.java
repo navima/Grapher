@@ -5,11 +5,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.node.TextNode;
 import grapher.model.Edge;
 import grapher.model.Graph;
 import grapher.model.Node;
 import grapher.shape.ENodeShape;
 import javafx.geometry.Point2D;
+import org.tinylog.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,19 +23,10 @@ import java.util.LinkedHashMap;
  * Class for deserializing Graph.
  */
 public class GraphDeserializer extends StdDeserializer<Graph> {
-
-    /**
-     * Default constructor.
-     */
     public GraphDeserializer() {
         this(null);
     }
 
-    /**
-     * Constructor.
-     *
-     * @param vc vc
-     */
     protected GraphDeserializer(Class<?> vc) {
         super(vc);
     }
@@ -86,7 +79,14 @@ public class GraphDeserializer extends StdDeserializer<Graph> {
                 parsedEdgeSet.add(edgeEdge);
             }
 
-            var graph = new Graph(parsedNodeSet, new HashSet<>(), lastNodeId, lastEdgeId);
+            var name = "";
+            try {
+                final var nameNode = (TextNode) root.get("name");
+                name = nameNode.asText();
+            } catch (Exception e) {
+                Logger.warn("Graph missing 'name'");
+            }
+            var graph = new Graph(name, parsedNodeSet, new HashSet<>(), lastNodeId, lastEdgeId);
             for (var edge : parsedEdgeSet) {
                 graph.addEdge(edge);
             }

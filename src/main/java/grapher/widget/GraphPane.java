@@ -1,6 +1,6 @@
 package grapher.widget;// CHECKSTYLE:OFF
 
-import javafx.collections.ListChangeListener;
+import grapher.util.StyleChangeListenerFactory;
 import javafx.collections.ModifiableObservableListBase;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -10,6 +10,8 @@ import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
+import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -214,12 +216,19 @@ public class GraphPane extends Region {
         selection.remove(node);
     }
 
+    /**
+     * Widget that contains a child of the GraphPane, with dragging behaviour.
+     */
     public static class GraphPaneSlot extends Parent {
+        @Getter
+        @Setter
         private boolean draggable = true;
-        public final GraphPane parent;
+        private final GraphPane parent;
+        @Getter
         private final Node value;
+        @Getter
+        @Setter
         private EventHandler<ActionEvent> onMoved;
-        private EventHandler<ActionEvent> onModified;
         private double dragStartMouseX = 0.0;
         private double dragStartMouseY = 0.0;
         private double dragStartLayoutX = 0.0;
@@ -229,17 +238,11 @@ public class GraphPane extends Region {
             this.parent = parent;
             value = node;
             getChildren().add(node);
-            this.getStyleClass().addListener((ListChangeListener<? super String>) change -> {
-                change.next();
-                if (change.wasRemoved())
-                    value.getStyleClass().removeAll(change.getRemoved());
-                else if (change.wasAdded())
-                    value.getStyleClass().addAll(change.getAddedSubList());
-            });
+            this.getStyleClass().addListener(StyleChangeListenerFactory.copierListener(value));
             setOnMousePressed(e -> {
                 if (draggable) {
                     select();
-                    parent.selection.forEach(elem -> elem.recordMousePressed(e));
+                    parent.selection.forEach(elem -> elem.recordMouseAndLayoutLocation(e));
                     e.consume();
                 }
             });
@@ -250,7 +253,6 @@ public class GraphPane extends Region {
                         elem.value.setLayoutY(elem.dragStartLayoutY + e.getY() - dragStartMouseY);
                     });
                     e.consume();
-                    //System.out.println("HELP! IM BEING DRAGGED!!");
                 }
             });
             setOnMouseReleased(e -> {
@@ -258,7 +260,7 @@ public class GraphPane extends Region {
                     if (!e.isStillSincePress()) {
                         var temp = new ArrayList<>(parent.selection);
                         temp.forEach(elem -> {
-                            if (!(elem.getOnMoved() == null))
+                            if (elem.getOnMoved() != null)
                                 elem.getOnMoved().handle(new ActionEvent());
                         });
                         e.consume();
@@ -267,34 +269,16 @@ public class GraphPane extends Region {
             });
         }
 
-        private void recordMousePressed(javafx.scene.input.MouseEvent e) {
+        private void recordMouseAndLayoutLocation(javafx.scene.input.MouseEvent e) {
             dragStartMouseX = e.getX();
             dragStartMouseY = e.getY();
             dragStartLayoutX = value.getLayoutX();
             dragStartLayoutY = value.getLayoutY();
         }
 
-
-        public Node getValue() {
-            return value;
-        }
-
-        public EventHandler<ActionEvent> getOnMoved() {
-            return onMoved;
-        }
-
-        public void setOnMoved(EventHandler<ActionEvent> onMoved) {
-            this.onMoved = onMoved;
-        }
-
-        public EventHandler<ActionEvent> getOnModified() {
-            return onModified;
-        }
-
-        public void setOnModified(EventHandler<ActionEvent> onModified) {
-            this.onModified = onModified;
-        }
-
+        /**
+         * Sets this widget as the selected widget on the parent GraphPane.
+         */
         public void select() {
             parent.select(this);
         }
@@ -305,14 +289,6 @@ public class GraphPane extends Region {
 
         public boolean isSelected() {
             return parent.selection.contains(this);
-        }
-
-        public boolean isDraggable() {
-            return draggable;
-        }
-
-        public void setDraggable(boolean draggable) {
-            this.draggable = draggable;
         }
     }
 }

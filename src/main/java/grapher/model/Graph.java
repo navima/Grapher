@@ -23,6 +23,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Graph implements IMementoable<Graph> {
+    public String name = "";
     public Set<Node> nodes = new HashSet<>();
     public Set<Edge> edges = new HashSet<>();
     private int lastNodeId;
@@ -42,6 +43,7 @@ public class Graph implements IMementoable<Graph> {
         }
         lastNodeId = oldGraph.lastNodeId;
         lastEdgeId = oldGraph.lastEdgeId;
+        name = oldGraph.name;
     }
 
     /**

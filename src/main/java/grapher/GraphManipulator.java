@@ -19,7 +19,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Wraps graph object.
+ * Wraps graph object and provides convenience methods for manipulating it.
  */
 public class GraphManipulator implements IGraph {
     public Graph graph = new Graph();

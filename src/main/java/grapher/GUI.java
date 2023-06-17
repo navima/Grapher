@@ -14,17 +14,16 @@ import org.jetbrains.annotations.NotNull;
 
 public class GUI {
     final @NotNull Controller controller;
-
-    public GUI(@NotNull Controller controller) {
-        this.controller = controller;
-        controller.gui = this;
-    }
-
     public ToggleButton bPan;
     public ToggleButton bAddN;
     public ToggleButton bAddE;
     public ToggleButton bRemove;
     final GraphPane graphPane = new GraphPane();
+
+    public GUI(@NotNull Controller controller) {
+        this.controller = controller;
+        controller.gui = this;
+    }
 
     @NotNull Scene show(@NotNull Stage stage) {
         final var root = new Group();
@@ -32,7 +31,14 @@ public class GUI {
         final var scene = new Scene(root, 640, 480);
         scene.getStylesheets().add("style.css");
         stage.setTitle("Grapher");
-
+/*
+        final var tabPane = new TabPane();
+        tabPane.getTabs().addAll(controller.project.graphs.stream().map(graph -> {
+            var gp = new GraphPane();
+            var tab = new Tab(graph.name, gp);
+            return tab;
+        }).toList());
+*/
         controller.updateGraphPaneContents();
         setUpGraphPane(scene);
 

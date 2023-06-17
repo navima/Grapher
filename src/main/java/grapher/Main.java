@@ -1,5 +1,6 @@
 package grapher;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
@@ -11,7 +12,7 @@ public class Main extends Application {
     private static GUI gui;
 
     public static void main(String[] args) {
-        Controller controller = new Controller();
+        Controller controller = new Controller(new ObjectMapper());
         gui = new GUI(controller);
         launch();
     }
