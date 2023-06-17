@@ -91,43 +91,7 @@ public class GraphManipulator implements IGraph {
         //printHistory();
     }
 
-    @Deprecated
-    @Override
-    public boolean save() throws IOException {
-        if (graphPath == null)
-            return false;
-        else {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.writeValue(graphPath, graph);
-            logger.info("Overwritten save at: {}", graphPath);
-            return true;
-        }
-    }
-
-    @Deprecated
-    @Override
-    public boolean save(File file) throws IOException {
-        graphPath = file;
-        return save();
-    }
-
-    @Deprecated
-    @Override
-    public boolean load(@Nullable File file) throws IOException {
-        if (file != null) {
-            ObjectMapper mapper = new ObjectMapper();
-            graph = mapper.readValue(file, Graph.class);
-            graphPath = file;
-            captureState("load file");
-            logger.info("Loaded file from: {}", file);
-            return true;
-        }
-        return false;
-    }
-
-    @Deprecated
-    @Override
-    public void load(@NotNull URL src) throws IOException {
+    private void load(@NotNull URL src) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         graph = mapper.readValue(src, Graph.class);
         graphPath = new File(src.getFile());
@@ -135,7 +99,6 @@ public class GraphManipulator implements IGraph {
         logger.info("Loaded file from: {}", src);
     }
 
-    @Deprecated
     @Override
     public void loadDefault() {
         ClassLoader classLoader = getClass().getClassLoader();

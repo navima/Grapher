@@ -18,41 +18,6 @@ import java.util.Set;
  * The interface for a {@link Graph} object.
  */
 public interface IGraph extends ICaretaker {
-
-    /**
-     * Saves graph if path is set.
-     *
-     * @return Whether path is set
-     * @throws IOException On IOException
-     */
-    boolean save() throws IOException;
-
-    /**
-     * Saves graph to JSON.
-     *
-     * @param file The source File
-     * @return Always True
-     * @throws IOException On IOException
-     */
-    boolean save(File file) throws IOException;
-
-    /**
-     * Loads graph JSON.
-     *
-     * @param file The source File
-     * @return Whether File was null.
-     * @throws IOException On IOException
-     */
-    boolean load(@Nullable File file) throws IOException;
-
-    /**
-     * Loads graph JSON.
-     *
-     * @param src The source URL
-     * @throws IOException On IOException
-     */
-    void load(@NotNull URL src) throws IOException;
-
     /**
      * Load the default startup graph.
      */
