@@ -17,7 +17,7 @@ public class EdgePointWidget extends Parent {
     public int i;
     public Circle circle = new Circle();
     @Setter
-    EventHandler<ActionEvent> onAction;
+    private EventHandler<ActionEvent> onAction;
 
     public EdgePointWidget(Edge parentEdge, int i) {
         this.parentEdge = parentEdge;

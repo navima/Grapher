@@ -11,9 +11,7 @@ public class Main extends Application {
     private static GUI gui;
 
     public static void main(String[] args) {
-        IGraph graphWrapper = new GraphManipulator();
-        graphWrapper.loadDefault();
-        Controller controller = new Controller(graphWrapper);
+        Controller controller = new Controller();
         gui = new GUI(controller);
         launch();
     }

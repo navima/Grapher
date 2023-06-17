@@ -1,11 +1,14 @@
 package grapher.model;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@ToString
+@EqualsAndHashCode
 public class Project {
-    public Settings settings;
-    public List<Graph> graphs;
+    public Settings settings = new Settings();
+    public List<Graph> graphs = new ArrayList<>();
 }

@@ -1,8 +1,8 @@
 package grapher.widget;// CHECKSTYLE:OFF
 
 import grapher.Controller;
-import grapher.IGraph;
 import grapher.EActionMode;
+import grapher.IGraph;
 import grapher.model.Edge;
 import grapher.util.Callback;
 import javafx.beans.binding.DoubleBinding;

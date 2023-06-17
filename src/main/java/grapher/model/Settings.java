@@ -1,7 +1,10 @@
 package grapher.model;
 
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-@Data
+@ToString
+@EqualsAndHashCode
 public class Settings {
+    public boolean dummy;
 }

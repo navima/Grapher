@@ -83,6 +83,7 @@ public class GraphManipulator implements IGraph {
         //printHistory();
     }
 
+    @Deprecated
     @Override
     public boolean save() throws IOException {
         if (graphPath == null)
@@ -95,12 +96,14 @@ public class GraphManipulator implements IGraph {
         }
     }
 
+    @Deprecated
     @Override
     public boolean save(File file) throws IOException {
         graphPath = file;
         return save();
     }
 
+    @Deprecated
     @Override
     public boolean load(@Nullable File file) throws IOException {
         if (file != null) {
@@ -114,6 +117,7 @@ public class GraphManipulator implements IGraph {
         return false;
     }
 
+    @Deprecated
     @Override
     public void load(@NotNull URL src) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
@@ -123,6 +127,7 @@ public class GraphManipulator implements IGraph {
         Logger.info("Loaded file from: {}", src);
     }
 
+    @Deprecated
     @Override
     public void loadDefault() {
         ClassLoader classLoader = getClass().getClassLoader();

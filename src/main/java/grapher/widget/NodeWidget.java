@@ -1,8 +1,8 @@
 package grapher.widget;// CHECKSTYLE:OFF
 
 import grapher.model.Node;
-import grapher.shape.NodeShapeFactory;
 import grapher.shape.ENodeShape;
+import grapher.shape.NodeShapeFactory;
 import grapher.util.Callback;
 import grapher.util.StyleChangeListenerFactory;
 import javafx.beans.binding.DoubleBinding;
@@ -20,7 +20,6 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 /**
  * Widget representing a node.
