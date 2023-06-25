@@ -18,10 +18,6 @@ import java.util.Set;
  * The interface for a {@link Graph} object.
  */
 public interface IGraph extends ICaretaker {
-    /**
-     * Load the default startup graph.
-     */
-    void loadDefault();
 
     /**
      * Get a readonly view of the nodes.

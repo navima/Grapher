@@ -14,7 +14,7 @@ import java.util.Objects;
 /**
  * Class representing a node.
  */
-@JsonSerialize(using = NodeSerializer.class)
+//@JsonSerialize(using = NodeSerializer.class)
 @NoArgsConstructor
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)

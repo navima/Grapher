@@ -8,9 +8,6 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class Settings {
-    @Section("Dummy settings")
-    @Title("This is a dummy text")
-    public String dummyString;
     @Section("Export Format")
     @Title("Generate separate file for each graph")
     public boolean separateFilesForGraphs = false;

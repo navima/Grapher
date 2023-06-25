@@ -91,25 +91,6 @@ public class GraphManipulator implements IGraph {
         //printHistory();
     }
 
-    private void load(@NotNull URL src) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-        graph = mapper.readValue(src, Graph.class);
-        graphPath = new File(src.getFile());
-        captureState("load file");
-        logger.info("Loaded file from: {}", src);
-    }
-
-    @Override
-    public void loadDefault() {
-        ClassLoader classLoader = getClass().getClassLoader();
-        try {
-            load(classLoader.getResource("default.json"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        graphPath = null;
-    }
-
     @Override
     public Set<Node> getNodes() {
         return Collections.unmodifiableSet(graph.nodes);

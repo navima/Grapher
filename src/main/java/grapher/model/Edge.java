@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Represents a connection between two {@link Node}s.
  */
-@JsonSerialize(using = EdgeSerializer.class)
+//@JsonSerialize(using = EdgeSerializer.class)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @AllArgsConstructor
 @RequiredArgsConstructor

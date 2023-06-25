@@ -1,9 +1,14 @@
 package grapher;// CHECKSTYLE:OFF
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import grapher.dialog.ProjectSettingsDialogPanel;
+import grapher.model.Edge;
+import grapher.model.Graph;
 import grapher.model.Node;
 import grapher.model.Project;
+import grapher.serialization.CustomEdgeSerializer;
+import grapher.serialization.CustomNodeSerializer;
 import grapher.widget.EdgeWidget;
 import grapher.widget.GraphPane;
 import grapher.widget.NodeWidget;
@@ -17,15 +22,16 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.net.URL;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Controller responsible for handling user actions.
@@ -47,7 +53,11 @@ public class Controller {
         this.mapper = mapper;
         project = new Project();
         currentManipulator = addGraphManipulator();
-        currentManipulator.loadDefault();
+        try {
+            currentManipulator.graph = mapper.readValue(getClass().getClassLoader().getResource("default.json"), Graph.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void clearProject() {
@@ -188,6 +198,40 @@ public class Controller {
 
     public void fileMenuProjectSettingsHandler(ActionEvent actionEvent) {
         new ProjectSettingsDialogPanel(project.settings).show();
+    }
+
+    /**
+     * Exports graphs next to save location.
+     */
+    public void fileMenuExportHandler(ActionEvent actionEvent) {
+        if (project.source == null) {
+            new Alert(Alert.AlertType.ERROR, "Can't export before saving at least once.").showAndWait();
+            return;
+        }
+        ObjectMapper exportMapper = new ObjectMapper();
+        SimpleModule simpleModule = new SimpleModule();
+        simpleModule.addSerializer(Node.class, new CustomNodeSerializer(project.settings));
+        simpleModule.addSerializer(Edge.class, new CustomEdgeSerializer(project.settings));
+        exportMapper.registerModule(simpleModule);
+        try {
+            if (project.settings.separateFilesForGraphs) {
+                // save into multiple files
+                for (var graph : project.graphs) {
+                    exportMapper.writeValue(appendToProjectFilePath(graph.name + ".json"), graph);
+                }
+            } else {
+                // save into one file
+                exportMapper.writeValue(appendToProjectFilePath("export.json"), project);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            new Alert(Alert.AlertType.ERROR, e.toString()).showAndWait();
+        }
+    }
+
+    @NotNull
+    private File appendToProjectFilePath(String... s) {
+        return new File(project.source.getParentFile(), FilenameUtils.getBaseName(project.source.getName()) + "-" + String.join("-", s));
     }
 
     /**

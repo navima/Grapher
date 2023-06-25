@@ -215,11 +215,13 @@ public class GUI {
         fSaveAs.setOnAction(controller::fileMenuSaveAsHandler);
         var fProjectSettings = new MenuItem("_Project Settings");
         fProjectSettings.setOnAction(controller::fileMenuProjectSettingsHandler);
+        var fExport = new MenuItem("_Export...");
+        fExport.setOnAction(controller::fileMenuExportHandler);
         var fLoad = new MenuItem("_Load...");
         fLoad.setOnAction(controller::fileMenuLoadHandler);
         fLoad.setAccelerator(new KeyCodeCombination(KeyCode.L, KeyCombination.CONTROL_DOWN));
 
-        filemenu.getItems().addAll(fNew, fSave, fSaveAs, fProjectSettings, fLoad);
+        filemenu.getItems().addAll(fNew, fSave, fSaveAs, fProjectSettings, fExport, fLoad);
         return filemenu;
     }
 }

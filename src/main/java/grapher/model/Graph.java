@@ -17,7 +17,7 @@ import java.util.Set;
 /**
  * Data structure for a graph.
  */
-@JsonDeserialize(using = GraphDeserializer.class)
+//@JsonDeserialize(using = GraphDeserializer.class)
 @ToString
 @EqualsAndHashCode
 @AllArgsConstructor
