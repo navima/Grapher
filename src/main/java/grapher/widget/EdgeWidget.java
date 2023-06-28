@@ -5,15 +5,15 @@ import grapher.EActionMode;
 import grapher.IGraph;
 import grapher.model.Edge;
 import grapher.util.Callback;
+import javafx.beans.InvalidationListener;
 import javafx.beans.binding.DoubleBinding;
+import javafx.beans.value.ChangeListener;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
+import javafx.scene.shape.*;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,8 +21,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EdgeWidget extends Parent {
+    /**
+     * List of points, in order from 'from' to 'to'.
+     */
     @Getter
     final private List<EdgePointWidget> pathPoints = new ArrayList<>();
+    /**
+     * List of paths between points, in order from 'from' to 'to'.
+     */
+    final private List<Path> paths = new ArrayList<>();
     final private Label label = new Label();
     final private TextArea textArea = new TextArea();
     final private NodeWidget fromWidget;
@@ -31,11 +38,13 @@ public class EdgeWidget extends Parent {
     private final DoubleBinding layoutCenterXBinding;
     @Getter
     private final DoubleBinding layoutCenterYBinding;
+    private final Polyline arrowWidget;
 
     public EdgeWidget(@NotNull Edge edge, @NotNull IGraph graph, @NotNull Callback updateCallback, @NotNull Controller controller) {
 
         fromWidget = controller.nodeWidgetMap.get(edge.from);
         toWidget = controller.nodeWidgetMap.get(edge.to);
+        arrowWidget = new Polyline(-5, -10, 0, 0, 5, -10);
 
         layoutCenterXBinding = new DoubleBinding() {
             {
@@ -45,7 +54,7 @@ public class EdgeWidget extends Parent {
 
             @Override
             protected double computeValue() {
-                return getPathPoints().stream().mapToDouble(Node::getLayoutX).average().getAsDouble();
+                return pathPoints.stream().mapToDouble(Node::getLayoutX).average().getAsDouble();
             }
         };
         layoutCenterYBinding = new DoubleBinding() {
@@ -56,9 +65,11 @@ public class EdgeWidget extends Parent {
 
             @Override
             protected double computeValue() {
-                return getPathPoints().stream().mapToDouble(Node::getLayoutY).average().getAsDouble();
+                return pathPoints.stream().mapToDouble(Node::getLayoutY).average().getAsDouble();
             }
         };
+
+        ChangeListener<Object> arrowPositionListener = (observable, oldValue, newValue) -> refreshArrowPosition();
 
 
         // Manipulating points
@@ -82,9 +93,14 @@ public class EdgeWidget extends Parent {
             //style
         }
 
+        for (var point : pathPoints) {
+            point.layoutXProperty().addListener(arrowPositionListener);
+            point.layoutYProperty().addListener(arrowPositionListener);
+        }
+
 
         // Edges
-        List<Path> paths = new ArrayList<>();
+        // TODO change this so that position is stored in layout instead of in the "moveTo"
         for (int i = 0; i < pathPoints.size() - 1; i++) {
             final var path = new Path();
             final var currPoint = pathPoints.get(i);
@@ -131,6 +147,18 @@ public class EdgeWidget extends Parent {
             });
         }
 
+        var lastPath = paths.get(paths.size() - 1);
+        var moveTo = (MoveTo) lastPath.getElements().get(0);
+        var lineTo = (LineTo) lastPath.getElements().get(1);
+        arrowWidget.setTranslateX(0);
+        arrowWidget.setTranslateY(5);
+        arrowWidget.layoutXProperty().bind(moveTo.xProperty().add(lineTo.xProperty()).divide(2));
+        arrowWidget.layoutYProperty().bind(moveTo.yProperty().add(lineTo.yProperty()).divide(2));
+        updateArrowRotate(moveTo, lineTo);
+        var listener = (InvalidationListener) (observable) -> updateArrowRotate(moveTo, lineTo);
+        arrowWidget.layoutXProperty().addListener(listener);
+
+
         getChildren().addAll(paths);
         getChildren().addAll(pathPoints);
 
@@ -169,5 +197,36 @@ public class EdgeWidget extends Parent {
 
         this.getChildren().add(label);
         this.getChildren().add(textArea);
+        this.getChildren().add(arrowWidget);
+    }
+
+    private void updateArrowRotate(MoveTo moveTo, LineTo lineTo) {
+        var x = moveTo.getX();
+        var y = moveTo.getY();
+        var xv = lineTo.getX();
+        var yv = lineTo.getY();
+        var dx = xv - x;
+        var dy = yv - y;
+        arrowWidget.setRotate(Math.toDegrees(Math.atan2(dy, dx)) - 90);
+    }
+
+    private void refreshArrowPosition() {
+        // TODO implement function that finds edge of 'to' node.
+        /*
+        for (int i = paths.size() - 1; i == 0; i--) {
+            if (toWidget.getBoundsInParent().intersects(localToParent(paths.get(i).getBoundsInParent()))) {
+                label.setText("WÚ");
+                Shape intersect = Shape.intersect(paths.get(i), toWidget.getLabel().getShape());
+                Logger.info(intersect);
+                if (intersect.getBoundsInLocal().getWidth() != -1) {
+                    arrowWidget.setLayoutX(intersect.getLayoutX());
+                    arrowWidget.setLayoutY(intersect.getLayoutY());
+                    break;
+                }
+            } else {
+                label.setText("");
+            }
+        }
+        */
     }
 }

@@ -26,6 +26,7 @@ public class NodeWidget extends Parent {
     private static final String DEFAULT_STYLE_CLASS = "graph-node";
     @EqualsAndHashCode.Include
     public final @NotNull Node value;
+    @Getter
     private final Label label = new Label();
     private final TextArea textArea = new TextArea();
     @Setter
