@@ -215,7 +215,7 @@ public class GUI {
         fSaveAs.setOnAction(controller::fileMenuSaveAsHandler);
         var fProjectSettings = new MenuItem("_Project Settings");
         fProjectSettings.setOnAction(controller::fileMenuProjectSettingsHandler);
-        var fExport = new MenuItem("_Export...");
+        var fExport = new MenuItem("_Export");
         fExport.setOnAction(controller::fileMenuExportHandler);
         var fLoad = new MenuItem("_Load...");
         fLoad.setOnAction(controller::fileMenuLoadHandler);
