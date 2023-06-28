@@ -9,10 +9,7 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 import java.lang.reflect.Field;
@@ -71,7 +68,8 @@ public class ProjectSettingsDialogPanel {
         if (chooserWidget == null) {
             return;
         }
-        final var box = new VBox();
+        var inlineChooserWidget = field.getType().equals(boolean.class);
+        final var box = inlineChooserWidget ? new HBox() : new VBox();
         box.getChildren().addAll(titleWidget, chooserWidget);
         pane.getChildren().add(box);
     }
