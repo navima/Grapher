@@ -3,13 +3,18 @@ package grapher.dialog;
 import grapher.model.settings.Settings;
 import grapher.util.Section;
 import grapher.util.Title;
-import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.lang.reflect.Field;
@@ -99,25 +104,17 @@ public class ProjectSettingsDialogPanel {
             return textField;
         } else if (field.getType().isEnum()) {
             Object[] values = field.getType().getEnumConstants();
-            final var listView = new ListView<>();
-            listView.getItems().addAll(values);
-            listView.getSelectionModel().select(field.get(settings));
-            listView.setEditable(false);
-            Platform.runLater(() -> {
-                listView.layout();
-                listView.applyCss();
-                double cellHeight = ((Cell<?>) listView.lookup(".list-cell")).getHeight();
-                double items = listView.getItems().size();
-                listView.setPrefHeight(cellHeight * items + 1);
-            });
-            listView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            final var choiceBox = new ChoiceBox<>();
+            choiceBox.getItems().addAll(values);
+            choiceBox.getSelectionModel().select(field.get(settings));
+            choiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
                 try {
                     field.set(settings, newValue);
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
             });
-            return listView;
+            return choiceBox;
         }
         return null;
     }
