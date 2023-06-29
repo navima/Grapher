@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import grapher.model.Edge;
 import grapher.model.settings.Settings;
+import grapher.util.Utils;
 
 import java.io.IOException;
 
@@ -27,8 +28,8 @@ public class CustomEdgeSerializer extends StdSerializer<Edge> {
         if (settings.writeEdgeFrom)
             gen.writeNumberField("from", value.from.id);
         if (settings.writeEdgeTo)
-            gen.writeNumberField("to", value.to.id);
-        gen.writeStringField("text", value.text);
+            gen.writeNumberField(settings.edgeToName, value.to.id);
+        gen.writeStringField(settings.edgeTextName, Utils.transformNullIf(value.text, settings.transformNull));
         if (settings.writeEdgePoints)
             gen.writeObjectField("points", value.points);
         gen.writeEndObject();

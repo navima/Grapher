@@ -216,6 +216,7 @@ public class GUI {
         var fProjectSettings = new MenuItem("_Project Settings");
         fProjectSettings.setOnAction(controller::fileMenuProjectSettingsHandler);
         var fExport = new MenuItem("_Export");
+        fExport.setAccelerator(new KeyCodeCombination(KeyCode.E, KeyCombination.CONTROL_DOWN));
         fExport.setOnAction(controller::fileMenuExportHandler);
         var fLoad = new MenuItem("_Load...");
         fLoad.setOnAction(controller::fileMenuLoadHandler);

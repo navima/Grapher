@@ -13,12 +13,21 @@ public class Settings {
     public boolean separateFilesForGraphs = false;
     @Title("Where to store edges")
     public EEdgePlace eEdgePlace = EEdgePlace.SEPARATE;
+    @Title("Transform null strings to default value?")
+    public boolean transformNull = false;
     public String fromNodeEdgeFieldName = "edges";
+    public String nodeIdName = "id";
+    public String nodeTextName = "text";
     public boolean writeNodeX = true;
     public boolean writeNodeY = true;
     public boolean writeNodeShape = true;
+    public String edgeToName = "to";
+    public String edgeTextName = "text";
     public boolean writeEdgeId = true;
     public boolean writeEdgeFrom = true;
     public boolean writeEdgeTo = true;
     public boolean writeEdgePoints = true;
+    public boolean writeGraphName = true;
+    @Title("Make the root json object an array, containing only the nodes")
+    public boolean collapseGraphIntoNodes = false;
 }

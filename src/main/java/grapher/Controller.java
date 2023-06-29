@@ -7,7 +7,9 @@ import grapher.model.Edge;
 import grapher.model.Graph;
 import grapher.model.Node;
 import grapher.model.Project;
+import grapher.serialization.ContextWriter;
 import grapher.serialization.CustomEdgeSerializer;
+import grapher.serialization.CustomGraphSerializer;
 import grapher.serialization.CustomNodeSerializer;
 import grapher.widget.EdgeWidget;
 import grapher.widget.GraphPane;
@@ -29,9 +31,10 @@ import org.tinylog.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Controller responsible for handling user actions.
@@ -212,15 +215,23 @@ public class Controller {
         SimpleModule simpleModule = new SimpleModule();
         simpleModule.addSerializer(Node.class, new CustomNodeSerializer(project.settings));
         simpleModule.addSerializer(Edge.class, new CustomEdgeSerializer(project.settings));
+        simpleModule.addSerializer(Graph.class, new CustomGraphSerializer(project.settings));
         exportMapper.registerModule(simpleModule);
         try {
             if (project.settings.separateFilesForGraphs) {
                 // save into multiple files
                 for (var graph : project.graphs) {
-                    exportMapper.writeValue(appendToProjectFilePath(graph.name + ".json"), graph);
+                    var writer = new ContextWriter(graph);
+                    exportMapper.writer().writeValue(writer, graph);
+                    var res = writer.toString();
+                    try (var out = new PrintWriter(appendToProjectFilePath(graph.name + ".json"))) {
+                        out.print(res);
+                    }
+                    // exportMapper.writeValue(appendToProjectFilePath(graph.name + ".json"), graph);
                 }
             } else {
                 // save into one file
+                // TODO this probably doesn't work
                 exportMapper.writeValue(appendToProjectFilePath("export.json"), project);
             }
         } catch (IOException e) {
