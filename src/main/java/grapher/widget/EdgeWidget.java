@@ -45,6 +45,7 @@ public class EdgeWidget extends Parent {
         fromWidget = controller.nodeWidgetMap.get(edge.from);
         toWidget = controller.nodeWidgetMap.get(edge.to);
         arrowWidget = new Polyline(-5, -10, 0, 0, 5, -10);
+        arrowWidget.getStyleClass().add("graph-edge-arrow");
 
         layoutCenterXBinding = new DoubleBinding() {
             {
@@ -89,9 +90,6 @@ public class EdgeWidget extends Parent {
         cN.layoutXProperty().bind(toWidget.getLayoutCenterXBinding());
         cN.layoutYProperty().bind(toWidget.getLayoutCenterYBinding());
         pathPoints.add(cN);
-        for (var elem : pathPoints) {
-            //style
-        }
 
         for (var point : pathPoints) {
             point.layoutXProperty().addListener(arrowPositionListener);
@@ -166,11 +164,13 @@ public class EdgeWidget extends Parent {
         label.setText(edge.text);
         label.layoutXProperty().bind(getLayoutCenterXBinding());
         label.layoutYProperty().bind(getLayoutCenterYBinding());
+        label.getStyleClass().add("graph-edge-label");
 
         textArea.setVisible(false);
         textArea.layoutXProperty().bind(getLayoutCenterXBinding());
         textArea.layoutYProperty().bind(getLayoutCenterYBinding());
         textArea.setPrefSize(150, 0);
+        textArea.getStyleClass().add("graph-edge-textarea");
 
 
         setOnMouseClicked(e -> {

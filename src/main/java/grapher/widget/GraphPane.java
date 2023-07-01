@@ -7,12 +7,19 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.transform.NonInvertibleTransformException;
+import javafx.scene.transform.Transform;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+import org.tinylog.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,20 +30,24 @@ import java.util.List;
  * Is preserves child Layout, panning is stored in Translate.
  */
 public class GraphPane extends Region {
-    private double dragStartMouseX = 0.0;
-    private double dragStartMouseY = 0.0;
-    private double dragStartTranslateX = 0.0;
-    private double dragStartTranslateY = 0.0;
+    private double dragStartMouseSceneX = 0.0;
+    private double dragStartMouseSceneY = 0.0;
+    private double dragStartChildTranslateX = 0.0;
+    private double dragStartChildTranslateY = 0.0;
 
+    @Getter
     private double childTranslateX = 0.0;
+    @Getter
     private double childTranslateY = 0.0;
 
     private double marqueeStartX;
     private double marqueeStartY;
 
+    @Getter
+    @Setter
     private double zoomMultiplier = 0.1;
 
-    public final Pane g = new Pane();
+    public final Pane innerCanvas = new Pane();
     public final Rectangle marquee = new Rectangle();
     public final List<GraphPaneSlot> selectionList = new ArrayList<>();
     public final ObservableList<GraphPaneSlot> selection = new ModifiableObservableListBase<>() {
@@ -76,12 +87,13 @@ public class GraphPane extends Region {
 
     public GraphPane() {
         getStyleClass().add("graph-pane-outer");
-        g.getStyleClass().add("graph-pane-inner");
-        getChildren().add(g);
-        g.setPrefSize(150, 150);
+        innerCanvas.getStyleClass().add("graph-pane-inner");
+        getChildren().add(innerCanvas);
+        innerCanvas.setPrefSize(1, 1);
         marquee.setMouseTransparent(true);
-
         marquee.getStyleClass().add("marquee");
+        var hintLabel = new Label("'Home' to reset view");
+        getChildren().add(hintLabel);
 
         setMouseTransparent(false);
         setOnMouseDragged(e -> {
@@ -95,14 +107,25 @@ public class GraphPane extends Region {
                 marquee.setWidth(xmax - xmin);
                 marquee.setHeight(ymax - ymin);
                 selection.clear();
-                var gTrans = g.getLocalToParentTransform();
-                for (var child : g.getChildren()) {
+                var gTrans = innerCanvas.getLocalToParentTransform();
+                for (var child : innerCanvas.getChildren()) {
                     if (marquee.getBoundsInLocal().intersects(gTrans.transform(child.getBoundsInParent())))
                         selection.add((GraphPaneSlot) child);
                 }
                 e.consume();
             } else if (e.isSecondaryButtonDown()) {
-                setChildTranslate(e.getSceneX() - dragStartMouseX + dragStartTranslateX, e.getSceneY() - dragStartMouseY + dragStartTranslateY);
+                Transform paneToCanvasTransform = null;
+                try {
+                    paneToCanvasTransform = innerCanvas.getLocalToParentTransform().createInverse();
+                } catch (NonInvertibleTransformException ex) {
+                    throw new RuntimeException(ex);
+                }
+                var newMouseSceneX = e.getSceneX();
+                var newMouseSceneY = e.getSceneY();
+                var dragStartMouseCanvasPos = paneToCanvasTransform.transform(dragStartMouseSceneX, dragStartMouseSceneY);
+                var newMouseCanvasPos = paneToCanvasTransform.transform(newMouseSceneX, newMouseSceneY);
+                var mouseCanvasDelta = newMouseCanvasPos.subtract(dragStartMouseCanvasPos);
+                setChildrenTranslate(mouseCanvasDelta.getX() + dragStartChildTranslateX, mouseCanvasDelta.getY() + dragStartChildTranslateY);
                 e.consume();
             }
         });
@@ -127,55 +150,61 @@ public class GraphPane extends Region {
                 getChildren().add(marquee);
                 e.consume();
             } else if (e.isSecondaryButtonDown()) {
-                dragStartTranslateX = childTranslateX;
-                dragStartTranslateY = childTranslateY;
-                dragStartMouseX = e.getSceneX();
-                dragStartMouseY = e.getSceneY();
+                dragStartChildTranslateX = childTranslateX;
+                dragStartChildTranslateY = childTranslateY;
+                dragStartMouseSceneX = e.getSceneX();
+                dragStartMouseSceneY = e.getSceneY();
                 e.consume();
             }
         });
         setOnScroll(scrollEvent -> {
             var ctx = getChildTranslateX();
             var cty = getChildTranslateY();
-            var glx = g.getLayoutX();
-            var gly = g.getLayoutY();
-            var gsx = g.getScaleX();
-            var gsy = g.getScaleY();
+            var clx = innerCanvas.getLayoutX();
+            var cly = innerCanvas.getLayoutY();
+            var csx = innerCanvas.getScaleX();
+            var csy = innerCanvas.getScaleY();
             var mx = scrollEvent.getX();
             var my = scrollEvent.getY();
-            setChildTranslate(
-                    ctx + (glx - mx) / gsx,
-                    cty + (gly - my) / gsy);
-            g.setLayoutX(scrollEvent.getX());
-            g.setLayoutY(scrollEvent.getY());
-            g.setScaleX(scrollEvent.getDeltaY() / scrollEvent.getMultiplierY() * getZoomMultiplier() + g.getScaleX());
-            g.setScaleY(scrollEvent.getDeltaY() / scrollEvent.getMultiplierY() * getZoomMultiplier() + g.getScaleY());
+            // move inner canvas layout to EXACT mouse location
+            innerCanvas.setLayoutX(mx);
+            innerCanvas.setLayoutY(my);
+            // set childrentranslate so that visually the children stay where they were
+            setChildrenTranslate(
+                    ctx + (clx - mx) / csx,
+                    cty + (cly - my) / csy);
+            // update scale of inner canvas
+            innerCanvas.setScaleX(Math.max(0.01, Math.signum(scrollEvent.getDeltaY()) * zoomMultiplier + csx));
+            innerCanvas.setScaleY(Math.max(0.01, Math.signum(scrollEvent.getDeltaY()) * zoomMultiplier + csy));
+        });
+        setOnKeyPressed(e -> {
+            Logger.info(e);
+            if (e.getCode() == KeyCode.HOME) {
+                setChildrenTranslate(0, 0);
+                innerCanvas.setScaleX(1);
+                innerCanvas.setScaleY(1);
+                innerCanvas.setLayoutX(0);
+                innerCanvas.setLayoutY(0);
+                e.consume();
+            }
         });
     }
 
     public void clear() {
-        g.getChildren().clear();
+        innerCanvas.getChildren().clear();
         selection.clear();
     }
 
     public GraphPaneSlot addChild(javafx.scene.@NotNull Node n) {
         GraphPaneSlot graphPaneSlot = new GraphPaneSlot(this, n);
-        g.getChildren().add(graphPaneSlot);
+        innerCanvas.getChildren().add(graphPaneSlot);
         n.setTranslateX(childTranslateX);
         n.setTranslateY(childTranslateY);
         return graphPaneSlot;
     }
 
-    public final double getChildTranslateX() {
-        return childTranslateX;
-    }
-
-    public final double getChildTranslateY() {
-        return childTranslateY;
-    }
-
-    public final void setChildTranslate(double x, double y) {
-        for (final var elem : g.getChildren()) {
+    private void setChildrenTranslate(double x, double y) {
+        for (final var elem : innerCanvas.getChildren()) {
             ((GraphPaneSlot) elem).value.setTranslateX(x);
             ((GraphPaneSlot) elem).value.setTranslateY(y);
         }
@@ -183,36 +212,28 @@ public class GraphPane extends Region {
         childTranslateY = y;
     }
 
-    public double getZoomMultiplier() {
-        return zoomMultiplier;
-    }
-
-    public void setZoomMultiplier(double zoomMultiplier) {
-        this.zoomMultiplier = zoomMultiplier;
-    }
-
-    public final List<GraphPaneSlot> getSelection() {
+    public List<GraphPaneSlot> getSelection() {
         return Collections.unmodifiableList(selectionList);
     }
 
-    public final void deselectAll() {
+    public void deselectAll() {
         selection.clear();
     }
 
-    public final void select(GraphPaneSlot node) {
+    public void select(GraphPaneSlot node) {
         if (!selection.contains(node)) {
             deselectAll();
             selection.add(node);
         }
     }
 
-    public final void selectAlso(GraphPaneSlot node) {
+    public void selectAlso(GraphPaneSlot node) {
         if (!selection.contains(node)) {
             selection.add(node);
         }
     }
 
-    public final void deselect(GraphPaneSlot node) {
+    public void deselect(GraphPaneSlot node) {
         selection.remove(node);
     }
 

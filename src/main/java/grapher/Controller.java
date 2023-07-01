@@ -85,7 +85,7 @@ public class Controller {
         if (actionMode == EActionMode.NODE_ADD) {
             if (e.isStillSincePress()) { // don't
                 try {
-                    var invTrans = gui.currentGraphPane.g.getLocalToParentTransform().createInverse();
+                    var invTrans = gui.currentGraphPane.innerCanvas.getLocalToParentTransform().createInverse();
                     var res = invTrans.transform(e.getX(), e.getY());
                     currentManipulator.addNode(
                             res.getX() - gui.currentGraphPane.getChildTranslateX(),

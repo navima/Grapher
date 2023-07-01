@@ -3,18 +3,18 @@
     /*-fx-border-color: black;*/
     /*-fx-fill: #F000F0;*/
 }
+
 .graph-pane-outer {
-    /*-fx-border-color: black;*/
-    /*-fx-background-color: #F000F0;*/
-}
-.graph-pane-inner {
-    /*-fx-border-color: black;*/
-    /*-fx-background-color: #00F000;*/
+    //-fx-border-color: black;
+    //-fx-border-style: dotted;
 }
 
-.button {
-    -fx-fill: #e3e3e3;
+.graph-pane-inner {
+    //-fx-border-color: black;
+    //-fx-border-style: dotted;
 }
+
+.button {}
 
 .toggle-button:selected {
     -fx-background-color: #0096c9;
@@ -47,6 +47,7 @@
 
 .marquee {
     -fx-stroke: #0096c9;
+    -fx-stroke-width: 1px;
     -fx-fill: rgba(0, 150, 201, 0.2);
 }
 
@@ -64,4 +65,25 @@
 
 .border-bottom {
     -fx-border-color: transparent transparent black transparent
+}
+
+.graph-node-label {
+    -fx-fill: #e3e3e3;
+    -fx-background-color: #e3e3e3;
+    //-fx-padding: 1em;
+}
+
+.graph-node-label.selected {
+    -fx-background-color: #0096c9;
+    -fx-text-fill: #ffffff;
+}
+
+.graph-node-textarea .scroll-bar {
+    -fx-pref-width: 0;
+    -fx-opacity: 0;
+}
+
+.graph-node-textarea .scroll-pane {
+    -fx-hbar-policy: never;
+    -fx-vbar-policy: never;
 }

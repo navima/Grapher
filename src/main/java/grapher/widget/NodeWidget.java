@@ -5,6 +5,8 @@ import grapher.shape.ENodeShape;
 import grapher.shape.NodeShapeFactory;
 import grapher.util.Callback;
 import grapher.util.StyleChangeListenerFactory;
+import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -14,11 +16,15 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.Region;
+import javafx.scene.text.Text;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
 @EqualsAndHashCode(callSuper = true)
@@ -68,7 +74,7 @@ public class NodeWidget extends Parent {
         return value.text;
     }
 
-    public NodeWidget(@NotNull Node n, final @NotNull Callback updateCallback) {
+    public NodeWidget(@NotNull Node n, @NotNull Callback updateCallback) {
         super();
         this.getStyleClass().setAll(DEFAULT_STYLE_CLASS);
         this.getStyleClass().addListener(StyleChangeListenerFactory.copierListener(label));
@@ -78,8 +84,23 @@ public class NodeWidget extends Parent {
 
         textArea.setVisible(false);
         textArea.setPromptText("Node Label");
-        textArea.prefWidthProperty().bind(label.widthProperty());
-        textArea.prefHeightProperty().bind(label.heightProperty());
+        // AUTOSIZE WIDTH
+        // Set Max and Min Width to PREF_SIZE so that the TextField is always PREF
+        textArea.setMinWidth(Region.USE_PREF_SIZE);
+        textArea.setMaxWidth(Region.USE_PREF_SIZE);
+        textArea.prefRowCountProperty().bind(Bindings.createIntegerBinding(() -> StringUtils.countMatches(textArea.getText(), '\n') + 1, textArea.textProperty()));
+        textArea.textProperty().addListener((ov, prevText, currText) -> {
+            // Do this in a Platform.runLater because of Textfield has no padding at first time and so on
+            Platform.runLater(() -> {
+                Text text = new Text(currText);
+                text.setFont(textArea.getFont()); // Set the same font, so the size is the same
+                double width = text.getLayoutBounds().getWidth() // This big is the Text in the TextField
+                        + textArea.getPadding().getLeft() + textArea.getPadding().getRight() // Add the padding of the TextField
+                        + 15; // Add some spacing
+                textArea.setPrefWidth(width); // Set the width
+                textArea.positionCaret(textArea.getCaretPosition()); // If you remove this line, it flashes a little bit
+            });
+        });
         textArea.setText(n.text);
         textArea.focusedProperty().addListener((observableValue, oldFocus, newFocus) -> {
             if (!newFocus) {
@@ -88,10 +109,11 @@ public class NodeWidget extends Parent {
                 updateCallback.call();
             }
         });
+        textArea.getStyleClass().add("graph-node-textarea");
 
         label.textProperty().bind(textArea.textProperty());
         label.setShape(NodeShapeFactory.build(n.shape));
-        label.getStyleClass().add("button");
+        label.getStyleClass().add("graph-node-label");
 
         value = n;
         setLayoutX(n.x);
